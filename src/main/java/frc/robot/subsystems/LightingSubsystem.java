@@ -9,6 +9,7 @@ import com.ctre.phoenix.led.CANdleFaults;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.awt.Color;
 
 public class LightingSubsystem extends SubsystemBase {
 
@@ -36,16 +37,29 @@ public class LightingSubsystem extends SubsystemBase {
     return m_faults;
   }
 
+  private void setLEDs(String hex) {
+    Color color = Color.decode(hex);
+    m_candle.setLEDs(color.getRed(), color.getGreen(), color.getBlue());
+  }
+
   public void off() {
-    m_candle.setLEDs(0, 0, 0);
+    setLEDs(COLOR_BLACK);
   }
 
   public void yellow() {
-    m_candle.setLEDs(93, 87, 6);
+    setLEDs(COLOR_YELLOW);
   }
 
   public void purple() {
-    m_candle.setLEDs(66, 9, 70);
+    setLEDs(COLOR_PURPLE);
+  }
+
+  public void red() {
+    setLEDs(COLOR_RED);
+  }
+
+  public void green() {
+    setLEDs(COLOR_GREEN);
   }
 
   @Override

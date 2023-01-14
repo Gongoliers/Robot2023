@@ -65,4 +65,10 @@ public final class Constants {
       -Math.toRadians(0.0); // FIXME Measure and set back right steer offset
 
   public static final int CANDLE_ID = 0; // FIXME Configure
+
+  public static final String COLOR_BLACK = "#000000";
+  public static final String COLOR_YELLOW = "#ffe606";
+  public static final String COLOR_PURPLE = "#e330ff";
+  public static final String COLOR_RED = "#ff0000";
+  public static final String COLOR_GREEN = "#00ff00";
 }
