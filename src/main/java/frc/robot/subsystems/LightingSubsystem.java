@@ -39,7 +39,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   private void setLEDs(String hex) {
     Color color = Color.decode(hex);
-    m_candle.setLEDs(color.getRed(), color.getBlue(), color.getGreen());
+    m_candle.setLEDs(color.getRed(), color.getGreen(), color.getBlue());
   }
 
   public void off() {
