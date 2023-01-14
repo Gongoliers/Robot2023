@@ -41,11 +41,11 @@ public class LightingSubsystem extends SubsystemBase {
   }
 
   public void yellow() {
-    m_candle.setLEDs(93, 87, 6);
+    m_candle.setLEDs(255, 230, 6);
   }
 
   public void purple() {
-    m_candle.setLEDs(66, 9, 70);
+    m_candle.setLEDs(227, 48, 255);
   }
 
   @Override
