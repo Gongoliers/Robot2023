@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 
+import java.awt.Color;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -36,16 +38,21 @@ public class LightingSubsystem extends SubsystemBase {
     return m_faults;
   }
 
+  private void setLEDs(String hex) {
+    Color color = Color.decode(hex);
+    m_candle.setLEDs(color.getRed(), color.getBlue(), color.getGreen());
+  }
+
   public void off() {
-    m_candle.setLEDs(0, 0, 0);
+    setLEDs(COLOR_BLACK);
   }
 
   public void yellow() {
-    m_candle.setLEDs(255, 230, 6);
+    setLEDs(COLOR_YELLOW);
   }
 
   public void purple() {
-    m_candle.setLEDs(227, 48, 255);
+    setLEDs(COLOR_PURPLE);
   }
 
   @Override
