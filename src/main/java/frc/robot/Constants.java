@@ -66,7 +66,9 @@ public final class Constants {
 
   public static final int CANDLE_ID = 0; // FIXME Configure
 
-  public static final String COLOR_BLACK = "";
-  public static final String COLOR_YELLOW = "";
-  public static final String COLOR_PURPLE = "";
+  public static final String COLOR_BLACK = "#000000";
+  public static final String COLOR_YELLOW = "#ffe606";
+  public static final String COLOR_PURPLE = "#e330ff";
+  public static final String COLOR_RED = "#ff0000";
+  public static final String COLOR_GREEN = "#00ff00";
 }

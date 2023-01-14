@@ -55,6 +55,14 @@ public class LightingSubsystem extends SubsystemBase {
     setLEDs(COLOR_PURPLE);
   }
 
+  public void red() {
+    setLEDs(COLOR_RED);
+  }
+
+  public void green() {
+    setLEDs(COLOR_GREEN);
+  }
+
   @Override
   public void periodic() {
     // Get faults; periodically assert that CANdle is OK
