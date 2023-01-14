@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 
-import java.awt.Color;
-
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
@@ -11,6 +9,7 @@ import com.ctre.phoenix.led.CANdleFaults;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.awt.Color;
 
 public class LightingSubsystem extends SubsystemBase {
 
