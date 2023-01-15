@@ -49,6 +49,12 @@ public class LightingSubsystem extends SubsystemBase {
     off();
   }
 
+  /**
+   * Generates a suitable "standard" configuration for the CANdle. The CANdle will always be
+   * initialized with this configuration at the beginning of the match.
+   *
+   * @return the "standard" configuration for the CANdle.
+   */
   private CANdleConfiguration config() {
     CANdleConfiguration config = new CANdleConfiguration();
     config.stripType = LEDStripType.RGB;
@@ -56,6 +62,12 @@ public class LightingSubsystem extends SubsystemBase {
     return config;
   }
 
+  /**
+   * Translates a CANdle's faults to its representation as a string.
+   *
+   * @param a filled faults buffer.
+   * @return a string representing the faults.
+   */
   private String asMessage(CANdleFaults faults) {
     ArrayList<String> messages = new ArrayList<String>();
 
@@ -83,6 +95,10 @@ public class LightingSubsystem extends SubsystemBase {
     return String.join(", ", messages);
   }
 
+  /**
+   * Handles all possible CANdle faults, including sticky faults. If present, all faults are
+   * reported on the Shuffleboard tab.
+   */
   private void handleFaults() {
     final CANdleFaults faults = new CANdleFaults();
     m_candle.getFaults(faults);
@@ -99,6 +115,7 @@ public class LightingSubsystem extends SubsystemBase {
     }
   }
 
+  /** Displays the current color of the CANdle on the Shuffleboard tab. */
   private void displayColor() {
     // Set the string value to the current color
     m_colorStringView.setString(m_currentColor);
@@ -109,6 +126,11 @@ public class LightingSubsystem extends SubsystemBase {
     m_colorColorView.setBoolean(true);
   }
 
+  /**
+   * Sets the LEDs controlled by the CANdle to the specified color.
+   *
+   * @param hex a hexademical color code to set the LEDs to.
+   */
   private void setLEDs(String hex) {
 
     m_currentColor = hex;
@@ -120,26 +142,47 @@ public class LightingSubsystem extends SubsystemBase {
     }
   }
 
+  /**
+   * Turn the LEDs off.
+   * @return a command that will turn the LEDs off.
+   */
   public CommandBase off() {
     return this.runOnce(() -> setLEDs(COLOR_BLACK));
   }
 
+  /**
+   * Turn the LEDs yellow.
+   * @return a command that will turn the LEDs yellow.
+   */
   public CommandBase yellow() {
     return this.runOnce(() -> setLEDs(COLOR_YELLOW));
   }
 
+  /**
+   * Turn the LEDs purple.
+   * @return a command that will turn the LEDs purple.
+   */
   public CommandBase purple() {
     return this.runOnce(() -> setLEDs(COLOR_PURPLE));
   }
 
+  /**
+   * Turn the LEDs red.
+   * @return a command that will turn the LEDs red.
+   */
   public CommandBase red() {
     return this.runOnce(() -> setLEDs(COLOR_RED));
   }
 
+  /**
+   * Turn the LEDs green.
+   * @return a command that will turn the LEDs green.
+   */
   public CommandBase green() {
     return this.runOnce(() -> setLEDs(COLOR_GREEN));
   }
 
+  /** Handles CANdle faults and updates the color displayed on the Shuffleboard. */
   @Override
   public void periodic() {
     handleFaults();
