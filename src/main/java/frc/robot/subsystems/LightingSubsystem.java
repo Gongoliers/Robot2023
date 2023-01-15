@@ -7,22 +7,21 @@ import static frc.robot.Constants.COLOR_PURPLE;
 import static frc.robot.Constants.COLOR_RED;
 import static frc.robot.Constants.COLOR_YELLOW;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Map;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.CANdleFaults;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class LightingSubsystem extends SubsystemBase {
 
@@ -40,8 +39,10 @@ public class LightingSubsystem extends SubsystemBase {
     m_tab = Shuffleboard.getTab("Lighting");
 
     m_faultIndicator = m_tab.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
-    m_colorStringView = m_tab.add("Current Color", "null").withWidget(BuiltInWidgets.kTextView).getEntry();
-    m_colorColorWidget = m_tab.add("Current Color", false).withProperties(Map.of("colorWhenFalse", "black"));
+    m_colorStringView =
+        m_tab.add("Current Color", "null").withWidget(BuiltInWidgets.kTextView).getEntry();
+    m_colorColorWidget =
+        m_tab.add("Current Color", false).withProperties(Map.of("colorWhenFalse", "black"));
     m_colorColorView = m_colorColorWidget.getEntry();
 
     m_candle.configAllSettings(config());
@@ -88,7 +89,7 @@ public class LightingSubsystem extends SubsystemBase {
 
     // https://v5.docs.ctr-electronics.com/en/stable/ch17_Faults.html?highlight=sticky
     // “Sticky” faults stay asserted until they are manually cleared
-    // All CANdle sticky faults are also "live" faults, so we can safely ignore the sticky faults 
+    // All CANdle sticky faults are also "live" faults, so we can safely ignore the sticky faults
     m_candle.clearStickyFaults();
 
     if (faults.hasAnyFault() == false) {
@@ -119,24 +120,24 @@ public class LightingSubsystem extends SubsystemBase {
     }
   }
 
-  public void off() {
-    setLEDs(COLOR_BLACK);
+  public CommandBase off() {
+    return this.runOnce(() -> setLEDs(COLOR_BLACK));
   }
 
-  public void yellow() {
-    setLEDs(COLOR_YELLOW);
+  public CommandBase yellow() {
+    return this.runOnce(() -> setLEDs(COLOR_YELLOW));
   }
 
-  public void purple() {
-    setLEDs(COLOR_PURPLE);
+  public CommandBase purple() {
+    return this.runOnce(() -> setLEDs(COLOR_PURPLE));
   }
 
-  public void red() {
-    setLEDs(COLOR_RED);
+  public CommandBase red() {
+    return this.runOnce(() -> setLEDs(COLOR_RED));
   }
 
-  public void green() {
-    setLEDs(COLOR_GREEN);
+  public CommandBase green() {
+    return this.runOnce(() -> setLEDs(COLOR_GREEN));
   }
 
   @Override
