@@ -68,7 +68,11 @@ public class LightingSubsystem extends SubsystemBase {
    * @param a filled faults buffer.
    * @return a string representing the faults.
    */
-  private String asMessage(CANdleFaults faults) {
+  private String asString(CANdleFaults faults) {
+    if (faults.hasAnyFault() == false) {
+      return "None";
+    }
+    
     ArrayList<String> messages = new ArrayList<String>();
 
     // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/led/CANdleFaults.html
@@ -83,21 +87,18 @@ public class LightingSubsystem extends SubsystemBase {
     messages.add(faults.VBatTooHigh ? "VBatTooHigh" : "");
     messages.add(faults.VBatTooLow ? "VBatTooLow" : "");
 
-    // Remove all "empty faults" (faults which do not occur)
-    messages.removeIf(item -> "".equals(item));
+    messages.removeIf(message -> message.equals(""));
 
-    if (messages.size() == 1) {
-      // If there is only one fault, return the first fault
-      return messages.get(0);
+    if (messages.size() > 1) {
+      return String.join(",", messages);
     }
 
-    // If there are multiple faults, return the combined faults
-    return String.join(", ", messages);
+    return messages.get(0);
   }
 
   /**
-   * Handles all possible CANdle faults, including sticky faults. If present, all faults are
-   * reported on the Shuffleboard tab.
+   * Handles all possible CANdle faults, including sticky faults. All faults are reported on the
+   * Shuffleboard tab.
    */
   private void handleFaults() {
     final CANdleFaults faults = new CANdleFaults();
@@ -108,11 +109,7 @@ public class LightingSubsystem extends SubsystemBase {
     // All CANdle sticky faults are also "live" faults, so we can safely ignore the sticky faults
     m_candle.clearStickyFaults();
 
-    if (faults.hasAnyFault() == false) {
-      m_faultIndicator.setString("None");
-    } else {
-      m_faultIndicator.setString(asMessage(faults));
-    }
+    m_faultIndicator.setString(asString(faults));
   }
 
   /** Displays the current color of the CANdle on the Shuffleboard tab. */
@@ -120,7 +117,6 @@ public class LightingSubsystem extends SubsystemBase {
     // Set the string value to the current color
     m_colorStringView.setString(m_currentColor);
 
-    // Use a Boolean widget to display the color of the LEDs
     // https://gist.github.com/GrantPerkins/ad829caee87ff054ca0ae156487e619d
     m_colorColorWidget.withProperties(Map.of("colorWhenTrue", m_currentColor));
     m_colorColorView.setBoolean(true);
@@ -144,6 +140,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   /**
    * Turn the LEDs off.
+   *
    * @return a command that will turn the LEDs off.
    */
   public CommandBase off() {
@@ -152,6 +149,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   /**
    * Turn the LEDs yellow.
+   *
    * @return a command that will turn the LEDs yellow.
    */
   public CommandBase yellow() {
@@ -160,6 +158,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   /**
    * Turn the LEDs purple.
+   *
    * @return a command that will turn the LEDs purple.
    */
   public CommandBase purple() {
@@ -168,6 +167,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   /**
    * Turn the LEDs red.
+   *
    * @return a command that will turn the LEDs red.
    */
   public CommandBase red() {
@@ -176,6 +176,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   /**
    * Turn the LEDs green.
+   *
    * @return a command that will turn the LEDs green.
    */
   public CommandBase green() {
