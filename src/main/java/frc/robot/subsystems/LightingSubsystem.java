@@ -68,32 +68,23 @@ public class LightingSubsystem extends SubsystemBase {
    * @param a filled faults buffer.
    * @return a string representing the faults.
    */
-  private String asString(CANdleFaults faults) {
-    if (faults.hasAnyFault() == false) {
-      return "None";
-    }
-    
-    ArrayList<String> messages = new ArrayList<String>();
+  private String toString(CANdleFaults faults) { 
+    // https://api.ctr-electronics.com/phoenix/release/java/src-html/com/ctre/phoenix/motorcontrol/Faults.html#line.151
+    StringBuilder messages = new StringBuilder();
 
     // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/led/CANdleFaults.html
-    messages.add(faults.APIError ? "APIError" : "");
-    messages.add(faults.BootDuringEnable ? "BootDuringEnable" : "");
-    messages.add(faults.HardwareFault ? "HardwareFault" : "");
-    messages.add(faults.ShortCircuit ? "ShortCircuit" : "");
-    messages.add(faults.SoftwareFuse ? "SoftwareFuse" : "");
-    messages.add(faults.ThermalFault ? "ThermalFault" : "");
-    messages.add(faults.V5TooHigh ? "V5TooHigh" : "");
-    messages.add(faults.V5TooLow ? "V5TooLow" : "");
-    messages.add(faults.VBatTooHigh ? "VBatTooHigh" : "");
-    messages.add(faults.VBatTooLow ? "VBatTooLow" : "");
+    messages.append("APIError: "); messages.append(faults.APIError ? "1" : "0");
+    messages.append(" BootDuringEnable: "); messages.append(faults.BootDuringEnable ? "1" : "0");
+    messages.append(" HardwareFault: "); messages.append(faults.HardwareFault ? "1" : "0");
+    messages.append(" ShortCircuit: "); messages.append(faults.ShortCircuit ? "1" : "0");
+    messages.append(" SoftwareFuse: "); messages.append(faults.SoftwareFuse ? "1" : "0");
+    messages.append(" ThermalFault: "); messages.append(faults.ThermalFault ? "1" : "0");
+    messages.append(" V5TooHigh: "); messages.append(faults.V5TooHigh ? "1" : "0");
+    messages.append(" V5TooLow: "); messages.append(faults.V5TooLow ? "1" : "0");
+    messages.append(" VBatTooHigh: "); messages.append(faults.VBatTooHigh ? "1" : "0");
+    messages.append(" VBatTooLow: "); messages.append(faults.VBatTooLow ? "1" : "0");
 
-    messages.removeIf(message -> message.equals(""));
-
-    if (messages.size() > 1) {
-      return String.join(",", messages);
-    }
-
-    return messages.get(0);
+    return messages.toString();
   }
 
   /**
@@ -109,7 +100,7 @@ public class LightingSubsystem extends SubsystemBase {
     // All CANdle sticky faults are also "live" faults, so we can safely ignore the sticky faults
     m_candle.clearStickyFaults();
 
-    m_faultIndicator.setString(asString(faults));
+    m_faultIndicator.setString(toString(faults));
   }
 
   /** Displays the current color of the CANdle on the Shuffleboard tab. */
