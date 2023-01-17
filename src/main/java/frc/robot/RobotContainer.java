@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.drivetrain.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LightingSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,6 +22,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final LightingSubsystem m_lightingSubsystem = new LightingSubsystem();
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -31,14 +33,14 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(
-        new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(getLeftStickY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(getLeftStickX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () ->
-                -modifyAxis(getRightStickX())
-                    * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+    //m_drivetrainSubsystem.setDefaultCommand(
+        //new DefaultDriveCommand(
+            //m_drivetrainSubsystem,
+            //() -> -modifyAxis(getLeftStickY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            //() -> -modifyAxis(getLeftStickX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            //() ->
+                //-modifyAxis(getRightStickX())
+                    //* DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -52,13 +54,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Back button zeros the gyroscope
-    new Trigger(m_controller::getBackButton)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_drivetrainSubsystem.zeroGyroscope();
-                },
-                m_drivetrainSubsystem));
+    //new Trigger(m_controller::getBackButton)
+        //.onTrue(
+            //new InstantCommand(
+                //() -> {
+                  //m_drivetrainSubsystem.zeroGyroscope();
+                //},
+                //m_drivetrainSubsystem));
+    new Trigger(m_controller::getAButton).onTrue(m_lightingSubsystem.green());
+    new Trigger(m_controller::getBButton).onTrue(m_lightingSubsystem.red());
+    new Trigger(m_controller::getXButton).onTrue(m_lightingSubsystem.purple());
+    new Trigger(m_controller::getYButton).onTrue(m_lightingSubsystem.yellow());
   }
 
   /**
