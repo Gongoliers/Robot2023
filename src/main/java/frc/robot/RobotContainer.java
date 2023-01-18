@@ -4,12 +4,14 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.drivetrain.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 
@@ -21,10 +23,10 @@ import frc.robot.subsystems.LightingSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final LightingSubsystem m_lightingSubsystem = new LightingSubsystem();
 
-  private final XboxController m_controller = new XboxController(0);
+  private CommandXboxController m_controller;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -33,14 +35,14 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    //m_drivetrainSubsystem.setDefaultCommand(
-        //new DefaultDriveCommand(
-            //m_drivetrainSubsystem,
-            //() -> -modifyAxis(getLeftStickY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            //() -> -modifyAxis(getLeftStickX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            //() ->
-                //-modifyAxis(getRightStickX())
-                    //* DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+    // m_drivetrainSubsystem.setDefaultCommand(
+    // new DefaultDriveCommand(
+    // m_drivetrainSubsystem,
+    // () -> -modifyAxis(getLeftStickY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    // () -> -modifyAxis(getLeftStickX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    // () ->
+    // -modifyAxis(getRightStickX())
+    // * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -53,18 +55,18 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_controller = new CommandXboxController(0);
+
     // Back button zeros the gyroscope
-    //new Trigger(m_controller::getBackButton)
-        //.onTrue(
-            //new InstantCommand(
-                //() -> {
-                  //m_drivetrainSubsystem.zeroGyroscope();
-                //},
-                //m_drivetrainSubsystem));
-    new Trigger(m_controller::getAButton).onTrue(m_lightingSubsystem.green());
-    new Trigger(m_controller::getBButton).onTrue(m_lightingSubsystem.red());
-    new Trigger(m_controller::getXButton).onTrue(m_lightingSubsystem.purple());
-    new Trigger(m_controller::getYButton).onTrue(m_lightingSubsystem.yellow());
+    // new Trigger(m_controller::getBackButton)
+    // .onTrue(
+    // new InstantCommand(
+    // () -> {
+    // m_drivetrainSubsystem.zeroGyroscope();
+    // },
+    // m_drivetrainSubsystem));
+    m_controller.a().onTrue(new PrintCommand("A button pressed"));
+    //m_controller.a().onTrue(m_lightingSubsystem.green());
   }
 
   /**
