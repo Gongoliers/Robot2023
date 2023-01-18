@@ -24,7 +24,7 @@ import frc.robot.subsystems.LightingSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final LightingSubsystem m_lightingSubsystem = new LightingSubsystem();
+  //private final LightingSubsystem m_lightingSubsystem = new LightingSubsystem();
 
   private CommandXboxController m_controller;
 
