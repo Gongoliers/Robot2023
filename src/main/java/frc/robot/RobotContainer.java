@@ -45,16 +45,7 @@ public class RobotContainer {
     // * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
-    configureButtonBindings();
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+    // configureButtonBindings();
     m_controller = new CommandXboxController(0);
 
     // Back button zeros the gyroscope
@@ -67,6 +58,15 @@ public class RobotContainer {
     // m_drivetrainSubsystem));
     m_controller.a().onTrue(new PrintCommand("A button pressed"));
     //m_controller.a().onTrue(m_lightingSubsystem.green());
+  }
+
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  private void configureButtonBindings() {
   }
 
   /**
