@@ -56,7 +56,7 @@ public class SwerveModule {
 
   private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
     if (isOpenLoop) {
-      double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.MAX_LINEAR_SPEED;
+      double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.LINEAR_SPEED_MAX;
       mDriveMotor.set(ControlMode.PercentOutput, percentOutput);
     } else {
       double velocity =
@@ -74,7 +74,7 @@ public class SwerveModule {
 
   private void setAngle(SwerveModuleState desiredState) {
     Rotation2d angle =
-        (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.MAX_LINEAR_SPEED * 0.01))
+        (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.LINEAR_SPEED_MAX * 0.01))
             ? lastAngle
             : desiredState
                 .angle; // Prevent rotating module if speed is less then 1%. Prevents Jittering.

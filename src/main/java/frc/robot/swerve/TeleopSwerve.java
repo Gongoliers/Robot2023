@@ -45,8 +45,8 @@ public class TeleopSwerve extends CommandBase {
 
     /* Drive */
     s_Swerve.drive(
-        new Translation2d(translationVal, strafeVal).times(Constants.Swerve.MAX_LINEAR_SPEED),
-        rotationVal * Constants.Swerve.MAX_ANGULAR_SPEED,
+        new Translation2d(translationVal, strafeVal).times(Constants.Swerve.LINEAR_SPEED_MAX),
+        rotationVal * Constants.Swerve.ANGULAR_SPEED_MAX,
         !robotCentricSup.getAsBoolean(),
         true);
   }

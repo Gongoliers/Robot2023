@@ -62,7 +62,7 @@ public class Swerve extends SubsystemBase {
                     translation.getX(), translation.getY(), rotation, yaw())
                 : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, Constants.Swerve.MAX_LINEAR_SPEED);
+        swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
     for (SwerveModule mod : this.modules) {
       mod.setDesiredState(swerveModuleStates[mod.number], isOpenLoop);
@@ -70,7 +70,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_LINEAR_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
     for (SwerveModule module : this.modules) {
       module.setDesiredState(desiredStates[module.number], false);
