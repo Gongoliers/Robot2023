@@ -27,16 +27,16 @@ public class Swerve extends SubsystemBase {
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
 
   public Swerve() {
-    this.gyro = new Pigeon2(Constants.Swerve.pigeonID, "Drivetrain");
+    this.gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, "Drivetrain");
     this.gyro.configFactoryDefault();
     this.setYawZero();
 
     this.modules =
         new SwerveModule[] {
-          new SwerveModule(0, Constants.Swerve.FrontLeftModule.constants),
-          new SwerveModule(1, Constants.Swerve.FrontRightModule.constants),
-          new SwerveModule(2, Constants.Swerve.BackLeftModule.constants),
-          new SwerveModule(3, Constants.Swerve.BackRightModule.constants)
+          new SwerveModule(0, Constants.Swerve.FRONT_LEFT_MODULE.CONSTANTS),
+          new SwerveModule(1, Constants.Swerve.FRONT_RIGHT_MODULE.CONSTANTS),
+          new SwerveModule(2, Constants.Swerve.BACK_LEFT_MODULE.CONSTANTS),
+          new SwerveModule(3, Constants.Swerve.BACK_RIGHT_MODULE.CONSTANTS)
         };
 
     /*
@@ -48,7 +48,7 @@ public class Swerve extends SubsystemBase {
     this.resetModulesToAbsolute();
 
     this.swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, this.yaw(), this.positions());
+        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, this.yaw(), this.positions());
 
     this.field = new Field2d();
   }
@@ -56,13 +56,13 @@ public class Swerve extends SubsystemBase {
   public void drive(
       Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
     SwerveModuleState[] swerveModuleStates =
-        Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                     translation.getX(), translation.getY(), rotation, yaw())
                 : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, Constants.Swerve.maxLinearSpeed);
+        swerveModuleStates, Constants.Swerve.MAX_LINEAR_SPEED);
 
     for (SwerveModule mod : this.modules) {
       mod.setDesiredState(swerveModuleStates[mod.number], isOpenLoop);
@@ -70,7 +70,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxLinearSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_LINEAR_SPEED);
 
     for (SwerveModule module : this.modules) {
       module.setDesiredState(desiredStates[module.number], false);
@@ -112,7 +112,7 @@ public class Swerve extends SubsystemBase {
   public Rotation2d yaw() {
     double yaw = this.gyro.getYaw();
 
-    if (Constants.Swerve.invertGyro) {
+    if (Constants.Swerve.SHOULD_INVERT_GYRO) {
       yaw = 360 - yaw;
     }
 

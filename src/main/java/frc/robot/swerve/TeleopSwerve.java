@@ -34,16 +34,19 @@ public class TeleopSwerve extends CommandBase {
     /* Get Values, Deadband*/
     // TODO Mikaylee setting
     double translationVal =
-        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.OI.stickDeadband) * 0.3;
+        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
+            * 0.3;
     double strafeVal =
-        MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.OI.stickDeadband) * 0.3;
+        MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
+            * 0.3;
     double rotationVal =
-        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.OI.stickDeadband) * 0.3;
+        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
+            * 0.3;
 
     /* Drive */
     s_Swerve.drive(
-        new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxLinearSpeed),
-        rotationVal * Constants.Swerve.maxAnglularSpeed,
+        new Translation2d(translationVal, strafeVal).times(Constants.Swerve.MAX_LINEAR_SPEED),
+        rotationVal * Constants.Swerve.MAX_ANGULAR_SPEED,
         !robotCentricSup.getAsBoolean(),
         true);
   }
