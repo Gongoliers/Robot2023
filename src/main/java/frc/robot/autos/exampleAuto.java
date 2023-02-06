@@ -11,7 +11,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
+import frc.robot.swerve.Swerve;
+
 import java.util.List;
 
 public class exampleAuto extends SequentialCommandGroup {
@@ -35,10 +36,7 @@ public class exampleAuto extends SequentialCommandGroup {
 
     var thetaController =
         new ProfiledPIDController(
-            Constants.Auto.kPThetaController,
-            0,
-            0,
-            Constants.Auto.kThetaControllerConstraints);
+            Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand =

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.lighting;
 
 import static frc.robot.Constants.Lighting.CANDLE_ID;
 import static frc.robot.Constants.Lighting.COLOR_BLACK;
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.awt.Color;
 import java.util.Map;
 
-public class LightingSubsystem extends SubsystemBase {
+public class Lighting extends SubsystemBase {
 
   private final CANdle m_candle = new CANdle(CANDLE_ID);
 
@@ -33,7 +33,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   private String m_currentColor;
 
-  public LightingSubsystem() {
+  public Lighting() {
     m_tab = Shuffleboard.getTab("Lighting");
 
     m_faultIndicator = m_tab.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
