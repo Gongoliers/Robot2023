@@ -1,21 +1,17 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.CANDLE_ID;
-import static frc.robot.Constants.COLOR_BLACK;
-import static frc.robot.Constants.COLOR_GREEN;
-import static frc.robot.Constants.COLOR_PURPLE;
-import static frc.robot.Constants.COLOR_RED;
-import static frc.robot.Constants.COLOR_YELLOW;
-
-import java.awt.Color;
-import java.util.Map;
+import static frc.robot.Constants.Lighting.CANDLE_ID;
+import static frc.robot.Constants.Lighting.COLOR_BLACK;
+import static frc.robot.Constants.Lighting.COLOR_GREEN;
+import static frc.robot.Constants.Lighting.COLOR_PURPLE;
+import static frc.robot.Constants.Lighting.COLOR_RED;
+import static frc.robot.Constants.Lighting.COLOR_YELLOW;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.CANdleFaults;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,6 +19,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.awt.Color;
+import java.util.Map;
 
 public class LightingSubsystem extends SubsystemBase {
 
