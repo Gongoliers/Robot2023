@@ -1,12 +1,5 @@
 package frc.robot.lighting;
 
-import static frc.robot.Constants.Lighting.CANDLE_ID;
-import static frc.robot.Constants.Lighting.COLOR_BLACK;
-import static frc.robot.Constants.Lighting.COLOR_GREEN;
-import static frc.robot.Constants.Lighting.COLOR_PURPLE;
-import static frc.robot.Constants.Lighting.COLOR_RED;
-import static frc.robot.Constants.Lighting.COLOR_YELLOW;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -19,12 +12,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import java.awt.Color;
 import java.util.Map;
 
 public class Lighting extends SubsystemBase {
 
-  private final CANdle m_candle = new CANdle(CANDLE_ID);
+  private final CANdle m_candle = new CANdle(Constants.Lighting.CANDLE_ID);
 
   private final ShuffleboardTab m_tab;
   private final GenericEntry m_faultIndicator;
@@ -51,7 +45,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs off.
    */
   public CommandBase off() {
-    return this.runOnce(() -> setLEDs(COLOR_BLACK));
+    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_BLACK));
   }
 
   /**
@@ -60,7 +54,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs yellow.
    */
   public CommandBase yellow() {
-    return this.runOnce(() -> setLEDs(COLOR_YELLOW));
+    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_YELLOW));
   }
 
   /**
@@ -69,7 +63,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs purple.
    */
   public CommandBase purple() {
-    return this.runOnce(() -> setLEDs(COLOR_PURPLE));
+    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_PURPLE));
   }
 
   /**
@@ -78,7 +72,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs red.
    */
   public CommandBase red() {
-    return this.runOnce(() -> setLEDs(COLOR_RED));
+    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_RED));
   }
 
   /**
@@ -87,7 +81,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs green.
    */
   public CommandBase green() {
-    return this.runOnce(() -> setLEDs(COLOR_GREEN));
+    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_GREEN));
   }
 
   /** Handles CANdle faults and updates the color displayed on the Shuffleboard. */

@@ -5,20 +5,32 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConstants;
 
 public final class Constants {
 
-  public static final class OperatorInput {
-    /** Minimum stick displacement to register movement. */
-    public static final double STICK_DEADBAND = 0.2;
+  public static final class Driver {
+    /** Port in Driver Station for the driver controller. */
+    public static final int CONTROLLER_PORT = 1;
+    /** Minimum axis displacement to register movement. */
+    public static final double DEADBAND = 0.2;
+    /** Axis for forward-backward movement. */
+    public static final int AXIS_TRANSLATION = XboxController.Axis.kLeftY.value;
+    /** Axis for left-right movement. */
+    public static final int AXIS_STRAFE = XboxController.Axis.kLeftX.value;
+    /** Axis for rotation. */
+    public static final int AXIS_ROTATION = XboxController.Axis.kRightX.value;
+    /** Button for zeroing the gyro. */
+    public static final int BUTTON_ZERO_GYRO = XboxController.Button.kY.value;
+    /** Button for driving in robot-centric. */
+    public static final int BUTTON_ROBOT_CENTRIC = XboxController.Button.kLeftBumper.value;
   }
 
   public static final class Swerve {

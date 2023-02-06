@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.swerve.Swerve;
-import frc.robot.swerve.TeleopSwerve;
+import frc.robot.swerve.TeleopDrive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,31 +18,26 @@ import frc.robot.swerve.TeleopSwerve;
  */
 public class RobotContainer {
   /* Controllers */
-  private final Joystick driver = new Joystick(1);
-
-  /* Drive Controls */
-  private final int translationAxis = XboxController.Axis.kLeftY.value;
-  private final int strafeAxis = XboxController.Axis.kLeftX.value;
-  private final int rotationAxis = XboxController.Axis.kRightX.value;
+  private final Joystick driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
   /* Driver Buttons */
-  private final JoystickButton zeroGyro =
-      new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton robotCentric =
-      new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton zeroGyroButton =
+      new JoystickButton(driverController, Constants.Driver.BUTTON_ZERO_GYRO);
+  private final JoystickButton robotCentricButton =
+      new JoystickButton(driverController, Constants.Driver.BUTTON_ROBOT_CENTRIC);
 
   /* Subsystems */
-  private final Swerve s_Swerve = new Swerve();
+  private final Swerve swerve = new Swerve();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    s_Swerve.setDefaultCommand(
-        new TeleopSwerve(
-            s_Swerve,
-            () -> -driver.getRawAxis(translationAxis),
-            () -> -driver.getRawAxis(strafeAxis),
-            () -> -driver.getRawAxis(rotationAxis),
-            () -> robotCentric.getAsBoolean()));
+    swerve.setDefaultCommand(
+        new TeleopDrive(
+            swerve,
+            () -> -driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION),
+            () -> -driverController.getRawAxis(Constants.Driver.AXIS_STRAFE),
+            () -> -driverController.getRawAxis(Constants.Driver.AXIS_ROTATION),
+            () -> robotCentricButton.getAsBoolean()));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -56,7 +51,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.setYawZero()));
+    zeroGyroButton.onTrue(new InstantCommand(() -> swerve.setYawZero()));
   }
 
   /**
@@ -66,6 +61,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(s_Swerve);
+    return new exampleAuto(swerve);
   }
 }

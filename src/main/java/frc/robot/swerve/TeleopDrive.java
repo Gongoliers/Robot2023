@@ -7,21 +7,21 @@ import frc.robot.Constants;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-public class TeleopSwerve extends CommandBase {
-  private Swerve s_Swerve;
+public class TeleopDrive extends CommandBase {
+  private Swerve swerve;
   private DoubleSupplier translationSup;
   private DoubleSupplier strafeSup;
   private DoubleSupplier rotationSup;
   private BooleanSupplier robotCentricSup;
 
-  public TeleopSwerve(
-      Swerve s_Swerve,
+  public TeleopDrive(
+      Swerve swerve,
       DoubleSupplier translationSup,
       DoubleSupplier strafeSup,
       DoubleSupplier rotationSup,
       BooleanSupplier robotCentricSup) {
-    this.s_Swerve = s_Swerve;
-    addRequirements(s_Swerve);
+    this.swerve = swerve;
+    addRequirements(swerve);
 
     this.translationSup = translationSup;
     this.strafeSup = strafeSup;
@@ -34,17 +34,13 @@ public class TeleopSwerve extends CommandBase {
     /* Get Values, Deadband*/
     // TODO Mikaylee setting
     double translationVal =
-        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
-            * 0.3;
-    double strafeVal =
-        MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
-            * 0.3;
+        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Driver.DEADBAND);
+    double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Driver.DEADBAND);
     double rotationVal =
-        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.OperatorInput.STICK_DEADBAND)
-            * 0.3;
+        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Driver.DEADBAND);
 
     /* Drive */
-    s_Swerve.drive(
+    swerve.drive(
         new Translation2d(translationVal, strafeVal).times(Constants.Swerve.LINEAR_SPEED_MAX),
         rotationVal * Constants.Swerve.ANGULAR_SPEED_MAX,
         !robotCentricSup.getAsBoolean(),
