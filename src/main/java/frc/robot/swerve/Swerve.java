@@ -27,7 +27,7 @@ public class Swerve extends SubsystemBase {
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
 
   public Swerve() {
-    this.gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, "Drivetrain");
+    this.gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
     this.gyro.configFactoryDefault();
     this.setYawZero();
 
@@ -54,13 +54,13 @@ public class Swerve extends SubsystemBase {
   }
 
   public void drive(
-      Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+      Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
     SwerveModuleState[] swerveModuleStates =
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    translation.getX(), translation.getY(), rotation, yaw())
-                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
+                    translation.getX(), translation.getY(), rotation.getRadians(), yaw())
+                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation.getRadians()));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
