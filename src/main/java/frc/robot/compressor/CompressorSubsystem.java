@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class CompressorSubsystem {
-  private Compressor pnCompressor = new Compressor(0, PneumaticsModuleType.REVPH);
+  private Compressor pnCompressor = new Compressor(Constants.Compressor.module, PneumaticsModuleType.REVPH);
 
   public void run() {
     // TODO: investigate enableAnalog vs enableDigital

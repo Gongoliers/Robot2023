@@ -296,5 +296,8 @@ public final class Constants {
     public static final int minPressure = 75;
     /** The maximum pressure in PSI. The compressor will turn off when the pressure reaches this value. */
     public static final int maxPressure = 120;
+    /** The module ID to use. */
+    //https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/Compressor.html#%3Cinit%3E(int,edu.wpi.first.wpilibj.PneumaticsModuleType)
+    public static final int module = 0;
   }
 }
