@@ -245,4 +245,16 @@ public final class Constants {
     /** Hex code for green (aligned). */
     public static final String COLOR_GREEN = "#00ff00";
   }
+
+  public static final class Arm {
+    /** Maximum length of the arm, in meters. */
+    public static final double MAX_EXTENTION_LENGTH = 0.0;
+    /** Maximum angle of the arm, in radians. */
+    public static final double MAX_ANGLE = 0.0;
+
+    /** setpoint names */
+    public static final String TOP_SETPOINT = "top setpoint";
+    public static final String MIDDLE_SETPOINT = "middle setpoint";
+    public static final String HYBRID_SETPOINT = "hybrid setpoint";
+  }
 }
