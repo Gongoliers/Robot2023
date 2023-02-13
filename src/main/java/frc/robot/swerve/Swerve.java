@@ -10,8 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.swerve.SwerveModule;
 import frc.robot.Constants;
@@ -21,17 +21,17 @@ public class Swerve extends SubsystemBase {
   private final SwerveDriveOdometry swerveOdometry;
   private final SwerveModule[] modules;
   private final Pigeon2 gyro;
-  private final Field2d field;
 
   private final String[] moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
+  private double currentTurboScalar;
 
   public Swerve() {
-    this.gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
-    this.gyro.configFactoryDefault();
-    this.setYawZero();
+    gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
+    gyro.configFactoryDefault();
+    setYawZero();
 
-    this.modules =
+    modules =
         new SwerveModule[] {
           new SwerveModule(0, Constants.Swerve.FRONT_LEFT_MODULE.CONSTANTS),
           new SwerveModule(1, Constants.Swerve.FRONT_RIGHT_MODULE.CONSTANTS),
@@ -45,26 +45,31 @@ public class Swerve extends SubsystemBase {
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
     Timer.delay(1.0);
-    this.resetModulesToAbsolute();
+    resetModulesToAbsolute();
 
-    this.swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, this.yaw(), this.positions());
-
-    this.field = new Field2d();
+    swerveOdometry =
+        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
+    currentTurboScalar = Constants.Driver.NORMAL_SCALAR;
   }
 
   public void drive(
       Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
+
+    Translation2d scaledTranslation = translation.times(currentTurboScalar);
+    Rotation2d scaledRotation = rotation.times(currentTurboScalar);
+
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            scaledTranslation.getX(), scaledTranslation.getY(), scaledRotation.getRadians());
+    // TODO Test whether field-relative driving works this way
+    if (fieldRelative) speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
+
     SwerveModuleState[] swerveModuleStates =
-        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    translation.getX(), translation.getY(), rotation.getRadians(), yaw())
-                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation.getRadians()));
+        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    for (SwerveModule mod : this.modules) {
+    for (SwerveModule mod : modules) {
       mod.setDesiredState(swerveModuleStates[mod.number], isOpenLoop);
     }
   }
@@ -72,7 +77,7 @@ public class Swerve extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    for (SwerveModule module : this.modules) {
+    for (SwerveModule module : modules) {
       module.setDesiredState(desiredStates[module.number], false);
     }
   }
@@ -82,13 +87,13 @@ public class Swerve extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d toPose) {
-    swerveOdometry.resetPosition(this.yaw(), this.positions(), toPose);
+    swerveOdometry.resetPosition(yaw(), positions(), toPose);
   }
 
   public SwerveModuleState[] states() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
-    for (SwerveModule module : this.modules) {
+    for (SwerveModule module : modules) {
       states[module.number] = module.getState();
     }
 
@@ -98,7 +103,7 @@ public class Swerve extends SubsystemBase {
   public SwerveModulePosition[] positions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
-    for (SwerveModule module : this.modules) {
+    for (SwerveModule module : modules) {
       positions[module.number] = module.getPosition();
     }
 
@@ -110,7 +115,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public Rotation2d yaw() {
-    double yaw = this.gyro.getYaw();
+    double yaw = gyro.getYaw();
 
     if (Constants.Swerve.SHOULD_INVERT_GYRO) {
       yaw = 360 - yaw;
@@ -120,25 +125,35 @@ public class Swerve extends SubsystemBase {
   }
 
   public void resetModulesToAbsolute() {
-    for (SwerveModule module : this.modules) {
+    for (SwerveModule module : modules) {
       module.resetToAbsolute();
     }
   }
 
+  public CommandBase zeroGyro() {
+    return runOnce(() -> setYawZero());
+  }
+
+  public CommandBase enableTurbo() {
+    return this.runOnce(() -> currentTurboScalar = Constants.Driver.TURBO_SCALAR);
+  }
+
+  public CommandBase disableTurbo() {
+    return this.runOnce(() -> currentTurboScalar = Constants.Driver.NORMAL_SCALAR);
+  }
+
   @Override
   public void periodic() {
-    field.setRobotPose(this.pose());
-    swerveOdometry.update(this.yaw(), this.positions());
+    swerveOdometry.update(yaw(), positions());
 
-    for (SwerveModule module : this.modules) {
-      String moduleName = this.moduleNameFromNumber[module.number];
+    for (SwerveModule module : modules) {
+      String moduleName = moduleNameFromNumber[module.number];
       SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.getCanCoder().getDegrees());
       SmartDashboard.putNumber(
           moduleName + " Integrated Encoder Angle", module.getPosition().angle.getDegrees());
       SmartDashboard.putNumber(moduleName + " Velocity", module.getState().speedMetersPerSecond);
     }
 
-    SmartDashboard.putNumber("Gyro Yaw", this.yaw().getDegrees());
-    SmartDashboard.putData(field);
+    SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
   }
 }
