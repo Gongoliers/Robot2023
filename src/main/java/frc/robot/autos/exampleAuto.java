@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
@@ -15,7 +16,7 @@ import frc.robot.swerve.Swerve;
 import java.util.List;
 
 public class exampleAuto extends SequentialCommandGroup {
-  public exampleAuto(Swerve s_Swerve) {
+  public exampleAuto(Swerve swerve) {
     TrajectoryConfig config =
         new TrajectoryConfig(
                 Constants.Auto.LINEAR_SPEED_MAX, Constants.Auto.LINEAR_ACCELERATION_MAX)
@@ -40,17 +41,16 @@ public class exampleAuto extends SequentialCommandGroup {
     SwerveControllerCommand swerveControllerCommand =
         new SwerveControllerCommand(
             exampleTrajectory,
-            s_Swerve::pose,
+            swerve::pose,
             Constants.Swerve.SWERVE_KINEMATICS,
             new PIDController(Constants.Auto.X_CONTROLLER_KP, 0, 0),
             new PIDController(Constants.Auto.Y_CONTROLLER_KP, 0, 0),
             thetaController,
-            s_Swerve::setModuleStates,
-            s_Swerve);
+            swerve::setModuleStates,
+            swerve);
 
     addCommands(
-        // new InstantCommand(() -> s_Swerve.resetOdometry(exampleTrajectory.getInitialPose())),
-        // swerveControllerCommand
-        );
+        new InstantCommand(() -> swerve.resetOdometry(exampleTrajectory.getInitialPose())),
+        swerveControllerCommand);
   }
 }
