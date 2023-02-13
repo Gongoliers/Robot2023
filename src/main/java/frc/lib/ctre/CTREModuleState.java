@@ -20,8 +20,7 @@ public class CTREModuleState {
     // https://github.com/Team364/BaseFalconSwerve/issues/14
     double currentAngleDegrees = MathUtil.inputModulus(currentAngle.getDegrees(), -180, 180);
     double desiredAngleDegrees = MathUtil.inputModulus(desiredState.angle.getDegrees(), -180, 180);
-    double targetAngle =
-        placeInAppropriate0To360Scope(currentAngleDegrees, desiredAngleDegrees);
+    double targetAngle = placeInAppropriate0To360Scope(currentAngleDegrees, desiredAngleDegrees);
     double targetSpeed = desiredState.speedMetersPerSecond;
     double delta = targetAngle - currentAngleDegrees;
     if (Math.abs(delta) > 90) {
@@ -36,7 +35,8 @@ public class CTREModuleState {
    * @param newAngle Target Angle
    * @return Closest angle within scope
    */
-  // FIXME! Bug that returns the expected value offset by + or - 360, likely due to input angles exceeded + or - 360
+  // FIXME! Bug that returns the expected value offset by + or - 360, likely due to input angles
+  // exceeded + or - 360
   private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
     double lowerBound;
     double upperBound;
