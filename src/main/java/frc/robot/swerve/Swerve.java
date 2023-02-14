@@ -24,7 +24,7 @@ public class Swerve extends SubsystemBase {
 
   private final String[] moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
-  private double currentTurboScalar;
+  private double speedScalar;
 
   public Swerve() {
     gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
@@ -51,14 +51,14 @@ public class Swerve extends SubsystemBase {
 
     swerveOdometry =
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
-    currentTurboScalar = Constants.Driver.NORMAL_SCALAR;
+    speedScalar = Constants.Driver.NORMAL_SCALAR;
   }
 
   public void drive(
       Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
 
-    Translation2d scaledTranslation = translation.times(currentTurboScalar);
-    Rotation2d scaledRotation = rotation.times(currentTurboScalar);
+    Translation2d scaledTranslation = translation.times(speedScalar);
+    Rotation2d scaledRotation = rotation.times(speedScalar);
 
     ChassisSpeeds speeds =
         new ChassisSpeeds(
@@ -133,15 +133,15 @@ public class Swerve extends SubsystemBase {
   }
 
   public CommandBase zeroGyro() {
-    return runOnce(() -> setYawZero());
+    return this.runOnce(() -> setYawZero());
   }
 
   public CommandBase enableTurbo() {
-    return this.runOnce(() -> currentTurboScalar = Constants.Driver.TURBO_SCALAR);
+    return this.runOnce(() -> speedScalar = Constants.Driver.TURBO_SCALAR);
   }
 
   public CommandBase disableTurbo() {
-    return this.runOnce(() -> currentTurboScalar = Constants.Driver.NORMAL_SCALAR);
+    return this.runOnce(() -> speedScalar = Constants.Driver.NORMAL_SCALAR);
   }
 
   public CommandBase resetModules() {
