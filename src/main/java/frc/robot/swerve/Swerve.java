@@ -47,6 +47,8 @@ public class Swerve extends SubsystemBase {
     Timer.delay(1.0);
     resetModulesToAbsolute();
 
+    SmartDashboard.putData("Reset Modules", resetModules());
+
     swerveOdometry =
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
     currentTurboScalar = Constants.Driver.NORMAL_SCALAR;
@@ -142,6 +144,10 @@ public class Swerve extends SubsystemBase {
     return this.runOnce(() -> currentTurboScalar = Constants.Driver.NORMAL_SCALAR);
   }
 
+  public CommandBase resetModules() {
+    return this.runOnce(() -> resetModulesToAbsolute());
+  }
+
   @Override
   public void periodic() {
     swerveOdometry.update(yaw(), positions());
@@ -155,5 +161,7 @@ public class Swerve extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
+    SmartDashboard.putNumber("Pose X", pose().getX());
+    SmartDashboard.putNumber("Pose Y", pose().getY());
   }
 }
