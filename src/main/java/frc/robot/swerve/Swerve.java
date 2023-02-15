@@ -10,28 +10,28 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.swerve.SwerveModule;
 import frc.robot.Constants;
 
 public class Swerve extends SubsystemBase {
 
-  private final SwerveDriveOdometry swerveOdometry;
-  private final SwerveModule[] modules;
-  private final Pigeon2 gyro;
-  private final Field2d field;
+  private final SwerveDriveOdometry m_swerveOdometry;
+  private final SwerveModule[] m_modules;
+  private final Pigeon2 m_gyro;
 
-  private final String[] moduleNameFromNumber =
+  private final String[] m_moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
+  private double m_speedScalar;
 
   public Swerve() {
-    this.gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, "Drivetrain");
-    this.gyro.configFactoryDefault();
-    this.setYawZero();
+    m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
+    m_gyro.configFactoryDefault();
+    setYawZero();
 
-    this.modules =
+    m_modules =
         new SwerveModule[] {
           new SwerveModule(0, Constants.Swerve.FRONT_LEFT_MODULE.CONSTANTS),
           new SwerveModule(1, Constants.Swerve.FRONT_RIGHT_MODULE.CONSTANTS),
@@ -45,72 +45,134 @@ public class Swerve extends SubsystemBase {
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
     Timer.delay(1.0);
-    this.resetModulesToAbsolute();
+    realignEncodersToCANCoder();
 
-    this.swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, this.yaw(), this.positions());
+    SmartDashboard.putData("Reset Modules", realignEncoders());
 
-    this.field = new Field2d();
+    m_swerveOdometry =
+        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
+    m_speedScalar = Constants.Driver.NORMAL_SCALAR;
   }
 
+  /**
+   * Direct the swerve modules to drive the robot.
+   *
+   * @param translation a vector containing the desired X and Y velocity of the chassis.
+   * @param rotation the desired rotational velocity of the chassis.
+   * @param fieldRelative whether the velocities are relative to the field or relative to the robot.
+   * @param isOpenLoop whether the swerve modules are driven in open loop (velocity direct from
+   *     driver) or closed loop (velocity controlled by PID).
+   */
   public void drive(
-      Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+      Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
+
+    // Scale the translation velocities and rotational velocity
+    Translation2d scaledTranslation = translation.times(m_speedScalar);
+    Rotation2d scaledRotation = rotation.times(m_speedScalar);
+
+    // Create a ChassisSpeeds object to contain the desired velocities
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            scaledTranslation.getX(), scaledTranslation.getY(), scaledRotation.getRadians());
+    // TODO Test whether field-relative driving works this way
+    // FIXME Looks like it doesn't...
+    // Shift the desired velocities to be relative to the robot heading
+    if (fieldRelative) speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
+
+    // Convert the desired velocities to module states
     SwerveModuleState[] swerveModuleStates =
-        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    translation.getX(), translation.getY(), rotation, yaw())
-                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
+        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
+    // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    for (SwerveModule mod : this.modules) {
-      mod.setDesiredState(swerveModuleStates[mod.number], isOpenLoop);
+    // Set the desired state for each module
+    for (SwerveModule module : m_modules) {
+      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop);
     }
   }
 
+  /**
+   * Set the swerve module states. Used for setting the module states for autonomous.
+   *
+   * @param desiredStates the module states.
+   */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
+    // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    for (SwerveModule module : this.modules) {
-      module.setDesiredState(desiredStates[module.number], false);
+    // Set the desired state for each module
+    for (SwerveModule module : m_modules) {
+      module.setDesiredState(desiredStates[module.id], false);
     }
   }
 
+  /**
+   * Get the current pose of the robot. The displacements are measured in meters.
+   *
+   * @return the current pose (position) of the robot.
+   */
   public Pose2d pose() {
-    return swerveOdometry.getPoseMeters();
+    return m_swerveOdometry.getPoseMeters();
   }
 
+  /**
+   * Reset the robot's current pose. This overrides the previous pose. After this calling function,
+   * the robot will believe it is at the pose parameter.
+   *
+   * @param toPose the pose the robot will be reset to.
+   */
   public void resetOdometry(Pose2d toPose) {
-    swerveOdometry.resetPosition(this.yaw(), this.positions(), toPose);
+    m_swerveOdometry.resetPosition(yaw(), positions(), toPose);
   }
 
+  /**
+   * Get the current swerve module states.
+   *
+   * @return the current swerve module states.
+   */
   public SwerveModuleState[] states() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
-    for (SwerveModule module : this.modules) {
-      states[module.number] = module.getState();
+    // Get the state of each module
+    for (SwerveModule module : m_modules) {
+      states[module.id] = module.state();
     }
 
     return states;
   }
 
+  /**
+   * Get the current swerve module positions.
+   *
+   * @return the current swerve module positions.
+   */
   public SwerveModulePosition[] positions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
-    for (SwerveModule module : this.modules) {
-      positions[module.number] = module.getPosition();
+    // Get the position of each module
+    for (SwerveModule module : m_modules) {
+      positions[module.id] = module.position();
     }
 
     return positions;
   }
 
+  /**
+   * Set the gyro's current yaw to be zero. This makes the robot's previous yaw the new zero point
+   * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
+   */
   public void setYawZero() {
-    gyro.setYaw(0);
+    m_gyro.setYaw(0);
   }
 
+  /**
+   * Get the current yaw (counter-clockwise / clockwise rotation) of the robot.
+   *
+   * @return the current yaw of the robot.
+   */
   public Rotation2d yaw() {
-    double yaw = this.gyro.getYaw();
+    double yaw = m_gyro.getYaw();
 
     if (Constants.Swerve.SHOULD_INVERT_GYRO) {
       yaw = 360 - yaw;
@@ -119,26 +181,69 @@ public class Swerve extends SubsystemBase {
     return Rotation2d.fromDegrees(yaw);
   }
 
-  public void resetModulesToAbsolute() {
-    for (SwerveModule module : this.modules) {
-      module.resetToAbsolute();
+  /**
+   * Instruct all of the modules to realign their angle encoders to the angle value provided by the
+   * CANCoder.
+   */
+  public void realignEncodersToCANCoder() {
+    for (SwerveModule module : m_modules) {
+      module.realignEncoderToCANCoder();
     }
+  }
+
+  /**
+   * Zero the gyro.
+   *
+   * @return a command that will zero the gyro.
+   */
+  public CommandBase zeroGyro() {
+    return this.runOnce(() -> setYawZero());
+  }
+
+  /**
+   * Enable the turbo. Increase the scalar that modifies the velocity.
+   *
+   * @return a command that will enable the turbo.
+   */
+  public CommandBase enableTurbo() {
+    return this.runOnce(() -> m_speedScalar = Constants.Driver.TURBO_SCALAR);
+  }
+
+  /**
+   * Disable the turbo. Decrease the scalar that modifies the velocity.
+   *
+   * @return a command that will disable the turbo.
+   */
+  public CommandBase disableTurbo() {
+    return this.runOnce(() -> m_speedScalar = Constants.Driver.NORMAL_SCALAR);
+  }
+
+  /**
+   * Realign the module encoder angles to the CANCoder angle.
+   *
+   * @return a command that will realign the encoders.
+   */
+  public CommandBase realignEncoders() {
+    return this.runOnce(() -> realignEncodersToCANCoder());
   }
 
   @Override
   public void periodic() {
-    field.setRobotPose(this.pose());
-    swerveOdometry.update(this.yaw(), this.positions());
+    // Update the swerve odometry to the latest position measurements
+    m_swerveOdometry.update(yaw(), positions());
 
-    for (SwerveModule module : this.modules) {
-      String moduleName = this.moduleNameFromNumber[module.number];
-      SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.getCanCoder().getDegrees());
+    // Display the state of each swerve module on the Shuffleboard
+    for (SwerveModule module : m_modules) {
+      String moduleName = m_moduleNameFromNumber[module.id];
+      SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.cancoderAngle().getDegrees());
       SmartDashboard.putNumber(
-          moduleName + " Integrated Encoder Angle", module.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber(moduleName + " Velocity", module.getState().speedMetersPerSecond);
+          moduleName + " Integrated Encoder Angle", module.position().angle.getDegrees());
+      SmartDashboard.putNumber(moduleName + " Velocity", module.state().speedMetersPerSecond);
     }
 
-    SmartDashboard.putNumber("Gyro Yaw", this.yaw().getDegrees());
-    SmartDashboard.putData(field);
+    // Display the current pose (position) on the Shuffleboard
+    SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
+    SmartDashboard.putNumber("Pose X", pose().getX());
+    SmartDashboard.putNumber("Pose Y", pose().getY());
   }
 }

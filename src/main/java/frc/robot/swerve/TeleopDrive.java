@@ -1,6 +1,7 @@
 package frc.robot.swerve;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -8,42 +9,40 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class TeleopDrive extends CommandBase {
-  private Swerve swerve;
-  private DoubleSupplier translationSup;
-  private DoubleSupplier strafeSup;
-  private DoubleSupplier rotationSup;
-  private BooleanSupplier robotCentricSup;
+  private Swerve m_swerve;
+  private DoubleSupplier m_translationSupplier;
+  private DoubleSupplier m_strafeSupplier;
+  private DoubleSupplier m_rotationSupplier;
+  private BooleanSupplier m_robotCentricSupplier;
 
   public TeleopDrive(
       Swerve swerve,
-      DoubleSupplier translationSup,
-      DoubleSupplier strafeSup,
-      DoubleSupplier rotationSup,
-      BooleanSupplier robotCentricSup) {
-    this.swerve = swerve;
+      DoubleSupplier translationSupplier,
+      DoubleSupplier strafeSupplier,
+      DoubleSupplier rotationSupplier,
+      BooleanSupplier robotCentricSupplier) {
+    m_swerve = swerve;
     addRequirements(swerve);
 
-    this.translationSup = translationSup;
-    this.strafeSup = strafeSup;
-    this.rotationSup = rotationSup;
-    this.robotCentricSup = robotCentricSup;
+    m_translationSupplier = translationSupplier;
+    m_strafeSupplier = strafeSupplier;
+    m_rotationSupplier = rotationSupplier;
+    m_robotCentricSupplier = robotCentricSupplier;
   }
 
   @Override
   public void execute() {
-    /* Get Values, Deadband*/
-    // TODO Mikaylee setting
-    double translationVal =
-        MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Driver.DEADBAND);
-    double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Driver.DEADBAND);
-    double rotationVal =
-        MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Driver.DEADBAND);
+    double translationScalar =
+        MathUtil.applyDeadband(m_translationSupplier.getAsDouble(), Constants.Driver.DEADBAND);
+    double strafeScalar =
+        MathUtil.applyDeadband(m_strafeSupplier.getAsDouble(), Constants.Driver.DEADBAND);
+    double rotationScalar =
+        MathUtil.applyDeadband(m_rotationSupplier.getAsDouble(), Constants.Driver.DEADBAND);
 
-    /* Drive */
-    swerve.drive(
-        new Translation2d(translationVal, strafeVal).times(Constants.Swerve.LINEAR_SPEED_MAX),
-        rotationVal * Constants.Swerve.ANGULAR_SPEED_MAX,
-        !robotCentricSup.getAsBoolean(),
-        true);
+    m_swerve.drive(
+        new Translation2d(translationScalar, strafeScalar).times(Constants.Swerve.LINEAR_SPEED_MAX),
+        new Rotation2d(rotationScalar).times(Constants.Swerve.ANGULAR_SPEED_MAX),
+        !m_robotCentricSupplier.getAsBoolean(),
+        Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
   }
 }

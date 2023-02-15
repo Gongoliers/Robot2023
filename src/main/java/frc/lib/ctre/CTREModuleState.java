@@ -15,10 +15,12 @@ public class CTREModuleState {
    */
   public static SwerveModuleState optimize(
       SwerveModuleState desiredState, Rotation2d currentAngle) {
-    double targetAngle =
-        placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
+    // https://github.com/Team364/BaseFalconSwerve/issues/14
+    double currentAngleDegrees = currentAngle.getDegrees();
+    double desiredAngleDegrees = desiredState.angle.getDegrees();
+    double targetAngle = placeInAppropriate0To360Scope(currentAngleDegrees, desiredAngleDegrees);
     double targetSpeed = desiredState.speedMetersPerSecond;
-    double delta = targetAngle - currentAngle.getDegrees();
+    double delta = targetAngle - currentAngleDegrees;
     if (Math.abs(delta) > 90) {
       targetSpeed = -targetSpeed;
       targetAngle = delta > 90 ? (targetAngle -= 180) : (targetAngle += 180);
@@ -31,6 +33,8 @@ public class CTREModuleState {
    * @param newAngle Target Angle
    * @return Closest angle within scope
    */
+  // FIXME! Bug that returns the expected value offset by + or - 360, likely due to input angles
+  // exceeded + or - 360
   private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
     double lowerBound;
     double upperBound;
