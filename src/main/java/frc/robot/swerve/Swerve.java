@@ -135,7 +135,7 @@ public class Swerve extends SubsystemBase {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
     for (SwerveModule module : modules) {
-      states[module.number] = module.getState();
+      states[module.number] = module.state();
     }
 
     return states;
@@ -150,7 +150,7 @@ public class Swerve extends SubsystemBase {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
     for (SwerveModule module : modules) {
-      positions[module.number] = module.getPosition();
+      positions[module.number] = module.position();
     }
 
     return positions;
@@ -200,6 +200,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Enable the turbo. Increase the scalar that modifies the velocity.
+   *
    * @return a command that will enable the turbo.
    */
   public CommandBase enableTurbo() {
@@ -208,6 +209,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Disable the turbo. Decrease the scalar that modifies the velocity.
+   *
    * @return a command that will disable the turbo.
    */
   public CommandBase disableTurbo() {
@@ -216,6 +218,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Realign the module encoder angles to the CANCoder angle.
+   *
    * @return a command that will realign the encoders.
    */
   public CommandBase realignEncoders() {
@@ -227,13 +230,13 @@ public class Swerve extends SubsystemBase {
     // Update the swerve odometry to the latest position measurements
     swerveOdometry.update(yaw(), positions());
 
-    // Display the state of each swerve module on the Shuffleboard 
+    // Display the state of each swerve module on the Shuffleboard
     for (SwerveModule module : modules) {
       String moduleName = moduleNameFromNumber[module.number];
-      SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.getCanCoder().getDegrees());
+      SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.cancoderAngle().getDegrees());
       SmartDashboard.putNumber(
-          moduleName + " Integrated Encoder Angle", module.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber(moduleName + " Velocity", module.getState().speedMetersPerSecond);
+          moduleName + " Integrated Encoder Angle", module.position().angle.getDegrees());
+      SmartDashboard.putNumber(moduleName + " Velocity", module.state().speedMetersPerSecond);
     }
 
     // Display the current pose (position) on the Shuffleboard
