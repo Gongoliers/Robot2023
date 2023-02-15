@@ -45,53 +45,92 @@ public class Swerve extends SubsystemBase {
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
     Timer.delay(1.0);
-    resetModulesToAbsolute();
+    realignEncodersToCANCoder();
 
-    SmartDashboard.putData("Reset Modules", resetModules());
+    SmartDashboard.putData("Reset Modules", realignEncoders());
 
     swerveOdometry =
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
     speedScalar = Constants.Driver.NORMAL_SCALAR;
   }
 
+  /**
+   * Direct the swerve modules to drive the robot.
+   *
+   * @param translation a vector containing the desired X and Y velocity of the chassis.
+   * @param rotation the desired rotational velocity of the chassis.
+   * @param fieldRelative whether the velocities are relative to the field or relative to the robot.
+   * @param isOpenLoop whether the swerve modules are driven in open loop (velocity direct from
+   *     driver) or closed loop (velocity controlled by PID).
+   */
   public void drive(
       Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
 
+    // Scale the translation velocities and rotational velocity
     Translation2d scaledTranslation = translation.times(speedScalar);
     Rotation2d scaledRotation = rotation.times(speedScalar);
 
+    // Create a ChassisSpeeds object to contain the desired velocities
     ChassisSpeeds speeds =
         new ChassisSpeeds(
             scaledTranslation.getX(), scaledTranslation.getY(), scaledRotation.getRadians());
     // TODO Test whether field-relative driving works this way
+    // FIXME Looks like it doesn't...
+    // Shift the desired velocities to be relative to the robot heading
     if (fieldRelative) speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
 
+    // Convert the desired velocities to module states
     SwerveModuleState[] swerveModuleStates =
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
+    // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    for (SwerveModule mod : modules) {
-      mod.setDesiredState(swerveModuleStates[mod.number], isOpenLoop);
+    // Set the desired state for each module
+    for (SwerveModule module : modules) {
+      module.setDesiredState(swerveModuleStates[module.number], isOpenLoop);
     }
   }
 
+  /**
+   * Set the swerve module states. Used for setting the module states for autonomous.
+   *
+   * @param desiredStates the module states.
+   */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
+    // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
+    // Set the desired state for each module
     for (SwerveModule module : modules) {
       module.setDesiredState(desiredStates[module.number], false);
     }
   }
 
+  /**
+   * Get the current pose of the robot. The displacements are measured in meters.
+   *
+   * @return the current pose (position) of the robot.
+   */
   public Pose2d pose() {
     return swerveOdometry.getPoseMeters();
   }
 
+  /**
+   * Reset the robot's current pose. This overrides the previous pose. After this calling function,
+   * the robot will believe it is at the pose parameter.
+   *
+   * @param toPose the pose the robot will be reset to.
+   */
   public void resetOdometry(Pose2d toPose) {
     swerveOdometry.resetPosition(yaw(), positions(), toPose);
   }
 
+  /**
+   * Get the current swerve module states.
+   *
+   * @return the current swerve module states.
+   */
   public SwerveModuleState[] states() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
@@ -102,6 +141,11 @@ public class Swerve extends SubsystemBase {
     return states;
   }
 
+  /**
+   * Get the current swerve module positions.
+   *
+   * @return the current swerve module positions.
+   */
   public SwerveModulePosition[] positions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
@@ -112,10 +156,19 @@ public class Swerve extends SubsystemBase {
     return positions;
   }
 
+  /**
+   * Set the gyro's current yaw to be zero. This makes the robot's previous yaw the new zero point
+   * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
+   */
   public void setYawZero() {
     gyro.setYaw(0);
   }
 
+  /**
+   * Get the current yaw (counter-clockwise / clockwise rotation) of the robot.
+   *
+   * @return the current yaw of the robot.
+   */
   public Rotation2d yaw() {
     double yaw = gyro.getYaw();
 
@@ -126,32 +179,55 @@ public class Swerve extends SubsystemBase {
     return Rotation2d.fromDegrees(yaw);
   }
 
-  public void resetModulesToAbsolute() {
+  /**
+   * Instruct all of the modules to realign their angle encoders to the angle value provided by the
+   * CANCoder.
+   */
+  public void realignEncodersToCANCoder() {
     for (SwerveModule module : modules) {
-      module.resetToAbsolute();
+      module.realignEncoderToCANCoder();
     }
   }
 
+  /**
+   * Zero the gyro.
+   *
+   * @return a command that will zero the gyro.
+   */
   public CommandBase zeroGyro() {
     return this.runOnce(() -> setYawZero());
   }
 
+  /**
+   * Enable the turbo. Increase the scalar that modifies the velocity.
+   * @return a command that will enable the turbo.
+   */
   public CommandBase enableTurbo() {
     return this.runOnce(() -> speedScalar = Constants.Driver.TURBO_SCALAR);
   }
 
+  /**
+   * Disable the turbo. Decrease the scalar that modifies the velocity.
+   * @return a command that will disable the turbo.
+   */
   public CommandBase disableTurbo() {
     return this.runOnce(() -> speedScalar = Constants.Driver.NORMAL_SCALAR);
   }
 
-  public CommandBase resetModules() {
-    return this.runOnce(() -> resetModulesToAbsolute());
+  /**
+   * Realign the module encoder angles to the CANCoder angle.
+   * @return a command that will realign the encoders.
+   */
+  public CommandBase realignEncoders() {
+    return this.runOnce(() -> realignEncodersToCANCoder());
   }
 
   @Override
   public void periodic() {
+    // Update the swerve odometry to the latest position measurements
     swerveOdometry.update(yaw(), positions());
 
+    // Display the state of each swerve module on the Shuffleboard 
     for (SwerveModule module : modules) {
       String moduleName = moduleNameFromNumber[module.number];
       SmartDashboard.putNumber(moduleName + " Cancoder Angle", module.getCanCoder().getDegrees());
@@ -160,6 +236,7 @@ public class Swerve extends SubsystemBase {
       SmartDashboard.putNumber(moduleName + " Velocity", module.getState().speedMetersPerSecond);
     }
 
+    // Display the current pose (position) on the Shuffleboard
     SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
     SmartDashboard.putNumber("Pose X", pose().getX());
     SmartDashboard.putNumber("Pose Y", pose().getY());

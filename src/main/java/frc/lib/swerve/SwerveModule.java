@@ -98,7 +98,7 @@ public class SwerveModule {
     return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
   }
 
-  public void resetToAbsolute() {
+  public void realignEncoderToCANCoder() {
     double absolutePosition =
         Conversions.degreesToFalcon(
             getCanCoder().getDegrees() - angleOffset.getDegrees(),
@@ -116,7 +116,7 @@ public class SwerveModule {
     angleMotor.configAllSettings(Robot.ctreConfigs.swerveAngleFXConfig);
     angleMotor.setInverted(Constants.Swerve.SHOULD_INVERT_ANGLE_MOTOR);
     angleMotor.setNeutralMode(Constants.Swerve.ANGLE_MOTOR_NEUTRAL_MODE);
-    resetToAbsolute();
+    realignEncoderToCANCoder();
   }
 
   private void configDriveMotor() {
