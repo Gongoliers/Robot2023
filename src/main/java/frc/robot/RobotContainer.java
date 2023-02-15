@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.autos.*;
+import frc.robot.autos.exampleAuto;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -16,32 +16,33 @@ import frc.robot.swerve.TeleopDrive;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  /* Controllers */
-  private final Joystick driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
+  // Controllers
+  private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
-  /* Driver Buttons */
-  private final Trigger zeroGyro =
-      new Trigger(() -> driverController.getRawButton(Constants.Driver.BUTTON_ZERO_GYRO.value));
-  private final Trigger robotCentric =
-      new Trigger(() -> driverController.getRawButton(Constants.Driver.BUTTON_ROBOT_CENTRIC.value));
-  private final Trigger turbo =
+  // Driver buttons
+  private final Trigger m_zeroGyro =
+      new Trigger(() -> m_driverController.getRawButton(Constants.Driver.BUTTON_ZERO_GYRO.value));
+  private final Trigger m_robotCentric =
+      new Trigger(
+          () -> m_driverController.getRawButton(Constants.Driver.BUTTON_ROBOT_CENTRIC.value));
+  private final Trigger m_turbo =
       new Trigger(
           () ->
-              driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
+              m_driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
                   > Constants.Driver.TRIGGER_THRESHOLD);
 
-  /* Subsystems */
-  private final Swerve swerve = new Swerve();
+  // Subsystems
+  private final Swerve m_swerve = new Swerve();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    swerve.setDefaultCommand(
+    m_swerve.setDefaultCommand(
         new TeleopDrive(
-            swerve,
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value),
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
-            () -> robotCentric.getAsBoolean()));
+            m_swerve,
+            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value),
+            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
+            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
+            () -> m_robotCentric.getAsBoolean()));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -55,8 +56,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    zeroGyro.onTrue(swerve.zeroGyro());
-    turbo.onTrue(swerve.enableTurbo()).onFalse(swerve.disableTurbo());
+    m_zeroGyro.onTrue(m_swerve.zeroGyro());
+    m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
   }
 
   /**
@@ -66,6 +67,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(swerve);
+    return new exampleAuto(m_swerve);
   }
 }
