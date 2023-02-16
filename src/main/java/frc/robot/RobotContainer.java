@@ -36,6 +36,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    setDefaultCommands();
+    configureButtonBindings();
+  }
+
+  /**
+   * The default command will be automatically scheduled when no other commands are scheduled that require the subsystem. 
+   */
+  private void setDefaultCommands() {
     m_swerve.setDefaultCommand(
         new TeleopDrive(
             m_swerve,
@@ -43,9 +51,6 @@ public class RobotContainer {
             () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
             () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
             () -> m_robotCentric.getAsBoolean()));
-
-    // Configure the button bindings
-    configureButtonBindings();
   }
 
   /**
