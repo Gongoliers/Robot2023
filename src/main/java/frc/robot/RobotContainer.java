@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.swerve.Swerve;
@@ -16,6 +19,10 @@ import frc.robot.swerve.TeleopDrive;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  // Subsystems
+  private final Swerve m_swerve = new Swerve();
+
   // Controllers
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
@@ -30,18 +37,18 @@ public class RobotContainer {
           () ->
               m_driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
                   > Constants.Driver.TRIGGER_THRESHOLD);
-
-  // Subsystems
-  private final Swerve m_swerve = new Swerve();
+  private final Trigger m_inMotion = new Trigger(m_swerve::inMotion);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommands();
     configureButtonBindings();
+    configureTriggers();
   }
 
   /**
-   * The default command will be automatically scheduled when no other commands are scheduled that require the subsystem. 
+   * The default command will be automatically scheduled when no other commands are scheduled that
+   * require the subsystem.
    */
   private void setDefaultCommands() {
     m_swerve.setDefaultCommand(
@@ -63,6 +70,10 @@ public class RobotContainer {
     /* Driver Buttons */
     m_zeroGyro.onTrue(m_swerve.zeroGyro());
     m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
+  }
+
+  private void configureTriggers() {
+    m_inMotion.onTrue(new InstantCommand(m_swerve::unstop)).onFalse(new SequentialCommandGroup(new WaitCommand(5.0), new InstantCommand(m_swerve::stop)));
   }
 
   /**

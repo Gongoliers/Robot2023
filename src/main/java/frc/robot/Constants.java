@@ -211,7 +211,8 @@ public final class Constants {
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Front Right Module */
@@ -228,7 +229,8 @@ public final class Constants {
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Left Module */
@@ -245,7 +247,8 @@ public final class Constants {
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Right Module */
@@ -262,7 +265,8 @@ public final class Constants {
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
   }
 
