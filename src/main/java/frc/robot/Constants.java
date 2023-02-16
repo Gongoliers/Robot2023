@@ -34,6 +34,8 @@ public final class Constants {
     /** Button for driving in robot-centric. */
     public static final XboxController.Button BUTTON_ROBOT_CENTRIC =
         XboxController.Button.kLeftBumper;
+    /** Button for overriding the automatic stop delay for stopping instantly. */
+    public static final XboxController.Button BUTTON_OVERRIDE_STOP = XboxController.Button.kX;
     /** Button for driving in "turbo mode". */
     public static final XboxController.Axis AXIS_TURBO_MODE = XboxController.Axis.kRightTrigger;
 
@@ -196,6 +198,11 @@ public final class Constants {
      * behavior.
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
+
+    /** Number of seconds to wait before stopping the swerve, while the button is held. */
+    public static final double HELD_STOP_DELAY = 0.0;
+    /** Number of seconds to wait before stopping the swerve, while the button is not held. */
+    public static final double AUTOMATIC_STOP_DELAY = 5.0;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {

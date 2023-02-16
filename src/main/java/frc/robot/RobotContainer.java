@@ -37,6 +37,9 @@ public class RobotContainer {
           () ->
               m_driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
                   > Constants.Driver.TRIGGER_THRESHOLD);
+  private final Trigger m_overrideAutomaticStopDelay =
+      new Trigger(
+          () -> m_driverController.getRawButton(Constants.Driver.BUTTON_OVERRIDE_STOP.value));
   private final Trigger m_inMotion = new Trigger(m_swerve::inMotion);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -70,10 +73,17 @@ public class RobotContainer {
     /* Driver Buttons */
     m_zeroGyro.onTrue(m_swerve.zeroGyro());
     m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
+    m_overrideAutomaticStopDelay
+        .onTrue(m_swerve.disableAutomaticStopDelay())
+        .onFalse(m_swerve.enableAutomaticStopDelay());
   }
 
   private void configureTriggers() {
-    m_inMotion.onTrue(new InstantCommand(m_swerve::unstop)).onFalse(new SequentialCommandGroup(new WaitCommand(5.0), new InstantCommand(m_swerve::stop)));
+    m_inMotion
+        .onTrue(new InstantCommand(m_swerve::unstop))
+        .onFalse(
+            new SequentialCommandGroup(
+                new WaitCommand(m_swerve.getStopDelay()), new InstantCommand(m_swerve::stop)));
   }
 
   /**

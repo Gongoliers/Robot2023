@@ -25,6 +25,7 @@ public class Swerve extends SubsystemBase {
   private final String[] m_moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
   private double m_speedScalar;
+  private double m_stopDelay;
   private boolean m_ableToStop;
 
   private Translation2d m_translation;
@@ -58,6 +59,9 @@ public class Swerve extends SubsystemBase {
 
     m_speedScalar = Constants.Driver.NORMAL_SCALAR;
     m_ableToStop = false;
+
+    m_translation = new Translation2d(0, 0);
+    m_rotation = Rotation2d.fromDegrees(0);
   }
 
   /**
@@ -275,5 +279,17 @@ public class Swerve extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
     SmartDashboard.putNumber("Pose X", pose().getX());
     SmartDashboard.putNumber("Pose Y", pose().getY());
+  }
+
+  public double getStopDelay() {
+    return m_stopDelay;
+  }
+
+  public CommandBase disableAutomaticStopDelay() {
+    return this.runOnce(() -> m_stopDelay = Constants.Swerve.HELD_STOP_DELAY);
+  }
+
+  public CommandBase enableAutomaticStopDelay() {
+    return this.runOnce(() -> m_stopDelay = Constants.Swerve.AUTOMATIC_STOP_DELAY);
   }
 }
