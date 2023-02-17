@@ -219,9 +219,7 @@ public class Swerve extends SubsystemBase {
     m_shouldStop = false;
   }
 
-  /** 
-   * Whether the robot is being commanded to move.
-  */
+  /** Whether the robot is being commanded to move. */
   public boolean inMotion() {
     boolean isTranslating = !m_translation.equals(new Translation2d(0, 0));
     boolean isRotating = !m_rotation.equals(new Rotation2d(0));
@@ -266,6 +264,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Enable instant stop functionality.
+   *
    * @return a command that will enable instant stop functionality.
    */
   public CommandBase enableInstantStop() {
@@ -274,6 +273,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Disable instant stop functionality.
+   *
    * @return a command that will disable instant stop functionality.
    */
   public CommandBase disableInstantStop() {

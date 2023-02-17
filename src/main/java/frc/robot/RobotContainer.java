@@ -73,9 +73,7 @@ public class RobotContainer {
     /* Driver Buttons */
     m_zeroGyro.onTrue(m_swerve.zeroGyro());
     m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
-    m_instantlyStop
-        .onTrue(m_swerve.enableInstantStop())
-        .onFalse(m_swerve.disableInstantStop());
+    m_instantlyStop.onTrue(m_swerve.enableInstantStop()).onFalse(m_swerve.disableInstantStop());
   }
 
   private void configureTriggers() {
@@ -83,7 +81,8 @@ public class RobotContainer {
         .onTrue(new InstantCommand(m_swerve::unstop))
         .onFalse(
             new SequentialCommandGroup(
-                new WaitCommand(Constants.Swerve.AUTOMATIC_STOP_DELAY), new InstantCommand(m_swerve::stop)));
+                new WaitCommand(Constants.Swerve.AUTOMATIC_STOP_DELAY),
+                new InstantCommand(m_swerve::stop)));
   }
 
   /**
