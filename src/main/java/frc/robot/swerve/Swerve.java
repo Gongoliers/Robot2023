@@ -25,8 +25,8 @@ public class Swerve extends SubsystemBase {
   private final String[] m_moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
   private double m_speedScalar;
-  private double m_stopDelay;
-  private boolean m_ableToStop;
+  private boolean m_shouldInstantlyStop;
+  private boolean m_shouldStop;
 
   private Translation2d m_translation;
   private Rotation2d m_rotation;
@@ -58,7 +58,8 @@ public class Swerve extends SubsystemBase {
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
 
     m_speedScalar = Constants.Driver.NORMAL_SCALAR;
-    m_ableToStop = false;
+    m_shouldStop = false;
+    m_shouldInstantlyStop = false;
 
     m_translation = new Translation2d(0, 0);
     m_rotation = Rotation2d.fromDegrees(0);
@@ -101,11 +102,11 @@ public class Swerve extends SubsystemBase {
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
     // TODO Test if the trigger already handles this safety case
-    boolean ableToStop = m_ableToStop && !inMotion();
+    boolean stop = !inMotion() && (m_shouldStop || m_shouldInstantlyStop);
 
     // Set the desired state for each module
     for (SwerveModule module : m_modules) {
-      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop, ableToStop);
+      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop, stop);
     }
   }
 
@@ -210,12 +211,21 @@ public class Swerve extends SubsystemBase {
 
   /** Set the flag that forces the swerve into stop mode. */
   public void stop() {
-    m_ableToStop = true;
+    m_shouldStop = true;
   }
 
   /** Unset the flag that forces the swerve into stop mode. */
   public void unstop() {
-    m_ableToStop = false;
+    m_shouldStop = false;
+  }
+
+  /** 
+   * Whether the robot is being commanded to move.
+  */
+  public boolean inMotion() {
+    boolean isTranslating = !m_translation.equals(new Translation2d(0, 0));
+    boolean isRotating = !m_rotation.equals(new Rotation2d(0));
+    return isTranslating || isRotating;
   }
 
   /**
@@ -254,11 +264,20 @@ public class Swerve extends SubsystemBase {
     return this.runOnce(() -> realignEncodersToCANCoder());
   }
 
-  /** */
-  public boolean inMotion() {
-    boolean isTranslating = !m_translation.equals(new Translation2d(0, 0));
-    boolean isRotating = !m_rotation.equals(new Rotation2d(0));
-    return isTranslating || isRotating;
+  /**
+   * Enable instant stop functionality.
+   * @return a command that will enable instant stop functionality.
+   */
+  public CommandBase enableInstantStop() {
+    return this.runOnce(() -> m_shouldInstantlyStop = true);
+  }
+
+  /**
+   * Disable instant stop functionality.
+   * @return a command that will disable instant stop functionality.
+   */
+  public CommandBase disableInstantStop() {
+    return this.runOnce(() -> m_shouldInstantlyStop = false);
   }
 
   @Override
@@ -279,17 +298,5 @@ public class Swerve extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Yaw", yaw().getDegrees());
     SmartDashboard.putNumber("Pose X", pose().getX());
     SmartDashboard.putNumber("Pose Y", pose().getY());
-  }
-
-  public double getStopDelay() {
-    return m_stopDelay;
-  }
-
-  public CommandBase disableAutomaticStopDelay() {
-    return this.runOnce(() -> m_stopDelay = Constants.Swerve.HELD_STOP_DELAY);
-  }
-
-  public CommandBase enableAutomaticStopDelay() {
-    return this.runOnce(() -> m_stopDelay = Constants.Swerve.AUTOMATIC_STOP_DELAY);
   }
 }
