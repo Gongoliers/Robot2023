@@ -25,6 +25,11 @@ public class Swerve extends SubsystemBase {
   private final String[] m_moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
   private double m_speedScalar;
+  private boolean m_shouldInstantlyStop;
+  private boolean m_shouldStop;
+
+  private Translation2d m_translation;
+  private Rotation2d m_rotation;
 
   public Swerve() {
     m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
@@ -51,7 +56,13 @@ public class Swerve extends SubsystemBase {
 
     m_swerveOdometry =
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
+
     m_speedScalar = Constants.Driver.NORMAL_SCALAR;
+    m_shouldStop = false;
+    m_shouldInstantlyStop = false;
+
+    m_translation = new Translation2d(0, 0);
+    m_rotation = Rotation2d.fromDegrees(0);
   }
 
   /**
@@ -66,17 +77,21 @@ public class Swerve extends SubsystemBase {
   public void drive(
       Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
 
-    // Scale the translation velocities and rotational velocity
-    Translation2d scaledTranslation = translation.times(m_speedScalar);
-    Rotation2d scaledRotation = rotation.times(m_speedScalar);
+    // Scale the desired translation and rotational velocities
+    translation = translation.times(m_speedScalar);
+    rotation = rotation.times(m_speedScalar);
+
+    // Save the desired translation and rotation velocities
+    m_translation = translation;
+    m_rotation = rotation;
 
     // Create a ChassisSpeeds object to contain the desired velocities
     ChassisSpeeds speeds =
-        new ChassisSpeeds(
-            scaledTranslation.getX(), scaledTranslation.getY(), scaledRotation.getRadians());
+        new ChassisSpeeds(translation.getX(), translation.getY(), rotation.getRadians());
+
     // TODO Test whether field-relative driving works this way
     // FIXME Looks like it doesn't...
-    // Shift the desired velocities to be relative to the robot heading
+    // Transform the desired velocities to be relative to the robot heading
     if (fieldRelative) speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
 
     // Convert the desired velocities to module states
@@ -86,9 +101,12 @@ public class Swerve extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
+    // TODO Test if the trigger already handles this safety case
+    boolean stop = !inMotion() && (m_shouldStop || m_shouldInstantlyStop);
+
     // Set the desired state for each module
     for (SwerveModule module : m_modules) {
-      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop);
+      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop, stop);
     }
   }
 
@@ -103,7 +121,7 @@ public class Swerve extends SubsystemBase {
 
     // Set the desired state for each module
     for (SwerveModule module : m_modules) {
-      module.setDesiredState(desiredStates[module.id], false);
+      module.setDesiredState(desiredStates[module.id], false, false);
     }
   }
 
@@ -191,6 +209,23 @@ public class Swerve extends SubsystemBase {
     }
   }
 
+  /** Set the flag that forces the swerve into stop mode. */
+  public void stop() {
+    m_shouldStop = true;
+  }
+
+  /** Unset the flag that forces the swerve into stop mode. */
+  public void unstop() {
+    m_shouldStop = false;
+  }
+
+  /** Whether the robot is being commanded to move. */
+  public boolean inMotion() {
+    boolean isTranslating = !m_translation.equals(new Translation2d(0, 0));
+    boolean isRotating = !m_rotation.equals(new Rotation2d(0));
+    return isTranslating || isRotating;
+  }
+
   /**
    * Zero the gyro.
    *
@@ -225,6 +260,24 @@ public class Swerve extends SubsystemBase {
    */
   public CommandBase realignEncoders() {
     return this.runOnce(() -> realignEncodersToCANCoder());
+  }
+
+  /**
+   * Enable instant stop functionality.
+   *
+   * @return a command that will enable instant stop functionality.
+   */
+  public CommandBase enableInstantStop() {
+    return this.runOnce(() -> m_shouldInstantlyStop = true);
+  }
+
+  /**
+   * Disable instant stop functionality.
+   *
+   * @return a command that will disable instant stop functionality.
+   */
+  public CommandBase disableInstantStop() {
+    return this.runOnce(() -> m_shouldInstantlyStop = false);
   }
 
   @Override

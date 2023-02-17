@@ -34,6 +34,8 @@ public final class Constants {
     /** Button for driving in robot-centric. */
     public static final XboxController.Button BUTTON_ROBOT_CENTRIC =
         XboxController.Button.kLeftBumper;
+    /** Button for overriding the automatic stop delay for stopping instantly. */
+    public static final XboxController.Button BUTTON_INSTANTLY_STOP = XboxController.Button.kX;
     /** Button for driving in "turbo mode". */
     public static final XboxController.Axis AXIS_TURBO_MODE = XboxController.Axis.kRightTrigger;
 
@@ -197,6 +199,9 @@ public final class Constants {
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
 
+    /** Number of seconds to wait before stopping the swerve, while the button is not held. */
+    public static final double AUTOMATIC_STOP_DELAY = 5.0;
+
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
       /** CAN ID of the drive motor. */
@@ -207,9 +212,12 @@ public final class Constants {
       public static final int CANCODER_ID = 2;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(335.43);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Front Right Module */
@@ -222,9 +230,12 @@ public final class Constants {
       public static final int CANCODER_ID = 5;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(253.74);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Left Module */
@@ -237,9 +248,12 @@ public final class Constants {
       public static final int CANCODER_ID = 12;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(162.15);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Right Module */
@@ -252,9 +266,12 @@ public final class Constants {
       public static final int CANCODER_ID = 9;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(186.715);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
       public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+          new SwerveModuleConstants(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
   }
 
