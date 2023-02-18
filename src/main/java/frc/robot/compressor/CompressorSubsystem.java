@@ -5,18 +5,28 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class CompressorSubsystem {
-  private Compressor pnCompressor = new Compressor(Constants.Compressor.module, PneumaticsModuleType.REVPH);
-
+  private Compressor m_compressor = new Compressor(Constants.Compressor.module, PneumaticsModuleType.REVPH);
+  
+  /**
+   * Start the compressor.
+   */
   public void run() {
-    // TODO: investigate enableAnalog vs enableDigital
-    pnCompressor.enableAnalog(Constants.Compressor.minPressure, Constants.Compressor.maxPressure);
+    m_compressor.enableAnalog(Constants.Compressor.minPressure, Constants.Compressor.maxPressure);
   }
 
+  /**
+   * Stop the compressor.
+   */
   public void stop() {
-    pnCompressor.disable();
+    m_compressor.disable();
   }
 
+  /**
+   * Check if the compressor is running.
+   * 
+   * @return true if the compressor is running, false otherwise.
+   */
   public boolean isFull() {
-    return pnCompressor.getPressure() > Constants.Compressor.compressorThreshold;
+    return m_compressor.getPressure() > Constants.Compressor.compressorThreshold;
   }
 }
