@@ -13,6 +13,10 @@ public final class CTREConfigs {
   public TalonFXConfiguration swerveDriveFXConfig;
   public CANCoderConfiguration swerveCanCoderConfig;
 
+  public TalonFXConfiguration armRotationFXConfig;
+  public TalonFXConfiguration armExtensionFXConfig;
+  public CANCoderConfiguration armCanCoderConfig;
+
   public CTREConfigs() {
     swerveAngleFXConfig = new TalonFXConfiguration();
     swerveDriveFXConfig = new TalonFXConfiguration();
@@ -54,5 +58,44 @@ public final class CTREConfigs {
     swerveCanCoderConfig.initializationStrategy =
         SensorInitializationStrategy.BootToAbsolutePosition;
     swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+
+    armRotationFXConfig = new TalonFXConfiguration();
+    armExtensionFXConfig = new TalonFXConfiguration();
+    armCanCoderConfig = new CANCoderConfiguration();
+
+    // Arm rotation motor config
+    SupplyCurrentLimitConfiguration rotationSupplyLimit =
+        new SupplyCurrentLimitConfiguration(
+            Constants.Arm.SHOULD_CURRENT_LIMIT_ROTATION_MOTOR,
+            Constants.Arm.ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX,
+            Constants.Arm.ROTATION_MOTOR_PEAK_CURRENT_MAX,
+            Constants.Arm.ROTATION_MOTOR_PEAK_CURRENT_DURATION);
+
+    armRotationFXConfig.slot0.kP = Constants.Arm.ROTATION_MOTOR_KP;
+    armRotationFXConfig.slot0.kI = Constants.Arm.ROTATION_MOTOR_KI;
+    armRotationFXConfig.slot0.kD = Constants.Arm.ROTATION_MOTOR_KD;
+    armRotationFXConfig.slot0.kF = Constants.Arm.ROTATION_MOTOR_KF;
+    armRotationFXConfig.supplyCurrLimit = rotationSupplyLimit;
+
+    // Arm extension motor config
+    SupplyCurrentLimitConfiguration extensionSupplyLimit =
+        new SupplyCurrentLimitConfiguration(
+            Constants.Arm.SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR,
+            Constants.Arm.EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX,
+            Constants.Arm.EXTENSION_MOTOR_PEAK_CURRENT_MAX,
+            Constants.Arm.EXTENSION_MOTOR_PEAK_CURRENT_DURATION);
+
+    armExtensionFXConfig.slot0.kP = Constants.Arm.EXTENSION_MOTOR_KP;
+    armExtensionFXConfig.slot0.kI = Constants.Arm.EXTENSION_MOTOR_KI;
+    armExtensionFXConfig.slot0.kD = Constants.Arm.EXTENSION_MOTOR_KD;
+    armExtensionFXConfig.slot0.kF = Constants.Arm.EXTENSION_MOTOR_KF;
+    armExtensionFXConfig.supplyCurrLimit = extensionSupplyLimit;
+
+    // Arm CANCoder config
+    armCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+    armCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_CANCODER;
+    armCanCoderConfig.initializationStrategy =
+        SensorInitializationStrategy.BootToAbsolutePosition;
+    armCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
   }
 }

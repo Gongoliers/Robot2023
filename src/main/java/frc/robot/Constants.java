@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -303,5 +305,26 @@ public final class Constants {
     public static final String CANBUS_NAME = null;
     public static final int EXTENSION_MOTOR_CAN_ID = 0;
     public static final int ROTATION_CANCODER_CAN_ID = 0;
+    public static final boolean SHOULD_CURRENT_LIMIT_ROTATION_MOTOR = false;
+    public static final double ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX = 0;
+    public static final double ROTATION_MOTOR_PEAK_CURRENT_MAX = 0;
+    public static final double ROTATION_MOTOR_PEAK_CURRENT_DURATION = 0;
+    public static final double ROTATION_MOTOR_KP = 0;
+    public static final double ROTATION_MOTOR_KI = 0;
+    public static final double ROTATION_MOTOR_KD = 0;
+    public static final double ROTATION_MOTOR_KF = 0;
+    public static final boolean SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR = false;
+    public static final double EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX = 0;
+    public static final double EXTENSION_MOTOR_PEAK_CURRENT_MAX = 0;
+    public static final double EXTENSION_MOTOR_PEAK_CURRENT_DURATION = 0;
+    public static final double EXTENSION_MOTOR_KP = 0;
+    public static final double EXTENSION_MOTOR_KI = 0;
+    public static final double EXTENSION_MOTOR_KD = 0;
+    public static final double EXTENSION_MOTOR_KF = 0;
+    public static final boolean SHOULD_INVERT_CANCODER = false;
+    public static final TalonFXInvertType SHOULD_INVERT_ROTATION_MOTOR = null;
+    public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = null;
+    public static final TalonFXInvertType SHOULD_INVERT_EXTENSION_MOTOR = null;
+    public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = null;
   }
 }
