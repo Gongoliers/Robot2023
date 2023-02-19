@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -290,40 +289,87 @@ public final class Constants {
   }
 
   public static final class Arm {
+    /**
+     * Name of the CAN bus for all arm devices. By default, "rio" or "" selects the CAN bus
+     * beginning at the RoboRio. If connecting using a CANivore, use Phoenix Tuner to view the CAN
+     * bus name.
+     */
     public static final String CANBUS_NAME = "rio";
 
+    /**
+     * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
+     * button, then copy the ID of the motor to this constant.
+     */
     public static final int ROTATION_MOTOR_CAN_ID = 0; // TODO
+    /**
+     * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
+     * button, then copy the ID of the motor to this constant.
+     */
     public static final int EXTENSION_MOTOR_CAN_ID = 0; // TODO
+    /**
+     * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the Blink
+     * button, then copy the ID of the CANcoder to this constant.
+     */
     public static final int ROTATION_CANCODER_CAN_ID = 0; // TODO
 
-    public static final boolean SHOULD_CURRENT_LIMIT_ROTATION_MOTOR = false; // TODO
+    /** Maximum continuous current for the rotation motor. */
     public static final double ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
+    /** Maximum peak current for the rotation motor. */
     public static final double ROTATION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
+    /** Maximum peak current duration for the rotation motor. */
     public static final double ROTATION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
+    /** Toggle for limiting the current for the rotation motor. */
+    public static final boolean SHOULD_CURRENT_LIMIT_ROTATION_MOTOR = false; // TODO
 
+    /** Rotation motor KP. */
     public static final double ROTATION_MOTOR_KP = 0; // TODO
+    /** Rotation motor KI. */
     public static final double ROTATION_MOTOR_KI = 0; // TODO
+    /** Rotation motor KD. */
     public static final double ROTATION_MOTOR_KD = 0; // TODO
+    /** Rotation motor KF. */
     public static final double ROTATION_MOTOR_KF = 0; // TODO
 
-    public static final boolean SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR = false; // TODO
+    /** Maximum continuous current for the extension motor. */
     public static final double EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
+    /** Maximum peak current for the extension motor. */
     public static final double EXTENSION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
+    /** Maximum peak current duration for the extension motor. */
     public static final double EXTENSION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
+    /** Toggle for limiting the current for the extension motor. */
+    public static final boolean SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR = false; // TODO
 
+    /** Extension motor KP. */
     public static final double EXTENSION_MOTOR_KP = 0; // TODO
+    /** Extension motor KI. */
     public static final double EXTENSION_MOTOR_KI = 0; // TODO
+    /** Extension motor KD. */
     public static final double EXTENSION_MOTOR_KD = 0; // TODO
+    /** Extension motor KF. */
     public static final double EXTENSION_MOTOR_KF = 0; // TODO
 
+    /** Toggle for if the CANCoder should be inverted. Ensure that CCW+ CW-. */
     public static final boolean SHOULD_INVERT_CANCODER = false; // TODO
 
+    /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
     public static final boolean SHOULD_INVERT_ROTATION_MOTOR = false; // TODO
 
+    /**
+     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * behavior.
+     */
     public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
 
+    /**
+     * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
+     * arm to extend and that negative values cause the arm to retract.
+     */
     public static final boolean SHOULD_INVERT_EXTENSION_MOTOR = false; // TODO
 
+    /**
+     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * behavior.
+     */
     public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
   }
 }
