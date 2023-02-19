@@ -1,7 +1,10 @@
 package frc.robot.arm;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
@@ -21,6 +24,26 @@ public class Arm {
     m_rotationCANCoder =
         new CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
+  }
+
+  public void set(ArmState state) {
+    setAngle(state.angle);
+    setExtension(state.extension);
+  }
+
+  private void setExtension(double extension) {
+    double position =
+        Conversions.MetersToFalcon(
+            extension,
+            Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
+            Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
+    m_extensionMotor.set(ControlMode.Position, position);
+  }
+
+  private void setAngle(Rotation2d angle) {
+    double position =
+        Conversions.degreesToFalcon(angle.getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO);
+    m_rotationMotor.set(ControlMode.Position, position);
   }
 
   private void configRotationMotor() {

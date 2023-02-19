@@ -371,5 +371,16 @@ public final class Constants {
      * behavior.
      */
     public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
+
+    /**
+     * The difference in arm length caused by one full rotation of the spool, meaured in meters.
+     * Essentially, the effective "circumference" of the spool.
+     */
+    public static final double EXTENSION_LENGTH_PER_ROTATION = 0;
+    /** The gear ratio between the extension motor and the spool. */
+    public static final double EXTENSION_MOTOR_GEAR_RATIO = 0;
+
+    /** The gear ratio between the rotation motor and the arm. */
+    public static final double ROTATION_MOTOR_GEAR_RATIO = 0;
   }
 }
