@@ -32,36 +32,62 @@ public class Arm extends SubsystemBase {
     configRotationCANCoder();
   }
 
-  private ArmState validate(ArmState state) {
+  /**
+   * Validate a state. This ensures that the arm will not crash into any part of the superstructure
+   * or field when approaching the desired state.
+   *
+   * @param desiredState the state to be validated.
+   * @return a new state that is guarenteed to be a valid state.
+   */
+  private ArmState validate(ArmState desiredState) {
     double minExtension = 0.0; // TODO
     double maxExtension = 0.0; // TODO
-    double extension = MathUtil.clamp(state.extension, minExtension, maxExtension);
-    Rotation2d angle = state.angle;
+    double extension = MathUtil.clamp(desiredState.extension, minExtension, maxExtension);
+    Rotation2d angle = desiredState.angle;
     return new ArmState(extension, angle);
   }
 
-  public void set(ArmState state) {
-    state = validate(state);
-    setAngle(state.angle);
-    setExtension(state.extension);
-    m_desiredState = state;
+  /**
+   * Approach the desired state.
+   *
+   * @param desiredState the state to approach.
+   */
+  public void set(ArmState desiredState) {
+    desiredState = validate(desiredState);
+
+    setAngle(desiredState.angle);
+    setExtension(desiredState.extension);
+
+    m_desiredState = desiredState;
   }
 
+  /**
+   * Approach the desired extension length.
+   * @param extension the extension length (in meters) to approach.
+   */
   private void setExtension(double extension) {
-    double position =
+    double setpoint =
         Conversions.MetersToFalcon(
             extension,
             Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
             Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
-    m_extensionMotor.set(ControlMode.Position, position);
+    m_extensionMotor.set(ControlMode.Position, setpoint);
   }
 
+  /**
+   * Approach the desired angle.
+   * @param angle the angle to approach.
+   */
   private void setAngle(Rotation2d angle) {
-    double position =
+    double setpoint =
         Conversions.degreesToFalcon(angle.getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO);
-    m_rotationMotor.set(ControlMode.Position, position);
+    m_rotationMotor.set(ControlMode.Position, setpoint);
   }
 
+  /**
+   * Get the current extension in meters.
+   * @return the current extension in meters.
+   */
   private double extension() {
     return Conversions.falconToMeters(
         m_extensionMotor.getSelectedSensorPosition(),
@@ -69,12 +95,20 @@ public class Arm extends SubsystemBase {
         Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
   }
 
+  /**
+   * Get the current angle.
+   * @return the current angle.
+   */
   private Rotation2d angle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_rotationMotor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
   }
 
+  /**
+   * Get the current arm state.
+   * @return the current arm state.
+   */
   public ArmState state() {
     return new ArmState(extension(), angle());
   }
@@ -108,6 +142,8 @@ public class Arm extends SubsystemBase {
 
     // Publish info to SmartDashboard
     // TODO Port to ShuffleBoard
+    SmartDashboard.putNumber("Desired Extension (m)", m_desiredState.extension);
+    SmartDashboard.putNumber("Desired Angle (deg)", m_desiredState.angle.getDegrees());
     SmartDashboard.putNumber("Actual Extension (m)", m_actualState.extension);
     SmartDashboard.putNumber("Actual Angle (deg)", m_actualState.angle.getDegrees());
   }
