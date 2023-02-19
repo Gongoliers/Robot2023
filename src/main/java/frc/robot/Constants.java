@@ -34,25 +34,45 @@ public final class Constants {
   }
 
   public static final class Swerve {
-    /** Name of the CAN bus for all swerve devices. View the name of the CANivore on Phoenix Tuner and match this constant to that name. */
+    /**
+     * Name of the CAN bus for all swerve devices. View the name of the CANivore on Phoenix Tuner
+     * and match this constant to that name.
+     */
     public static final String CANBUS_NAME = "Drivetrain";
-    /** CAN ID of the Pigeon 2. Locate the correct Pigeon 2 in Phoenix Tuner using the Blink button, then copy the ID of the Pigeon 2 to this constant. */
+    /**
+     * CAN ID of the Pigeon 2. Locate the correct Pigeon 2 in Phoenix Tuner using the Blink button,
+     * then copy the ID of the Pigeon 2 to this constant.
+     */
     public static final int PIGEON_ID = 7;
-    /** Toggle for if the Pigeon 2 is CCW+ CW-. Calibrate by rotating the Pigeon 2 counter-clockwise, and checking that the angle value increases. */
+    /**
+     * Toggle for if the Pigeon 2 is CCW+ CW-. Calibrate by rotating the Pigeon 2 counter-clockwise,
+     * and checking that the angle value increases.
+     */
     public static final boolean SHOULD_INVERT_GYRO = false;
 
-    /** Gear ratio of the drive motor. Use the gear ratio listed in the manufacturer's documentation. */
+    /**
+     * Gear ratio of the drive motor. Use the gear ratio listed in the manufacturer's documentation.
+     */
     public static final double DRIVE_MOTOR_GEAR_RATIO_SPEC =
         COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L3;
     /** Swerve module type. Contains the constants that make motors operate correctly. */
     public static final COTSFalconSwerveConstants COTS_MODULE_TYPE =
         COTSFalconSwerveConstants.SDSMK4i(DRIVE_MOTOR_GEAR_RATIO_SPEC);
 
-    /** Center-to-center distance of left and right modules, in meters. Measure the shaft-shaft distance in CAD. */
+    /**
+     * Center-to-center distance of left and right modules, in meters. Measure the shaft-shaft
+     * distance in CAD.
+     */
     public static final double TRACK_WIDTH = Units.inchesToMeters(22.75);
-    /** Center-to-center distance of front and rear modules, in meters. Measure the shaft-shaft distance in CAD. */
+    /**
+     * Center-to-center distance of front and rear modules, in meters. Measure the shaft-shaft
+     * distance in CAD.
+     */
     public static final double WHEEL_BASE = Units.inchesToMeters(22.75);
-    /** Cirumference of the wheel (including tread) in meters. Measure the wheel's physical dimensions. */
+    /**
+     * Cirumference of the wheel (including tread) in meters. Measure the wheel's physical
+     * dimensions.
+     */
     public static final double WHEEL_CIRCUMFERENCE = COTS_MODULE_TYPE.wheelCircumference;
 
     /** Inverse kinematics helper class. Calculated from the center-center distances. */
@@ -63,9 +83,15 @@ public final class Constants {
             new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
             new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
-    /** Gear ratio for the drive motor. Use the gear ratio listed in the manufacturer's documentation. */
+    /**
+     * Gear ratio for the drive motor. Use the gear ratio listed in the manufacturer's
+     * documentation.
+     */
     public static final double DRIVE_MOTOR_GEAR_RATIO = COTS_MODULE_TYPE.driveGearRatio;
-    /** Gear ratio for the angle motor. Use the gear ratio listed in the manufacturer's documentation. */
+    /**
+     * Gear ratio for the angle motor. Use the gear ratio listed in the manufacturer's
+     * documentation.
+     */
     public static final double ANGLE_MOTOR_GEAR_RATIO = COTS_MODULE_TYPE.angleGearRatio;
 
     /** Toggle for angle motor CCW+. Dependent on module type. */
@@ -126,13 +152,23 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KF = 0.0;
 
     // TODO Must tune for this robot
-    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html 
-    // V (volts) = KS (volts) + KV (volts / velocity) * d' (velocity) + KA (volts / acceleration) * d'' (acceleration)
-    /** Drive motor KS. KS is the voltage needed to overcome static friction. Copy these values from the System Identification application. */
+    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
+    // V (volts) = KS (volts) + KV (volts / velocity) * d' (velocity) + KA (volts / acceleration) *
+    // d'' (acceleration)
+    /**
+     * Drive motor KS. KS is the voltage needed to overcome static friction. Copy these values from
+     * the System Identification application.
+     */
     public static final double DRIVE_MOTOR_KS = (0.32 / 12);
-    /** Drive motor KV. KV is the voltage needed to cruise at a constant velocity. Copy these values from the System Identification application. */
+    /**
+     * Drive motor KV. KV is the voltage needed to cruise at a constant velocity. Copy these values
+     * from the System Identification application.
+     */
     public static final double DRIVE_MOTOR_KV = (1.51 / 12);
-    /** Drive motor KA. KA is the voltage needed to induce a given acceleration. Copy these values from the System Identification application. */
+    /**
+     * Drive motor KA. KA is the voltage needed to induce a given acceleration. Copy these values
+     * from the System Identification application.
+     */
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
     // TODO Must tune for this robot
@@ -142,9 +178,15 @@ public final class Constants {
     public static final double ANGULAR_SPEED_MAX = 10.0;
 
     // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
-    /** Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this behavior. */
+    /**
+     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * behavior.
+     */
     public static final NeutralMode ANGLE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
-    /** Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this behavior. */
+    /**
+     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * behavior.
+     */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
 
     /** Front Left Module */
@@ -254,7 +296,12 @@ public final class Constants {
 
     /** setpoint names */
     public static final String TOP_SETPOINT = "top setpoint";
+
     public static final String MIDDLE_SETPOINT = "middle setpoint";
     public static final String HYBRID_SETPOINT = "hybrid setpoint";
+    public static final int ROTATION_MOTOR_CAN_ID = 0;
+    public static final String CANBUS_NAME = null;
+    public static final int EXTENSION_MOTOR_CAN_ID = 0;
+    public static final int ROTATION_CANCODER_CAN_ID = 0;
   }
 }
