@@ -1,27 +1,41 @@
 package frc.robot.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
-public class ArmState {
-  /** The extension (in meters) from the zero point of the arm. */
-  public double extension;
-  /** The rotation (in degrees) from the zero point of the arm. */
-  public Rotation2d angle = Rotation2d.fromDegrees(0);
+/**
+ * Represents the state of the arm. Implemented as an abstraction over a Translation2d object contructed with a given distance (extension length) and angle.
+ */
+public class ArmState extends Translation2d {
 
   /**
-   * Construct an ArmState object with an extension of zero meters and a rotation of zero meters.
-   * Used for returning the arm to a neutral position.
+   * Constructs an ArmState with an extension length of zero meters and a rotation of zero degrees.
    */
   public ArmState() {}
 
   /**
-   * Construct an ArmState object with a custom extension and angle.
+   * Constructs an ArmState with the provided extension length and angle.
    *
-   * @param extension the extension of the arm in meters.
+   * @param extensionLength the extension of the arm in meters.
    * @param angle the rotation of the arm.
    */
-  public ArmState(double extension, Rotation2d angle) {
-    this.extension = extension;
-    this.angle = angle;
+  public ArmState(double extensionLength, Rotation2d angle) {
+    super(extensionLength, angle);
+  }
+
+  /**
+   * Returns the extension length of the arm.
+   * @return the extension length of the arm.
+   */
+  public double extensionLength() {
+    return this.getNorm();
+  }
+
+  /**
+   * Returns the angle of the arm.
+   * @return the angle of the arm.
+   */
+  public Rotation2d angle() {
+    return this.getAngle();
   }
 }

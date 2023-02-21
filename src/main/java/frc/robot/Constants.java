@@ -382,5 +382,17 @@ public final class Constants {
 
     /** The gear ratio between the rotation motor and the arm. */
     public static final double ROTATION_MOTOR_GEAR_RATIO = 0;
+
+    /**
+     * The minimum angle that the arm can rotate to. This value is measured in degrees, and
+     * represents the lower bound that the arm will never cross.
+     */
+    public static final double MIN_ANGLE = 0;
+
+    /**
+     * The maximum anglet hat the arm can rotate to. This value is measured in degrees, and
+     * represents the upper bound that the arm will never cross.
+     */
+    public static final double MAX_ANGLE = 0;
   }
 }
