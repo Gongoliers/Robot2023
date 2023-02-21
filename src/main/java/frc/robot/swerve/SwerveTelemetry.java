@@ -10,43 +10,38 @@ import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
 
 public class SwerveTelemetry {
 
-    private final ShuffleboardTab m_tab;
-    private final Swerve m_swerve;
+    public static void createShuffleboardTab(Swerve swerve, String tabName) {
+        ShuffleboardTab tab = Shuffleboard.getTab(tabName);
+        heading(swerve, tab).withPosition(0, 0);
+        odometryX(swerve, tab).withPosition(0, 1);
+        odometryY(swerve, tab).withPosition(0, 2);
 
-    public SwerveTelemetry(Swerve swerve) {
-        m_tab = Shuffleboard.getTab("Swerve");
-        m_swerve = swerve;
-
-        heading().withPosition(0, 0);
-        odometryX().withPosition(0, 1);
-        odometryY().withPosition(0, 2);
-
-        module(0, "Front Left Module").withPosition(1, 0);
-        module(1, "Front Right Module").withPosition(2, 0);
-        module(2, "Back Left Module").withPosition(3, 0);
-        module(3, "Back Right Module").withPosition(4, 0);
+        module(swerve, tab, 0, "Front Left Module").withPosition(1, 0);
+        module(swerve, tab, 1, "Front Right Module").withPosition(2, 0);
+        module(swerve, tab, 2, "Back Left Module").withPosition(3, 0);
+        module(swerve, tab, 3, "Back Right Module").withPosition(4, 0);
     }
 
-    private SuppliedValueWidget<Double> heading() {
-        var widget = m_tab.addNumber("Heading", () -> m_swerve.pose().getRotation().getDegrees());
+    private static SuppliedValueWidget<Double> heading(Swerve swerve, ShuffleboardTab tab) {
+        var widget = tab.addNumber("Heading", () -> swerve.pose().getRotation().getDegrees());
         return widget;
     }
         
-    private SuppliedValueWidget<Double> odometryX() {
-        var widget = m_tab.addNumber("Odometry X", () -> m_swerve.pose().getX());
+    private static SuppliedValueWidget<Double> odometryX(Swerve swerve, ShuffleboardTab tab) {
+        var widget = tab.addNumber("Odometry X", () -> swerve.pose().getX());
         return widget;
     }
 
-    private SuppliedValueWidget<Double> odometryY() {
-        var widget = m_tab.addNumber("Odometry Y", () -> m_swerve.pose().getY());
+    private static SuppliedValueWidget<Double> odometryY(Swerve swerve, ShuffleboardTab tab) {
+        var widget = tab.addNumber("Odometry Y", () -> swerve.pose().getY());
         return widget;
     }
 
-    private ShuffleboardLayout module(int moduleNumber, String moduleName) {
-        var layout = m_tab.getLayout(moduleName, BuiltInLayouts.kGrid);
+    private static ShuffleboardLayout module(Swerve swerve, ShuffleboardTab tab, int moduleNumber, String moduleName) {
+        var layout = tab.getLayout(moduleName, BuiltInLayouts.kGrid);
         layout.withProperties(Map.of("Label position", "TOP"));
 
-        SwerveModule module = m_swerve.module(moduleNumber);
+        SwerveModule module = swerve.module(moduleNumber);
 
         var cancoderAngleWidget = layout.addNumber("CANCoder Angle", () -> module.cancoderAngle().getDegrees());
         cancoderAngleWidget.withPosition(0, 0);
@@ -58,5 +53,6 @@ public class SwerveTelemetry {
         velocityWidget.withPosition(0, 2);
         return layout;
     }
+
 
 }

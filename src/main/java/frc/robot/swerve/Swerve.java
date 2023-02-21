@@ -24,10 +24,6 @@ public class Swerve extends SubsystemBase {
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
 
-  // Telemetry "manager" that handles the creation of swerve drive telemetry
-  @SuppressWarnings("unused")
-  private final SwerveTelemetry m_telemetry;
-
   public Swerve() {
     m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
     m_gyro.configFactoryDefault();
@@ -57,7 +53,7 @@ public class Swerve extends SubsystemBase {
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
-    m_telemetry = new SwerveTelemetry(this);
+    SwerveTelemetry.createShuffleboardTab(this, "Swerve");
   }
 
   /**
