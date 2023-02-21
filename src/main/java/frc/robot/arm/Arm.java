@@ -45,8 +45,8 @@ public class Arm extends SubsystemBase {
             desiredState.angle().getDegrees(), Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE);
     Rotation2d angle = Rotation2d.fromDegrees(degrees);
 
-    double minExtension = 0.0; // TODO
-    double maxExtension = 0.0; // TODO
+    double minExtension = Constants.Arm.kAngleToMinLength.get(angle.getDegrees());
+    double maxExtension = Constants.Arm.kAngleToMaxLength.get(angle.getDegrees());
 
     double extension = MathUtil.clamp(desiredState.extensionLength(), minExtension, maxExtension);
     return new ArmState(extension, angle);

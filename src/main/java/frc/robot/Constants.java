@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConstants;
@@ -394,5 +395,21 @@ public final class Constants {
      * represents the upper bound that the arm will never cross.
      */
     public static final double MAX_ANGLE = 0;
+
+    // TODO Implement as <Rotation2d, Double>
+    public static InterpolatingTreeMap<Double, Double> kAngleToMinLength = new InterpolatingTreeMap<>();
+    static {
+      kAngleToMinLength.put(MIN_ANGLE, 0.0);
+      kAngleToMinLength.put(0.0, 0.0);
+      kAngleToMinLength.put(MAX_ANGLE, 0.0);
+    }
+
+    // TODO Implement as <Rotation2d, Double>
+    public static InterpolatingTreeMap<Double, Double> kAngleToMaxLength = new InterpolatingTreeMap<>();
+    static {
+      kAngleToMaxLength.put(MIN_ANGLE, 0.0);
+      kAngleToMaxLength.put(0.0, 0.0);
+      kAngleToMaxLength.put(MAX_ANGLE, 0.0);
+    }
   }
 }
