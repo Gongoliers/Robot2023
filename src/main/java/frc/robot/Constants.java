@@ -215,7 +215,7 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConfig CONSTANTS =
+      public static final SwerveModuleConfig CONFIG =
           new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
@@ -233,7 +233,7 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConfig CONSTANTS =
+      public static final SwerveModuleConfig CONFIG =
           new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
@@ -251,7 +251,7 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConfig CONSTANTS =
+      public static final SwerveModuleConfig CONFIG =
           new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
@@ -269,7 +269,7 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConfig CONSTANTS =
+      public static final SwerveModuleConfig CONFIG =
           new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }

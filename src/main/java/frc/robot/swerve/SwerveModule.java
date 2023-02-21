@@ -29,9 +29,9 @@ public class SwerveModule extends SubsystemBase {
   // Previous angle of the swerve module
   private Rotation2d m_previousAngle;
 
-  // 
-  private SwerveModuleState m_swerveModuleState = new SwerveModuleState();
-  private SwerveModulePosition m_swerveModulePosition = new SwerveModulePosition();
+  // Store the current state
+  private SwerveModuleState m_state = new SwerveModuleState();
+  private SwerveModulePosition m_position = new SwerveModulePosition();
   private Rotation2d m_absoluteAngle = new Rotation2d();
 
   // The feed-forward calculator for the drive motor
@@ -56,8 +56,8 @@ public class SwerveModule extends SubsystemBase {
     m_driveMotor = new WPI_TalonFX(config.driveMotorID, Constants.Swerve.CANBUS_NAME);
     configDriveMotor();
 
-    m_swerveModuleState = state();
-    m_swerveModulePosition = position();
+    m_state = state();
+    m_position = position();
     m_previousAngle = encoderAngle();
   }
 
@@ -87,8 +87,8 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_swerveModuleState = state();
-    m_swerveModulePosition = position();
+    m_state = state();
+    m_position = position();
     m_absoluteAngle = cancoderAngle();
   }
 

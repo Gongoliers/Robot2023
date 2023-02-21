@@ -24,16 +24,9 @@ public class RobotContainer {
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
   // Driver buttons
-  private final Trigger m_zeroGyro =
-      new Trigger(() -> m_driverController.getRawButton(Constants.Driver.BUTTON_ZERO_GYRO.value));
   private final Trigger m_robotCentric =
       new Trigger(
           () -> m_driverController.getRawButton(Constants.Driver.BUTTON_ROBOT_CENTRIC.value));
-  private final Trigger m_turbo =
-      new Trigger(
-          () ->
-              m_driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
-                  > Constants.Driver.TRIGGER_THRESHOLD);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -64,8 +57,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    m_zeroGyro.onTrue(m_swerve.zeroGyro());
-    m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
   }
 
   private void configureTriggers() {
