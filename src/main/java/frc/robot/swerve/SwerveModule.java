@@ -30,8 +30,11 @@ public class SwerveModule extends SubsystemBase {
   private Rotation2d m_previousAngle;
 
   // Store the current state
+  @SuppressWarnings("unused")
   private SwerveModuleState m_state = new SwerveModuleState();
+  @SuppressWarnings("unused")
   private SwerveModulePosition m_position = new SwerveModulePosition();
+  @SuppressWarnings("unused")
   private Rotation2d m_absoluteAngle = new Rotation2d();
 
   // The feed-forward calculator for the drive motor

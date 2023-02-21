@@ -25,6 +25,7 @@ public class Swerve extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds;
 
   // Telemetry "manager" that handles the creation of swerve drive telemetry
+  @SuppressWarnings("unused")
   private final SwerveTelemetry m_telemetry;
 
   public Swerve() {
