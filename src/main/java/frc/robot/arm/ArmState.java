@@ -4,7 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
- * Represents the state of the arm. Implemented as an abstraction over a Translation2d object contructed with a given distance (extension length) and angle.
+ * Represents the state of the arm. Implemented as an abstraction over a Translation2d object
+ * contructed with a given distance (extension length) and angle.
  */
 public class ArmState extends Translation2d {
 
@@ -25,6 +26,7 @@ public class ArmState extends Translation2d {
 
   /**
    * Returns the extension length of the arm.
+   *
    * @return the extension length of the arm.
    */
   public double extensionLength() {
@@ -33,6 +35,7 @@ public class ArmState extends Translation2d {
 
   /**
    * Returns the angle of the arm.
+   *
    * @return the angle of the arm.
    */
   public Rotation2d angle() {

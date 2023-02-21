@@ -73,7 +73,7 @@ public class Arm extends SubsystemBase {
    */
   private void setExtension(double extension) {
     double setpoint =
-        Conversions.MetersToFalcon(
+        Conversions.metersToFalcon(
             extension,
             Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
             Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
