@@ -2,7 +2,7 @@ package frc.lib.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class SwerveModuleConstants {
+public class SwerveModuleConfig {
   public final int driveMotorID;
   public final int angleMotorID;
   public final int cancoderID;
@@ -18,7 +18,7 @@ public class SwerveModuleConstants {
    * @param angleOffset
    * @param angleStop
    */
-  public SwerveModuleConstants(
+  public SwerveModuleConfig(
       int driveMotorID,
       int angleMotorID,
       int canCoderID,

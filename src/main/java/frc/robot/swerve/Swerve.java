@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.swerve.SwerveModule;
 import frc.robot.Constants;
 
 public class Swerve extends SubsystemBase {
@@ -25,8 +24,6 @@ public class Swerve extends SubsystemBase {
   private final String[] m_moduleNameFromNumber =
       new String[] {"Front Left", "Front Right", "Back Left", "Back Right"};
   private double m_speedScalar;
-  private boolean m_shouldInstantlyStop;
-  private boolean m_shouldStop;
 
   private Translation2d m_translation;
   private Rotation2d m_rotation;
@@ -50,7 +47,7 @@ public class Swerve extends SubsystemBase {
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
     Timer.delay(1.0);
-    realignEncodersToCANCoder();
+    realignAllEncodersToCANCoder();
 
     SmartDashboard.putData("Reset Modules", realignEncoders());
 
@@ -58,8 +55,6 @@ public class Swerve extends SubsystemBase {
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
 
     m_speedScalar = Constants.Driver.NORMAL_SCALAR;
-    m_shouldStop = false;
-    m_shouldInstantlyStop = false;
 
     m_translation = new Translation2d(0, 0);
     m_rotation = Rotation2d.fromDegrees(0);
@@ -101,12 +96,9 @@ public class Swerve extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
-    // TODO Test if the trigger already handles this safety case
-    boolean stop = !inMotion() && (m_shouldStop || m_shouldInstantlyStop);
-
     // Set the desired state for each module
     for (SwerveModule module : m_modules) {
-      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop, stop);
+      module.setDesiredState(swerveModuleStates[module.id], isOpenLoop);
     }
   }
 
@@ -121,7 +113,7 @@ public class Swerve extends SubsystemBase {
 
     // Set the desired state for each module
     for (SwerveModule module : m_modules) {
-      module.setDesiredState(desiredStates[module.id], false, false);
+      module.setDesiredState(desiredStates[module.id], false);
     }
   }
 
@@ -149,7 +141,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module states.
    */
-  public SwerveModuleState[] states() {
+  private SwerveModuleState[] states() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
     // Get the state of each module
@@ -165,7 +157,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module positions.
    */
-  public SwerveModulePosition[] positions() {
+  private SwerveModulePosition[] positions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
     // Get the position of each module
@@ -203,27 +195,10 @@ public class Swerve extends SubsystemBase {
    * Instruct all of the modules to realign their angle encoders to the angle value provided by the
    * CANCoder.
    */
-  public void realignEncodersToCANCoder() {
+  public void realignAllEncodersToCANCoder() {
     for (SwerveModule module : m_modules) {
       module.realignEncoderToCANCoder();
     }
-  }
-
-  /** Set the flag that forces the swerve into stop mode. */
-  public void stop() {
-    m_shouldStop = true;
-  }
-
-  /** Unset the flag that forces the swerve into stop mode. */
-  public void unstop() {
-    m_shouldStop = false;
-  }
-
-  /** Whether the robot is being commanded to move. */
-  public boolean inMotion() {
-    boolean isTranslating = !m_translation.equals(new Translation2d(0, 0));
-    boolean isRotating = !m_rotation.equals(new Rotation2d(0));
-    return isTranslating || isRotating;
   }
 
   /**
@@ -259,25 +234,7 @@ public class Swerve extends SubsystemBase {
    * @return a command that will realign the encoders.
    */
   public CommandBase realignEncoders() {
-    return this.runOnce(() -> realignEncodersToCANCoder());
-  }
-
-  /**
-   * Enable instant stop functionality.
-   *
-   * @return a command that will enable instant stop functionality.
-   */
-  public CommandBase enableInstantStop() {
-    return this.runOnce(() -> m_shouldInstantlyStop = true);
-  }
-
-  /**
-   * Disable instant stop functionality.
-   *
-   * @return a command that will disable instant stop functionality.
-   */
-  public CommandBase disableInstantStop() {
-    return this.runOnce(() -> m_shouldInstantlyStop = false);
+    return this.runOnce(() -> realignAllEncodersToCANCoder());
   }
 
   @Override
