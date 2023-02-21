@@ -24,6 +24,9 @@ public class Swerve extends SubsystemBase {
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
 
+  // Telemetry "manager" that handles the creation of swerve drive telemetry
+  private final SwerveTelemetry m_telemetry;
+
   public Swerve() {
     m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
     m_gyro.configFactoryDefault();
@@ -52,6 +55,8 @@ public class Swerve extends SubsystemBase {
 
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
+
+    m_telemetry = new SwerveTelemetry(this);
   }
 
   /**
@@ -135,6 +140,10 @@ public class Swerve extends SubsystemBase {
     m_swerveOdometry.resetPosition(yaw(), positions(), toPose);
   }
 
+  public SwerveModule module(int moduleNumber) {
+    return m_modules[moduleNumber];
+  }
+
   /**
    * Get the current swerve module states.
    *
@@ -179,7 +188,7 @@ public class Swerve extends SubsystemBase {
    * Set the gyro's current yaw to be zero. This makes the robot's previous yaw the new zero point
    * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
    */
-  public void setYawZero() {
+  private void setYawZero() {
     m_gyro.setYaw(0);
   }
 
@@ -188,7 +197,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current yaw of the robot.
    */
-  public Rotation2d yaw() {
+  private Rotation2d yaw() {
     double yaw = m_gyro.getYaw();
 
     if (Constants.Swerve.SHOULD_INVERT_GYRO) {

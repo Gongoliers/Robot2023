@@ -211,7 +211,7 @@ public class SwerveModule extends SubsystemBase {
    *
    * @return the current angle of the integrated encoder.
    */
-  private Rotation2d encoderAngle() {
+  public Rotation2d encoderAngle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_angleMotor.getSelectedSensorPosition(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));
