@@ -4,9 +4,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.swerve.Swerve;
@@ -27,20 +24,9 @@ public class RobotContainer {
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
   // Driver buttons
-  private final Trigger m_zeroGyro =
-      new Trigger(() -> m_driverController.getRawButton(Constants.Driver.BUTTON_ZERO_GYRO.value));
   private final Trigger m_robotCentric =
       new Trigger(
           () -> m_driverController.getRawButton(Constants.Driver.BUTTON_ROBOT_CENTRIC.value));
-  private final Trigger m_turbo =
-      new Trigger(
-          () ->
-              m_driverController.getRawAxis(Constants.Driver.AXIS_TURBO_MODE.value)
-                  > Constants.Driver.TRIGGER_THRESHOLD);
-  private final Trigger m_instantlyStop =
-      new Trigger(
-          () -> m_driverController.getRawButton(Constants.Driver.BUTTON_INSTANTLY_STOP.value));
-  private final Trigger m_inMotion = new Trigger(m_swerve::inMotion);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -71,18 +57,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    m_zeroGyro.onTrue(m_swerve.zeroGyro());
-    m_turbo.onTrue(m_swerve.enableTurbo()).onFalse(m_swerve.disableTurbo());
-    m_instantlyStop.onTrue(m_swerve.enableInstantStop()).onFalse(m_swerve.disableInstantStop());
   }
 
   private void configureTriggers() {
-    m_inMotion
-        .onTrue(new InstantCommand(m_swerve::unstop))
-        .onFalse(
-            new SequentialCommandGroup(
-                new WaitCommand(Constants.Swerve.AUTOMATIC_STOP_DELAY),
-                new InstantCommand(m_swerve::stop)));
   }
 
   /**

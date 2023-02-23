@@ -12,7 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.swerve.COTSFalconSwerveConstants;
-import frc.lib.swerve.SwerveModuleConstants;
+import frc.lib.swerve.SwerveModuleConfig;
 
 public final class Constants {
 
@@ -215,8 +215,8 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
@@ -233,8 +233,8 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
@@ -251,8 +251,8 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
@@ -269,8 +269,8 @@ public final class Constants {
       /** Angle to return to when stopped. */
       public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
               DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
   }
