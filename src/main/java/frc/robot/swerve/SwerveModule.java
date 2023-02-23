@@ -48,10 +48,10 @@ public class SwerveModule extends SubsystemBase {
     id = moduleNumber;
     m_angleOffset = config.angleOffset;
 
-    m_absoluteAngle = cancoderAngle();
-
     m_angleEncoder = new CANCoder(config.cancoderID, Constants.Swerve.CANBUS_NAME);
     configCANCoder();
+    
+    m_absoluteAngle = cancoderAngle();
 
     m_angleMotor = new WPI_TalonFX(config.angleMotorID, Constants.Swerve.CANBUS_NAME);
     configAngleMotor();
