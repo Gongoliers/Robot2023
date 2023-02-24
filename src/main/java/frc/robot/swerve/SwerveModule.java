@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.ctre.CTREModuleState;
@@ -155,8 +155,8 @@ public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
   }
 
   @Override
-  public void addToShuffleboard(ShuffleboardTab tab) {
-    var layout = tab.getLayout("Module " + this.id, BuiltInLayouts.kGrid);
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    var layout = container.getLayout("Module " + this.id, BuiltInLayouts.kGrid);
     layout.withProperties(Map.of("Label position", "TOP"));
 
     layout.addNumber("CANCoder Angle", () -> this.cancoderAngle().getDegrees()).withPosition(0, 0);

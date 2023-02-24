@@ -11,7 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
@@ -166,13 +166,13 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
   }
 
   @Override
-  public void addToShuffleboard(ShuffleboardTab tab) {
-    tab.addNumber("Heading", () -> this.pose().getRotation().getDegrees());
-    tab.addNumber("Odometry X", () -> this.pose().getX());
-    tab.addNumber("Odometry Y", () -> this.pose().getY());
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    container.addNumber("Heading", () -> this.pose().getRotation().getDegrees());
+    container.addNumber("Odometry X", () -> this.pose().getX());
+    container.addNumber("Odometry Y", () -> this.pose().getY());
 
     for (var module : m_modules) {
-      module.addToShuffleboard(tab);
+      module.addToShuffleboard(container);
     }
   }
 
