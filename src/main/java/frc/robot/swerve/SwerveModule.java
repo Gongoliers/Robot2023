@@ -10,8 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.TelemetrySubsystem;
+import frc.lib.Subsystem;
 import frc.lib.ctre.CTREModuleState;
 import frc.lib.math.Conversions;
 import frc.lib.swerve.SwerveModuleConfig;
@@ -19,7 +18,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import java.util.Map;
 
-public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
+public class SwerveModule extends Subsystem {
   /** The identification number for this module. */
   public final int id;
 

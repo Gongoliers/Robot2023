@@ -12,11 +12,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.TelemetrySubsystem;
+import frc.lib.Subsystem;
 import frc.robot.Constants;
 
-public class Swerve extends SubsystemBase implements TelemetrySubsystem {
+public class Swerve extends Subsystem {
 
   private final SwerveDriveOdometry m_swerveOdometry;
   private final SwerveModule[] m_modules;
