@@ -8,35 +8,30 @@ import com.ctre.phoenix.led.CANdleFaults;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
 import java.awt.Color;
 import java.util.Map;
 
-public class Lighting extends SubsystemBase {
+public class Lighting extends SubsystemBase implements TelemetrySubsystem {
 
   private final CANdle m_candle = new CANdle(Constants.Lighting.CANDLE_ID);
 
-  private final ShuffleboardTab m_tab;
-  private final GenericEntry m_faultIndicator;
-  private final SimpleWidget m_colorColorWidget;
-  private final GenericEntry m_colorColorView;
+  private GenericEntry m_faultIndicator;
+  private SimpleWidget m_colorColorWidget;
+  private GenericEntry m_colorColorView;
 
   private String m_currentColor;
 
   public Lighting() {
-    m_tab = Shuffleboard.getTab("Lighting");
-
-    m_faultIndicator = m_tab.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
-    m_colorColorWidget =
-        m_tab.add("Current Color Color", false).withProperties(Map.of("colorWhenFalse", "black"));
-    m_colorColorView = m_colorColorWidget.getEntry();
-
     m_candle.configAllSettings(config());
     off();
+
+    addToShuffleboard(Shuffleboard.getTab("Lighting"));
   }
 
   /**
@@ -84,10 +79,23 @@ public class Lighting extends SubsystemBase {
     return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_GREEN));
   }
 
-  /** Handles CANdle faults and updates the color displayed on the Shuffleboard. */
   @Override
   public void periodic() {
-    handleFaults();
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    // TODO Auto-generated method stub
+    m_faultIndicator = container.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
+    m_colorColorWidget =
+        container.add("Current Color Color", false).withProperties(Map.of("colorWhenFalse", "black"));
+    m_colorColorView = m_colorColorWidget.getEntry();
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
+    m_faultIndicator.setString(toString(getFaults()));
     displayColor();
   }
 
@@ -107,7 +115,7 @@ public class Lighting extends SubsystemBase {
   /**
    * Translates a CANdle's faults to its representation as a string.
    *
-   * @param a filled faults buffer.
+   * @param faults a filled faults buffer.
    * @return a string representing the faults.
    */
   private String toString(final CANdleFaults faults) {
@@ -143,7 +151,7 @@ public class Lighting extends SubsystemBase {
    * Handles all possible CANdle faults, including sticky faults. All faults are reported on the
    * Shuffleboard tab.
    */
-  private void handleFaults() {
+  private CANdleFaults getFaults() {
     final CANdleFaults faults = new CANdleFaults();
     m_candle.getFaults(faults);
 
@@ -152,7 +160,7 @@ public class Lighting extends SubsystemBase {
     // All CANdle sticky faults are also "live" faults, so we can safely ignore the sticky faults
     m_candle.clearStickyFaults();
 
-    m_faultIndicator.setString(toString(faults));
+    return faults;
   }
 
   /** Displays the current color of the CANdle on the Shuffleboard tab. */
