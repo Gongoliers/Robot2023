@@ -38,7 +38,8 @@ public class Robot extends TimedRobot {
     // Use a DataLogManager to automatically handle the saving / sharing of logging info
     DataLogManager.start();
 
-    // Log DriverStation data, including joystick data, so specific error conditions can be recreated
+    // Log DriverStation data, including joystick data, so specific error conditions can be
+    // recreated
     DriverStation.startDataLog(DataLogManager.getLog());
     // Disable joystick warnings, since false positives may be distracting
     DriverStation.silenceJoystickConnectionWarning(true);

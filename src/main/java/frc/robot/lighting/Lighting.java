@@ -80,15 +80,17 @@ public class Lighting extends SubsystemBase implements TelemetrySubsystem {
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     // TODO Auto-generated method stub
-    m_faultIndicator = container.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
+    m_faultIndicator =
+        container.add("Faults?", "None").withWidget(BuiltInWidgets.kTextView).getEntry();
     m_colorColorWidget =
-        container.add("Current Color Color", false).withProperties(Map.of("colorWhenFalse", "black"));
+        container
+            .add("Current Color Color", false)
+            .withProperties(Map.of("colorWhenFalse", "black"));
     m_colorColorView = m_colorColorWidget.getEntry();
   }
 

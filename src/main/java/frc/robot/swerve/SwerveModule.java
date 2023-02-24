@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
@@ -157,7 +158,10 @@ public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     var layout = container.getLayout("Module " + this.id, BuiltInLayouts.kGrid);
-    layout.withProperties(Map.of("Label position", "TOP"));
+    layout
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(1 + this.id, 0)
+        .withSize(1, 3);
 
     layout.addNumber("CANCoder Angle", () -> this.cancoderAngle().getDegrees()).withPosition(0, 0);
 
@@ -165,7 +169,16 @@ public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
         .addNumber("Integrated Encoder Angle", () -> this.encoderAngle().getDegrees())
         .withPosition(0, 1);
 
-    layout.addNumber("Wheel Velocity", () -> this.state().speedMetersPerSecond).withPosition(0, 2);
+    layout
+        .addNumber("Wheel Velocity", () -> this.state().speedMetersPerSecond)
+        .withPosition(0, 2)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(
+            Map.of(
+                "min",
+                -Constants.Swerve.LINEAR_SPEED_MAX,
+                "max",
+                Constants.Swerve.LINEAR_SPEED_MAX));
   }
 
   @Override

@@ -59,8 +59,7 @@ public class RobotContainer {
     /* Driver Buttons */
   }
 
-  private void configureTriggers() {
-  }
+  private void configureTriggers() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
