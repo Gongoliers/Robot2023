@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.lib.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
 import java.awt.Color;
 import java.util.Map;
 
-public class Lighting extends Subsystem {
+public class Lighting extends SubsystemBase implements TelemetrySubsystem {
 
   private final CANdle m_candle = new CANdle(Constants.Lighting.CANDLE_ID);
 
