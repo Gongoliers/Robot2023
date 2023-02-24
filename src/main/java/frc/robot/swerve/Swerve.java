@@ -10,10 +10,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
 
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements TelemetrySubsystem {
 
   private final SwerveDriveOdometry m_swerveOdometry;
   private final SwerveModule[] m_modules;
@@ -53,12 +56,10 @@ public class Swerve extends SubsystemBase {
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
-    SwerveTelemetry.createShuffleboardTab(this, "Swerve");
+    addToShuffleboard(Shuffleboard.getTab("Swerve"));
   }
 
-  /**
-   * Stop all modules.
-   */
+  /** Stop all modules. */
   public void stop() {
     for (var module : m_modules) {
       module.stop();
@@ -94,8 +95,7 @@ public class Swerve extends SubsystemBase {
     SwerveModuleState[] desiredStates =
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
     // Set the desired state for each module
     for (var module : m_modules) {
@@ -137,8 +137,48 @@ public class Swerve extends SubsystemBase {
     m_swerveOdometry.resetPosition(yaw(), positions(), toPose);
   }
 
-  public SwerveModule module(int moduleNumber) {
-    return m_modules[moduleNumber];
+  /**
+   * Get the current chassis speeds.
+   *
+   * @return the current chassis speeds.
+   */
+  public ChassisSpeeds speeds() {
+    return m_chassisSpeeds;
+  }
+
+  /**
+   * Instruct all of the modules to realign their angle encoders to the angle value provided by the
+   * CANCoder.
+   */
+  public void realignEncodersToCANCoder() {
+    for (var module : m_modules) {
+      module.realignEncoderToCANCoder();
+    }
+  }
+
+  @Override
+  public void periodic() {
+    // Update the swerve odometry to the latest position measurements
+    m_swerveOdometry.update(yaw(), positions());
+    // Update the current module states and chassis speeds
+    m_swerveModuleStates = states();
+    m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardTab tab) {
+    tab.addNumber("Heading", () -> this.pose().getRotation().getDegrees());
+    tab.addNumber("Odometry X", () -> this.pose().getX());
+    tab.addNumber("Odometry Y", () -> this.pose().getY());
+
+    for (var module : m_modules) {
+      module.addToShuffleboard(tab);
+    }
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
   }
 
   /**
@@ -146,7 +186,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module states.
    */
-  public SwerveModuleState[] states() {
+  private SwerveModuleState[] states() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
     // Get the state of each module
@@ -162,7 +202,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module positions.
    */
-  public SwerveModulePosition[] positions() {
+  private SwerveModulePosition[] positions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
     // Get the position of each module
@@ -171,14 +211,6 @@ public class Swerve extends SubsystemBase {
     }
 
     return positions;
-  }
-
-  /**
-   * Get the current chassis speeds.
-   * @return the current chassis speeds.
-   */
-  public ChassisSpeeds speeds() {
-    return m_chassisSpeeds;
   }
 
   /**
@@ -202,24 +234,5 @@ public class Swerve extends SubsystemBase {
     }
 
     return Rotation2d.fromDegrees(yaw);
-  }
-
-  /**
-   * Instruct all of the modules to realign their angle encoders to the angle value provided by the
-   * CANCoder.
-   */
-  public void realignEncodersToCANCoder() {
-    for (var module : m_modules) {
-      module.realignEncoderToCANCoder();
-    }
-  }
-
-  @Override
-  public void periodic() {
-    // Update the swerve odometry to the latest position measurements
-    m_swerveOdometry.update(yaw(), positions());
-    // Update the current module states and chassis speeds
-    m_swerveModuleStates = states();
-    m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
   }
 }
