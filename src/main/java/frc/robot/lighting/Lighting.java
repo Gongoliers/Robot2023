@@ -5,6 +5,8 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.CANdleFaults;
+import com.ctre.phoenix.led.StrobeAnimation;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -72,7 +74,7 @@ public class Lighting extends SubsystemBase {
    * @return a command that will turn the LEDs red.
    */
   public CommandBase red() {
-    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_RED));
+    return this.runOnce(() -> strobeLEDs(Constants.Lighting.COLOR_RED));
   }
 
   /**
@@ -169,10 +171,30 @@ public class Lighting extends SubsystemBase {
    */
   private void setLEDs(final String hex) {
 
+    m_candle.clearAnimation(0);
+
     m_currentColor = hex;
 
     final Color color = Color.decode(hex);
     final ErrorCode error = m_candle.setLEDs(color.getRed(), color.getGreen(), color.getBlue());
+    if (error != ErrorCode.OK) {
+      // TODO Handle error condition
+    }
+  }
+
+  /**
+   * Flashes the LEDs controlled by the CANdle with the specified pattern.
+   * @param hex a hexadecimal color code to set the LEDs to.
+   */
+  private void strobeLEDs(final String hex) {
+
+    m_currentColor = hex;
+
+    final Color color = Color.decode(hex);
+
+    final StrobeAnimation strobe = new StrobeAnimation(color.getRed(), color.getGreen(), color.getBlue(), 0, 0.2, -1);
+
+    final ErrorCode error = m_candle.animate(strobe, 0);
     if (error != ErrorCode.OK) {
       // TODO Handle error condition
     }
