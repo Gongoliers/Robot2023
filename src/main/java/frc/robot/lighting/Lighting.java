@@ -38,7 +38,7 @@ public class Lighting extends SubsystemBase {
     m_colorColorView = m_colorColorWidget.getEntry();
 
     m_candle.configAllSettings(config());
-    off();
+    setLEDs(Constants.Lighting.COLOR_BLACK);
   }
 
   /**
