@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import java.awt.Color;
 import java.util.Map;
 
 public class Lighting extends SubsystemBase {
@@ -27,7 +27,7 @@ public class Lighting extends SubsystemBase {
   private final SimpleWidget m_colorColorWidget;
   private final GenericEntry m_colorColorView;
 
-  private String m_currentColor;
+  private Color m_currentColor;
 
   public Lighting() {
     m_tab = Shuffleboard.getTab("Lighting");
@@ -38,52 +38,7 @@ public class Lighting extends SubsystemBase {
     m_colorColorView = m_colorColorWidget.getEntry();
 
     m_candle.configAllSettings(config());
-    setLEDs(Constants.Lighting.COLOR_BLACK);
-  }
-
-  /**
-   * Turn the LEDs off.
-   *
-   * @return a command that will turn the LEDs off.
-   */
-  public CommandBase off() {
-    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_BLACK));
-  }
-
-  /**
-   * Turn the LEDs yellow.
-   *
-   * @return a command that will turn the LEDs yellow.
-   */
-  public CommandBase yellow() {
-    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_YELLOW));
-  }
-
-  /**
-   * Turn the LEDs purple.
-   *
-   * @return a command that will turn the LEDs purple.
-   */
-  public CommandBase purple() {
-    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_PURPLE));
-  }
-
-  /**
-   * Turn the LEDs red.
-   *
-   * @return a command that will turn the LEDs red.
-   */
-  public CommandBase red() {
-    return this.runOnce(() -> strobeLEDs(Constants.Lighting.COLOR_RED));
-  }
-
-  /**
-   * Turn the LEDs green.
-   *
-   * @return a command that will turn the LEDs green.
-   */
-  public CommandBase green() {
-    return this.runOnce(() -> setLEDs(Constants.Lighting.COLOR_GREEN));
+    setColor(Constants.Lighting.COLOR_BLACK);
   }
 
   /** Handles CANdle faults and updates the color displayed on the Shuffleboard. */
@@ -160,43 +115,32 @@ public class Lighting extends SubsystemBase {
   /** Displays the current color of the CANdle on the Shuffleboard tab. */
   private void displayColor() {
     // https://gist.github.com/GrantPerkins/ad829caee87ff054ca0ae156487e619d
-    m_colorColorWidget.withProperties(Map.of("colorWhenTrue", m_currentColor));
+    m_colorColorWidget.withProperties(Map.of("colorWhenTrue", m_currentColor.toHexString()));
     m_colorColorView.setBoolean(true);
   }
 
-  /**
-   * Sets the LEDs controlled by the CANdle to the specified color.
-   *
-   * @param hex a hexademical color code to set the LEDs to.
-   */
-  private void setLEDs(final String hex) {
-
+  public void clear() {
     m_candle.clearAnimation(0);
-
-    m_currentColor = hex;
-
-    final Color color = Color.decode(hex);
-    final ErrorCode error = m_candle.setLEDs(color.getRed(), color.getGreen(), color.getBlue());
-    if (error != ErrorCode.OK) {
-      // TODO Handle error condition
-    }
   }
 
-  /**
-   * Flashes the LEDs controlled by the CANdle with the specified pattern.
-   * @param hex a hexadecimal color code to set the LEDs to.
-   */
-  private void strobeLEDs(final String hex) {
+  public void setColor(final Color color) {
 
-    m_currentColor = hex;
+    m_currentColor = color;
 
-    final Color color = Color.decode(hex);
+    int r = (int) color.red;
+    int g = (int) color.green;
+    int b = (int) color.blue;
+    m_candle.setLEDs(r, g, b);
+  }
 
-    final StrobeAnimation strobe = new StrobeAnimation(color.getRed(), color.getGreen(), color.getBlue(), 0, 0.2, -1);
+  public void strobeColor(final Color color) {
 
-    final ErrorCode error = m_candle.animate(strobe, 0);
-    if (error != ErrorCode.OK) {
-      // TODO Handle error condition
-    }
+    m_currentColor = color;
+
+    int r = (int) color.red;
+    int g = (int) color.green;
+    int b = (int) color.blue;
+    final StrobeAnimation strobe = new StrobeAnimation(r, g, b, 0, 0.1, -1);
+    m_candle.animate(strobe, 0);
   }
 }
