@@ -10,8 +10,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Swerve extends SubsystemBase {
 
@@ -24,9 +27,21 @@ public class Swerve extends SubsystemBase {
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
 
+  private final Field2d m_field;
+
+  private Timer m_simTimer;
+  private double m_simPreviousTimestamp, m_simYaw;
+
   public Swerve() {
+    if (!Robot.isReal()) {
+      m_simTimer = new Timer();
+      m_simTimer.start();
+      m_simPreviousTimestamp = 0;
+    }
+
     m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
     m_gyro.configFactoryDefault();
+
     setYawZero();
 
     m_modules =
@@ -54,11 +69,11 @@ public class Swerve extends SubsystemBase {
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
     SwerveTelemetry.createShuffleboardTab(this, "Swerve");
+    m_field = new Field2d();
+    SmartDashboard.putData("Field", m_field);
   }
 
-  /**
-   * Stop all modules.
-   */
+  /** Stop all modules. */
   public void stop() {
     for (var module : m_modules) {
       module.stop();
@@ -94,8 +109,7 @@ public class Swerve extends SubsystemBase {
     SwerveModuleState[] desiredStates =
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 
     // Set the desired state for each module
     for (var module : m_modules) {
@@ -175,6 +189,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Get the current chassis speeds.
+   *
    * @return the current chassis speeds.
    */
   public ChassisSpeeds speeds() {
@@ -186,6 +201,9 @@ public class Swerve extends SubsystemBase {
    * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
    */
   private void setYawZero() {
+    if (!Robot.isReal()) {
+      m_simYaw = 0;
+    }
     m_gyro.setYaw(0);
   }
 
@@ -195,13 +213,17 @@ public class Swerve extends SubsystemBase {
    * @return the current yaw of the robot.
    */
   private Rotation2d yaw() {
-    double yaw = m_gyro.getYaw();
+    double yaw;
+    if (!Robot.isReal()) {
+      yaw = m_simYaw;
+    } else {
+      yaw = m_gyro.getYaw();
 
-    if (Constants.Swerve.SHOULD_INVERT_GYRO) {
-      yaw = 360 - yaw;
+      if (Constants.Swerve.SHOULD_INVERT_GYRO) {
+        yaw = 360 - yaw;
+      }
     }
-
-    return Rotation2d.fromDegrees(yaw);
+    return new Rotation2d(yaw);
   }
 
   /**
@@ -216,8 +238,20 @@ public class Swerve extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (!Robot.isReal()) {
+      ChassisSpeeds speeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(states());
+      double deltaTime = m_simTimer.get() - m_simPreviousTimestamp;
+      m_simYaw += speeds.omegaRadiansPerSecond * deltaTime;
+      m_simPreviousTimestamp = m_simTimer.get();
+    }
+
     // Update the swerve odometry to the latest position measurements
     m_swerveOdometry.update(yaw(), positions());
+
+    // Update the Field display on SmartDashboard
+    m_field.setRobotPose(pose());
+    SmartDashboard.putData("Field", m_field);
+
     // Update the current module states and chassis speeds
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
