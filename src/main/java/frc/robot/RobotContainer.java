@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
+import frc.robot.swerve.CrossFormationAfterDelay;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -22,6 +24,8 @@ public class RobotContainer {
 
   // Controllers
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
+
+  private final Trigger m_crossButton = new Trigger(() -> m_driverController.getRawButton(Constants.Driver.CROSS_BUTTON.value));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -63,7 +67,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /* Driver Buttons */
+    m_crossButton.debounce(Constants.Driver.DEBOUNCE_SECOND).whileTrue(new CrossFormationAfterDelay(m_swerve, Constants.Swerve.CROSS_FORMATION_DELAY));
   }
 
   private void configureTriggers() {}

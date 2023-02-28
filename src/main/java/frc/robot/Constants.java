@@ -23,6 +23,8 @@ public final class Constants {
     public static final double DEADBAND = 0.2;
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.5;
+    /** Minimum number of seconds for an active trigger to be considered active. */
+    public static final double DEBOUNCE_SECOND = 0;
     /** Axis for forward-backward movement. */
     public static final XboxController.Axis LEFT_VERTICAL_AXIS = XboxController.Axis.kLeftY;
     /** Axis for left-right movement. */
@@ -193,8 +195,8 @@ public final class Constants {
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
 
-    /** Number of seconds to wait before stopping the swerve, while the button is not held. */
-    public static final double AUTOMATIC_STOP_DELAY = 5.0;
+    /** Number of seconds to before entering cross formation. Blocks velocity input for this period to allow deceleration before fully stopping. */
+    public static final double CROSS_FORMATION_DELAY = 0;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
