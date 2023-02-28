@@ -84,8 +84,7 @@ public class Swerve extends SubsystemBase {
    * @param isOpenLoop whether the swerve modules are driven in open loop (velocity direct from
    *     driver) or closed loop (velocity controlled by PID).
    */
-  public void drive(
-      Translation2d translation, Rotation2d rotation, boolean isOpenLoop) {
+  public void drive(Translation2d translation, Rotation2d rotation, boolean isOpenLoop) {
 
     // Create a ChassisSpeeds object to contain the desired velocities
     ChassisSpeeds speeds =
@@ -246,15 +245,18 @@ public class Swerve extends SubsystemBase {
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
-    SmartDashboard.putNumberArray("ModuleStates", new double[]{
-      m_swerveModuleStates[0].angle.getDegrees(), m_swerveModuleStates[0].speedMetersPerSecond,
-      m_swerveModuleStates[1].angle.getDegrees(), m_swerveModuleStates[1].speedMetersPerSecond,
-      m_swerveModuleStates[2].angle.getDegrees(), m_swerveModuleStates[2].speedMetersPerSecond,
-      m_swerveModuleStates[3].angle.getDegrees(), m_swerveModuleStates[3].speedMetersPerSecond,
-    });
+    SmartDashboard.putNumberArray(
+        "ModuleStates",
+        new double[] {
+          m_swerveModuleStates[0].angle.getDegrees(), m_swerveModuleStates[0].speedMetersPerSecond,
+          m_swerveModuleStates[1].angle.getDegrees(), m_swerveModuleStates[1].speedMetersPerSecond,
+          m_swerveModuleStates[2].angle.getDegrees(), m_swerveModuleStates[2].speedMetersPerSecond,
+          m_swerveModuleStates[3].angle.getDegrees(), m_swerveModuleStates[3].speedMetersPerSecond,
+        });
 
-    double velocity = new Translation2d(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond).getNorm();
+    double velocity =
+        new Translation2d(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond)
+            .getNorm();
     SmartDashboard.putNumber("Velocity", velocity);
-
   }
 }

@@ -30,19 +30,19 @@ public class TeleopDrive extends CommandBase {
     double translation = m_translationSupplier.getAsDouble();
     double strafe = m_strafeSupplier.getAsDouble();
 
-    Translation2d velocity = new Translation2d(translation, strafe).times(Constants.Swerve.LINEAR_SPEED_MAX);
+    Translation2d velocity =
+        new Translation2d(translation, strafe).times(Constants.Swerve.LINEAR_SPEED_MAX);
     velocity = limitVelocity(velocity);
 
-    Rotation2d rotation = new Rotation2d(m_rotationSupplier.getAsDouble()).times(Constants.Swerve.ANGULAR_SPEED_MAX);
+    Rotation2d rotation =
+        new Rotation2d(m_rotationSupplier.getAsDouble()).times(Constants.Swerve.ANGULAR_SPEED_MAX);
 
-    m_swerve.drive(
-      velocity,
-      rotation,
-        Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
+    m_swerve.drive(velocity, rotation, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
   }
 
   /**
    * Gets the maximum velocity for the given direction.
+   *
    * @param angle the direction to calculate the maximum velocity.
    * @return the maximum velocity that is achievable for this direction.
    */
@@ -52,8 +52,10 @@ public class TeleopDrive extends CommandBase {
 
   /**
    * Limits a desired velocity to prevent exceeding the maximum velocity constraint.
+   *
    * @param desiredVelocity the desired velocity.
-   * @return The velocity after limiting, which is either the desired velocity, or the maximum velocity in that direction. 
+   * @return The velocity after limiting, which is either the desired velocity, or the maximum
+   *     velocity in that direction.
    */
   private Translation2d limitVelocity(Translation2d desiredVelocity) {
     final Rotation2d kVelocityAngle = desiredVelocity.getAngle();

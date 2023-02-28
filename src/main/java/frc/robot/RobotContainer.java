@@ -38,9 +38,18 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(
         new TeleopDrive(
             m_swerve,
-            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value), Constants.Driver.DEADBAND),
-            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value), Constants.Driver.DEADBAND),
-            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value), Constants.Driver.DEADBAND)));
+            () ->
+                -MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                -MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                -MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
+                    Constants.Driver.DEADBAND)));
   }
 
   /**
@@ -53,8 +62,7 @@ public class RobotContainer {
     /* Driver Buttons */
   }
 
-  private void configureTriggers() {
-  }
+  private void configureTriggers() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
