@@ -52,7 +52,7 @@ public class TeleopDrive extends CommandBase {
     velocity = limitVelocity(velocity);
 
     Translation2d desiredAngle =
-        new Translation2d(m_headingY.getAsDouble(), -m_headingX.getAsDouble());
+        new Translation2d(m_headingX.getAsDouble(), m_headingY.getAsDouble()).rotateBy(Rotation2d.fromDegrees(-90));
 
     if (desiredAngle.getNorm() < 0.5) {
       angle = lastAngle;
