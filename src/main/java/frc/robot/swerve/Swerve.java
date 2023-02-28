@@ -81,25 +81,23 @@ public class Swerve extends SubsystemBase {
    *
    * @param translation a vector containing the desired X and Y velocity of the chassis.
    * @param rotation the desired rotational velocity of the chassis.
-   * @param fieldRelative whether the velocities are relative to the field or relative to the robot.
    * @param isOpenLoop whether the swerve modules are driven in open loop (velocity direct from
    *     driver) or closed loop (velocity controlled by PID).
    */
   public void drive(
-      Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
+      Translation2d translation, Rotation2d rotation, boolean isOpenLoop) {
 
     // Create a ChassisSpeeds object to contain the desired velocities
     ChassisSpeeds speeds =
         new ChassisSpeeds(translation.getX(), translation.getY(), rotation.getRadians());
 
-    // TODO Test whether field-relative driving works this way
-    // FIXME Looks like it doesn't...
     // Transform the desired velocities to be relative to the robot heading
-    if (fieldRelative) speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
 
     // Convert the desired velocities to module states
     SwerveModuleState[] desiredStates =
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
+
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
 

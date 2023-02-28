@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class TeleopDrive extends CommandBase {
@@ -12,21 +11,18 @@ public class TeleopDrive extends CommandBase {
   private DoubleSupplier m_translationSupplier;
   private DoubleSupplier m_strafeSupplier;
   private DoubleSupplier m_rotationSupplier;
-  private BooleanSupplier m_robotCentricSupplier;
 
   public TeleopDrive(
       Swerve swerve,
       DoubleSupplier translationSupplier,
       DoubleSupplier strafeSupplier,
-      DoubleSupplier rotationSupplier,
-      BooleanSupplier robotCentricSupplier) {
+      DoubleSupplier rotationSupplier) {
     m_swerve = swerve;
     addRequirements(swerve);
 
     m_translationSupplier = translationSupplier;
     m_strafeSupplier = strafeSupplier;
     m_rotationSupplier = rotationSupplier;
-    m_robotCentricSupplier = robotCentricSupplier;
   }
 
   @Override
@@ -42,7 +38,6 @@ public class TeleopDrive extends CommandBase {
     m_swerve.drive(
       velocity,
       rotation,
-        !m_robotCentricSupplier.getAsBoolean(),
         Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
   }
 

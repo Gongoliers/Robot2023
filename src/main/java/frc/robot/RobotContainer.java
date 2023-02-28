@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
@@ -24,11 +23,6 @@ public class RobotContainer {
   // Controllers
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
-  // Driver buttons
-  private final Trigger m_robotCentric =
-      new Trigger(
-          () -> m_driverController.getRawButton(Constants.Driver.BUTTON_ROBOT_CENTRIC.value));
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommands();
@@ -46,8 +40,7 @@ public class RobotContainer {
             m_swerve,
             () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value), Constants.Driver.DEADBAND),
             () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value), Constants.Driver.DEADBAND),
-            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value), Constants.Driver.DEADBAND),
-            () -> m_robotCentric.getAsBoolean()));
+            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value), Constants.Driver.DEADBAND)));
   }
 
   /**
