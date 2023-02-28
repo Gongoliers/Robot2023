@@ -39,20 +39,20 @@ public class RobotContainer {
         new TeleopDrive(
             m_swerve,
             () ->
-                -MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value),
-                    Constants.Driver.DEADBAND),
-            () ->
-                -MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
                     Constants.Driver.DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION_X.value),
+                    m_driverController.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
                     Constants.Driver.DEADBAND),
             () ->
-                -MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION_Y.value),
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
                     Constants.Driver.DEADBAND)));
   }
 

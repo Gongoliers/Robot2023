@@ -24,25 +24,17 @@ public final class Constants {
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.5;
     /** Axis for forward-backward movement. */
-    public static final XboxController.Axis AXIS_TRANSLATION = XboxController.Axis.kLeftY;
+    public static final XboxController.Axis LEFT_VERTICAL_AXIS = XboxController.Axis.kLeftY;
     /** Axis for left-right movement. */
-    public static final XboxController.Axis AXIS_STRAFE = XboxController.Axis.kLeftX;
-    /** Axis for rotation. */
-    public static final XboxController.Axis AXIS_ROTATION_X = XboxController.Axis.kRightX;
-    /** Axis for rotation. */
-    public static final XboxController.Axis AXIS_ROTATION_Y = XboxController.Axis.kRightY;
+    public static final XboxController.Axis LEFT_HORIZONTAL_AXIS = XboxController.Axis.kLeftX;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_VERTICAL_AXIS = XboxController.Axis.kRightY;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_HORIZONTAL_AXIS = XboxController.Axis.kRightX;
     /** Button for zeroing the gyro. */
-    public static final XboxController.Button BUTTON_ZERO_GYRO = XboxController.Button.kY;
-    /** Button for driving in robot-centric. */
-    public static final XboxController.Button BUTTON_ROBOT_CENTRIC =
-        XboxController.Button.kLeftBumper;
-    /** Button for overriding the automatic stop delay for stopping instantly. */
-    public static final XboxController.Button BUTTON_INSTANTLY_STOP = XboxController.Button.kX;
-    /** Button for driving in "turbo mode". */
-    public static final XboxController.Axis AXIS_TURBO_MODE = XboxController.Axis.kRightTrigger;
-
-    public static final double NORMAL_SCALAR = 0.5;
-    public static final double TURBO_SCALAR = 1.0;
+    public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
+    /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
+    public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
   }
 
   public static final class Swerve {
