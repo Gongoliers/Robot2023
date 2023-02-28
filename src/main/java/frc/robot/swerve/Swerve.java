@@ -255,5 +255,16 @@ public class Swerve extends SubsystemBase {
     // Update the current module states and chassis speeds
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
+
+    SmartDashboard.putNumberArray("ModuleStates", new double[]{
+      m_swerveModuleStates[0].angle.getDegrees(), m_swerveModuleStates[0].speedMetersPerSecond,
+      m_swerveModuleStates[1].angle.getDegrees(), m_swerveModuleStates[1].speedMetersPerSecond,
+      m_swerveModuleStates[2].angle.getDegrees(), m_swerveModuleStates[2].speedMetersPerSecond,
+      m_swerveModuleStates[3].angle.getDegrees(), m_swerveModuleStates[3].speedMetersPerSecond,
+    });
+
+    double velocity = new Translation2d(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond).getNorm();
+    SmartDashboard.putNumber("Velocity", velocity);
+
   }
 }
