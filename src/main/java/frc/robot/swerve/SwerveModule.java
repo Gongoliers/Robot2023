@@ -3,11 +3,12 @@ package frc.robot.swerve;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ctre.CTREModuleState;
 import frc.lib.math.Conversions;
@@ -21,7 +22,7 @@ public class SwerveModule extends SubsystemBase {
 
   private final WPI_TalonFX m_angleMotor;
   private final WPI_TalonFX m_driveMotor;
-  private final CANCoder m_angleEncoder;
+  private final WPI_CANCoder m_angleEncoder;
 
   // Offset between the actual zero heading and the CANCoder zero heading
   private final Rotation2d m_angleOffset;
@@ -29,11 +30,16 @@ public class SwerveModule extends SubsystemBase {
   // Previous angle of the swerve module
   private Rotation2d m_previousAngle;
 
+  private Timer m_simTimer;
+  private double m_simPreviousTimestamp, m_simAngle, m_simDistance, m_simDeltaTime, m_simSpeed;
+
   // Store the current state
   @SuppressWarnings("unused")
   private SwerveModuleState m_state = new SwerveModuleState();
+
   @SuppressWarnings("unused")
   private SwerveModulePosition m_position = new SwerveModulePosition();
+
   @SuppressWarnings("unused")
   private Rotation2d m_absoluteAngle = new Rotation2d();
 
@@ -48,9 +54,9 @@ public class SwerveModule extends SubsystemBase {
     id = moduleNumber;
     m_angleOffset = config.angleOffset;
 
-    m_angleEncoder = new CANCoder(config.cancoderID, Constants.Swerve.CANBUS_NAME);
+    m_angleEncoder = new WPI_CANCoder(config.cancoderID, Constants.Swerve.CANBUS_NAME);
     configCANCoder();
-    
+
     m_absoluteAngle = cancoderAngle();
 
     m_angleMotor = new WPI_TalonFX(config.angleMotorID, Constants.Swerve.CANBUS_NAME);
@@ -62,6 +68,15 @@ public class SwerveModule extends SubsystemBase {
     m_state = state();
     m_position = position();
     m_previousAngle = encoderAngle();
+
+    if (!Robot.isReal()) {
+      m_simTimer = new Timer();
+      m_simTimer.start();
+      m_simPreviousTimestamp = m_simTimer.get();
+      m_simAngle = 0;
+      m_simSpeed = 0;
+      m_simDistance = 0;
+    }
   }
 
   /** Configure the CANCoder using the default configuration. */
@@ -107,12 +122,20 @@ public class SwerveModule extends SubsystemBase {
    * @param isOpenLoop whether the swerve modules are driven in open loop (velocity direct from
    *     driver) or closed loop (velocity controlled by PID).
    */
-  public void setDesiredState(
-      SwerveModuleState desiredState, boolean isOpenLoop) {
+  public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
     // Use custom optimize function since CTRE is not a continuous controller
     desiredState = CTREModuleState.optimize(desiredState, state().angle);
     setAngle(desiredState);
     setSpeed(desiredState, isOpenLoop);
+
+    if (!Robot.isReal()) {
+      m_simAngle = desiredState.angle.getDegrees();
+      m_simSpeed = desiredState.speedMetersPerSecond;
+
+      m_simDeltaTime = m_simTimer.get() - m_simPreviousTimestamp;
+      m_simDistance += (m_simSpeed * m_simDeltaTime);
+      m_simPreviousTimestamp = m_simTimer.get();
+    }
   }
 
   /**
@@ -155,8 +178,7 @@ public class SwerveModule extends SubsystemBase {
 
     m_angleMotor.set(
         ControlMode.Position,
-        Conversions.degreesToFalcon(
-            angle.getDegrees(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));
+        Conversions.degreesToFalcon(angle.getDegrees(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));
 
     m_previousAngle = angle;
   }
@@ -177,12 +199,20 @@ public class SwerveModule extends SubsystemBase {
    * @return the current state of the module.
    */
   public SwerveModuleState state() {
-    return new SwerveModuleState(
-        Conversions.falconToMPS(
-            m_driveMotor.getSelectedSensorVelocity(),
-            Constants.Swerve.WHEEL_CIRCUMFERENCE,
-            Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO),
-        encoderAngle());
+    double speedMetersPerSecond;
+    Rotation2d angle;
+    if (!Robot.isReal()) {
+      speedMetersPerSecond = m_simSpeed;
+      angle = Rotation2d.fromDegrees(m_simAngle);
+    } else {
+      speedMetersPerSecond =
+          Conversions.falconToMPS(
+              m_driveMotor.getSelectedSensorVelocity(),
+              Constants.Swerve.WHEEL_CIRCUMFERENCE,
+              Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
+      angle = encoderAngle();
+    }
+    return new SwerveModuleState(speedMetersPerSecond, angle);
   }
 
   /**
@@ -191,13 +221,20 @@ public class SwerveModule extends SubsystemBase {
    * @return the current displacement of the module.
    */
   public SwerveModulePosition position() {
-    double position = 
-        Conversions.falconToMeters(
-            m_driveMotor.getSelectedSensorPosition(),
-            Constants.Swerve.WHEEL_CIRCUMFERENCE,
-            Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
-    return new SwerveModulePosition(position,
-        state().angle);
+    double distanceMeters;
+    Rotation2d angle;
+    if (!Robot.isReal()) {
+      distanceMeters = m_simDistance;
+      angle = Rotation2d.fromDegrees(m_simAngle);
+    } else {
+      distanceMeters =
+          Conversions.falconToMeters(
+              m_driveMotor.getSelectedSensorPosition(),
+              Constants.Swerve.WHEEL_CIRCUMFERENCE,
+              Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
+      angle = state().angle;
+    }
+    return new SwerveModulePosition(distanceMeters, angle);
   }
 
   /**
