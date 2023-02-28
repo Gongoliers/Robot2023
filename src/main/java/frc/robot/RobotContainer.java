@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -43,9 +44,9 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(
         new TeleopDrive(
             m_swerve,
-            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value),
-            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
-            () -> -m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
+            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION.value), Constants.Driver.DEADBAND),
+            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value), Constants.Driver.DEADBAND),
+            () -> -MathUtil.applyDeadband(m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value), Constants.Driver.DEADBAND),
             () -> m_robotCentric.getAsBoolean()));
   }
 

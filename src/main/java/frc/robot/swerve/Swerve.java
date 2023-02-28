@@ -22,8 +22,6 @@ public class Swerve extends SubsystemBase {
   private final SwerveModule[] m_modules;
   private final Pigeon2 m_gyro;
 
-  private double m_speedScalar;
-
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
 
@@ -63,8 +61,6 @@ public class Swerve extends SubsystemBase {
     m_swerveOdometry =
         new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
 
-    m_speedScalar = Constants.Driver.NORMAL_SCALAR;
-
     m_swerveModuleStates = states();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
@@ -91,10 +87,6 @@ public class Swerve extends SubsystemBase {
    */
   public void drive(
       Translation2d translation, Rotation2d rotation, boolean fieldRelative, boolean isOpenLoop) {
-
-    // Scale the desired translation and rotational velocities
-    translation = translation.times(m_speedScalar);
-    rotation = rotation.times(m_speedScalar);
 
     // Create a ChassisSpeeds object to contain the desired velocities
     ChassisSpeeds speeds =
