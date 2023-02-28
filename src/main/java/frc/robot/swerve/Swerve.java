@@ -201,7 +201,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current yaw of the robot.
    */
-  private Rotation2d yaw() {
+  public Rotation2d yaw() {
     double yaw;
     if (!Robot.isReal()) {
       yaw = m_simYaw;

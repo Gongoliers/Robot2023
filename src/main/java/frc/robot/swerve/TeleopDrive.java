@@ -1,5 +1,6 @@
 package frc.robot.swerve;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -8,36 +9,65 @@ import java.util.function.DoubleSupplier;
 
 public class TeleopDrive extends CommandBase {
   private Swerve m_swerve;
-  private DoubleSupplier m_translationSupplier;
-  private DoubleSupplier m_strafeSupplier;
-  private DoubleSupplier m_rotationSupplier;
+
+  private PIDController thetaDegreesController;
+
+  private DoubleSupplier m_velocityX;
+  private DoubleSupplier m_velocityY;
+  private DoubleSupplier m_headingX;
+  private DoubleSupplier m_headingY;
+
+  private double vX, vY;
+  private Rotation2d angle, lastAngle, omega;
 
   public TeleopDrive(
       Swerve swerve,
-      DoubleSupplier translationSupplier,
-      DoubleSupplier strafeSupplier,
-      DoubleSupplier rotationSupplier) {
+      DoubleSupplier velocityX,
+      DoubleSupplier velocityY,
+      DoubleSupplier headingX,
+      DoubleSupplier headingY) {
     m_swerve = swerve;
     addRequirements(swerve);
 
-    m_translationSupplier = translationSupplier;
-    m_strafeSupplier = strafeSupplier;
-    m_rotationSupplier = rotationSupplier;
+    m_velocityX = velocityX;
+    m_velocityY = velocityY;
+    m_headingX = headingX;
+    m_headingY = headingY;
+  }
+
+  @Override
+  public void initialize() {
+    thetaDegreesController = new PIDController(1, 0, 0);
+    thetaDegreesController.enableContinuousInput(-180, 180);
+    thetaDegreesController.setTolerance(5);
+    lastAngle = m_swerve.yaw();
   }
 
   @Override
   public void execute() {
-    double translation = m_translationSupplier.getAsDouble();
-    double strafe = m_strafeSupplier.getAsDouble();
+    vX = m_velocityX.getAsDouble();
+    vY = m_velocityY.getAsDouble();
 
-    Translation2d velocity =
-        new Translation2d(translation, strafe).times(Constants.Swerve.LINEAR_SPEED_MAX);
+    Translation2d velocity = new Translation2d(vX, vY).times(Constants.Swerve.LINEAR_SPEED_MAX);
     velocity = limitVelocity(velocity);
 
-    Rotation2d rotation =
-        new Rotation2d(m_rotationSupplier.getAsDouble()).times(Constants.Swerve.ANGULAR_SPEED_MAX);
+    Translation2d desiredAngle =
+        new Translation2d(m_headingY.getAsDouble(), -m_headingX.getAsDouble());
 
-    m_swerve.drive(velocity, rotation, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
+    if (desiredAngle.getNorm() < 0.5) {
+      angle = lastAngle;
+    } else {
+      angle = desiredAngle.getAngle();
+    }
+
+    // Angular velocity
+    double omegaDegrees =
+        thetaDegreesController.calculate(m_swerve.yaw().getDegrees(), angle.getDegrees());
+    omega = Rotation2d.fromDegrees(omegaDegrees).times(Constants.Swerve.ANGULAR_SPEED_MAX);
+
+    m_swerve.drive(velocity, omega, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
+
+    lastAngle = angle;
   }
 
   /**

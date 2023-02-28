@@ -47,8 +47,12 @@ public class RobotContainer {
                     m_driverController.getRawAxis(Constants.Driver.AXIS_STRAFE.value),
                     Constants.Driver.DEADBAND),
             () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION_X.value),
+                    Constants.Driver.DEADBAND),
+            () ->
                 -MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION.value),
+                    m_driverController.getRawAxis(Constants.Driver.AXIS_ROTATION_Y.value),
                     Constants.Driver.DEADBAND)));
   }
 

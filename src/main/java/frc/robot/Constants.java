@@ -28,7 +28,9 @@ public final class Constants {
     /** Axis for left-right movement. */
     public static final XboxController.Axis AXIS_STRAFE = XboxController.Axis.kLeftX;
     /** Axis for rotation. */
-    public static final XboxController.Axis AXIS_ROTATION = XboxController.Axis.kRightX;
+    public static final XboxController.Axis AXIS_ROTATION_X = XboxController.Axis.kRightX;
+    /** Axis for rotation. */
+    public static final XboxController.Axis AXIS_ROTATION_Y = XboxController.Axis.kRightY;
     /** Button for zeroing the gyro. */
     public static final XboxController.Button BUTTON_ZERO_GYRO = XboxController.Button.kY;
     /** Button for driving in robot-centric. */
