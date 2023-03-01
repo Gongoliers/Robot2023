@@ -1,5 +1,6 @@
 package frc.robot.swerve;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,7 +19,7 @@ public class TeleopDrive extends CommandBase {
 
   private Translation2d m_velocity;
   private PIDController m_thetaDegreesController;
-  private Rotation2d m_heading, m_previousHeading, m_angularVelocity;
+  private Rotation2d m_heading, m_angularVelocity;
 
   public TeleopDrive(
       Swerve swerve,
@@ -37,13 +38,9 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void initialize() {
-    m_thetaDegreesController = new PIDController(1, 0, 0);
+    m_thetaDegreesController = new PIDController(Constants.Swerve.THETA_CONTROLLER_KP, 0, 0);
     m_thetaDegreesController.enableContinuousInput(-180, 180);
     m_thetaDegreesController.setTolerance(0);
-
-    SmartDashboard.putData("Theta Controller", m_thetaDegreesController);
-
-    m_previousHeading = m_swerve.yaw();
   }
 
   @Override
@@ -54,12 +51,12 @@ public class TeleopDrive extends CommandBase {
     double angularVelocityDegrees =
         m_thetaDegreesController.calculate(m_swerve.yaw().getDegrees(), m_heading.getDegrees());
 
+    MathUtil.clamp(angularVelocityDegrees, -Constants.Swerve.ANGULAR_SPEED_MAX, Constants.Swerve.ANGULAR_SPEED_MAX);
+
     m_angularVelocity =
-        Rotation2d.fromDegrees(angularVelocityDegrees).times(Constants.Swerve.ANGULAR_SPEED_MAX);
+        Rotation2d.fromDegrees(angularVelocityDegrees);
 
     m_swerve.drive(m_velocity, m_angularVelocity, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
-
-    m_previousHeading = m_heading;
   }
 
   /**
@@ -136,7 +133,7 @@ public class TeleopDrive extends CommandBase {
    */
   private Rotation2d thresholdHeading(Translation2d heading, double threshold) {
     if (heading.getNorm() < threshold) {
-      return m_previousHeading;
+      return m_swerve.yaw();
     }
 
     return heading.getAngle();

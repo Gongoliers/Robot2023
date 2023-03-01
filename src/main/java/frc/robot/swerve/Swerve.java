@@ -1,6 +1,6 @@
 package frc.robot.swerve;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +20,7 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveDriveOdometry m_swerveOdometry;
   private final SwerveModule[] m_modules;
-  private final Pigeon2 m_gyro;
+  private final WPI_Pigeon2 m_gyro;
 
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
@@ -37,7 +37,7 @@ public class Swerve extends SubsystemBase {
       m_simPreviousTimestamp = 0;
     }
 
-    m_gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
+    m_gyro = new WPI_Pigeon2(Constants.Swerve.PIGEON_ID, Constants.Swerve.CANBUS_NAME);
     m_gyro.configFactoryDefault();
 
     setYawZero();
@@ -202,17 +202,15 @@ public class Swerve extends SubsystemBase {
    * @return the current yaw of the robot.
    */
   public Rotation2d yaw() {
-    double yaw;
     if (!Robot.isReal()) {
-      yaw = m_simYaw;
-    } else {
-      yaw = m_gyro.getYaw();
-
-      if (Constants.Swerve.SHOULD_INVERT_GYRO) {
-        yaw = 360 - yaw;
-      }
+      return new Rotation2d(m_simYaw);
     }
-    return new Rotation2d(yaw);
+    Rotation2d yaw = m_gyro.getRotation2d();
+
+    if (Constants.Swerve.SHOULD_INVERT_GYRO) {
+      yaw = yaw.unaryMinus();
+    }
+    return yaw;
   }
 
   /**
