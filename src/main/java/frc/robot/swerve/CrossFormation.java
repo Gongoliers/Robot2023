@@ -4,9 +4,9 @@
 
 package frc.robot.swerve;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -23,10 +23,10 @@ public class CrossFormation extends CommandBase {
   @Override
   public void execute() {
     m_swerve.setModuleStates(new SwerveModuleState[] {
-      new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-      new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+      new SwerveModuleState(0, Constants.Swerve.FRONT_LEFT_MODULE.ANGLE_STOP),
+      new SwerveModuleState(0, Constants.Swerve.FRONT_RIGHT_MODULE.ANGLE_STOP),
+      new SwerveModuleState(0, Constants.Swerve.BACK_LEFT_MODULE.ANGLE_STOP),
+      new SwerveModuleState(0, Constants.Swerve.BACK_RIGHT_MODULE.ANGLE_STOP),
     });
   }
 }
