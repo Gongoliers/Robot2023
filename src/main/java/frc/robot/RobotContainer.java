@@ -67,7 +67,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_crossButton.debounce(Constants.Driver.DEBOUNCE_SECOND).whileTrue(new CrossFormationAfterDelay(m_swerve, Constants.Swerve.CROSS_FORMATION_DELAY));
+    m_crossButton.debounce(Constants.Driver.DEBOUNCE_SECONDS).whileTrue(new CrossFormationAfterDelay(m_swerve, Constants.Swerve.CROSS_FORMATION_DELAY));
   }
 
   private void configureTriggers() {}
