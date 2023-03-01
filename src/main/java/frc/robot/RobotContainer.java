@@ -25,7 +25,8 @@ public class RobotContainer {
   // Controllers
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
-  private final Trigger m_crossButton = new Trigger(() -> m_driverController.getRawButton(Constants.Driver.CROSS_BUTTON.value));
+  private final Trigger m_crossButton =
+      new Trigger(() -> m_driverController.getRawButton(Constants.Driver.CROSS_BUTTON.value));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,7 +68,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_crossButton.debounce(Constants.Driver.DEBOUNCE_SECONDS).whileTrue(new CrossFormationAfterDelay(m_swerve, Constants.Swerve.CROSS_FORMATION_DELAY));
+    m_crossButton
+        .debounce(Constants.Driver.DEBOUNCE_SECONDS)
+        .whileTrue(new CrossFormationAfterDelay(m_swerve, Constants.Swerve.CROSS_FORMATION_DELAY));
   }
 
   private void configureTriggers() {}

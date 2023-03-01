@@ -12,9 +12,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class CrossFormationAfterDelay extends SequentialCommandGroup {
   public CrossFormationAfterDelay(Swerve swerve, double delay) {
-    addCommands(
-      new WaitCommand(delay),
-      new CrossFormation(swerve)
-    );
+    addCommands(new WaitCommand(delay), new CrossFormation(swerve));
   }
 }

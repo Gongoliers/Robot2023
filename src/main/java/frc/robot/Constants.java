@@ -195,7 +195,10 @@ public final class Constants {
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
 
-    /** Number of seconds to before entering cross formation. Blocks velocity input for this period to allow deceleration before fully stopping. */
+    /**
+     * Number of seconds to before entering cross formation. Blocks velocity input for this period
+     * to allow deceleration before fully stopping.
+     */
     public static final double CROSS_FORMATION_DELAY = 0.15;
 
     /** Front Left Module */

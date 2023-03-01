@@ -22,11 +22,12 @@ public class CrossFormation extends CommandBase {
 
   @Override
   public void execute() {
-    m_swerve.setModuleStates(new SwerveModuleState[] {
-      new SwerveModuleState(0, Constants.Swerve.FRONT_LEFT_MODULE.ANGLE_STOP),
-      new SwerveModuleState(0, Constants.Swerve.FRONT_RIGHT_MODULE.ANGLE_STOP),
-      new SwerveModuleState(0, Constants.Swerve.BACK_LEFT_MODULE.ANGLE_STOP),
-      new SwerveModuleState(0, Constants.Swerve.BACK_RIGHT_MODULE.ANGLE_STOP),
-    });
+    m_swerve.setModuleStates(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Constants.Swerve.FRONT_LEFT_MODULE.ANGLE_STOP),
+          new SwerveModuleState(0, Constants.Swerve.FRONT_RIGHT_MODULE.ANGLE_STOP),
+          new SwerveModuleState(0, Constants.Swerve.BACK_LEFT_MODULE.ANGLE_STOP),
+          new SwerveModuleState(0, Constants.Swerve.BACK_RIGHT_MODULE.ANGLE_STOP),
+        });
   }
 }

@@ -3,6 +3,7 @@ package frc.robot.swerve;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -39,6 +40,9 @@ public class TeleopDrive extends CommandBase {
     m_thetaDegreesController = new PIDController(1, 0, 0);
     m_thetaDegreesController.enableContinuousInput(-180, 180);
     m_thetaDegreesController.setTolerance(0);
+
+    SmartDashboard.putData("Theta Controller", m_thetaDegreesController);
+
     m_previousHeading = m_swerve.yaw();
   }
 
