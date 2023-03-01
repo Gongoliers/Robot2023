@@ -4,7 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -51,10 +50,12 @@ public class TeleopDrive extends CommandBase {
     double angularVelocityDegrees =
         m_thetaDegreesController.calculate(m_swerve.yaw().getDegrees(), m_heading.getDegrees());
 
-    MathUtil.clamp(angularVelocityDegrees, -Constants.Swerve.ANGULAR_SPEED_MAX, Constants.Swerve.ANGULAR_SPEED_MAX);
+    MathUtil.clamp(
+        angularVelocityDegrees,
+        -Constants.Swerve.ANGULAR_SPEED_MAX,
+        Constants.Swerve.ANGULAR_SPEED_MAX);
 
-    m_angularVelocity =
-        Rotation2d.fromDegrees(angularVelocityDegrees);
+    m_angularVelocity = Rotation2d.fromDegrees(angularVelocityDegrees);
 
     m_swerve.drive(m_velocity, m_angularVelocity, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
   }

@@ -201,9 +201,7 @@ public final class Constants {
      */
     public static final double CROSS_FORMATION_DELAY = 0.15;
 
-    /**
-     * Theta (rotation) controller KP.
-     */
+    /** Theta (rotation) controller KP. */
     public static final double THETA_CONTROLLER_KP = 1;
 
     /** Front Left Module */
