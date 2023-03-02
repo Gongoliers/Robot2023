@@ -1,6 +1,5 @@
 package frc.robot.swerve;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -38,13 +37,18 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void initialize() {
+
+    // Converts the maxes from rotations per second to degrees per second
+    double maxVelocity = Constants.Swerve.ANGULAR_SPEED_MAX * 360;
+    double maxAcceleration = Constants.Swerve.ANGULAR_ACCELERATION_MAX * 360;
+
     m_thetaDegreesController =
         new ProfiledPIDController(
             Constants.Swerve.THETA_CONTROLLER_KP,
             Constants.Swerve.THETA_CONTROLLER_KI,
             Constants.Swerve.THETA_CONTROLLER_KD,
-            new TrapezoidProfile.Constraints(
-                Constants.Swerve.ANGULAR_SPEED_MAX, Constants.Swerve.ANGULAR_ACCELERATION_MAX));
+            new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+
     m_thetaDegreesController.enableContinuousInput(-180, 180);
     m_thetaDegreesController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
   }
@@ -63,13 +67,6 @@ public class TeleopDrive extends CommandBase {
     // Calculate the angular velocity needed to reach the heading goal from the heading measurement
     double angularVelocityDegrees =
         m_thetaDegreesController.calculate(headingMeasurement, headingGoal);
-
-    // Clamp angular velocity between the minimum and maximum values
-    angularVelocityDegrees =
-        MathUtil.clamp(
-            angularVelocityDegrees,
-            -Constants.Swerve.ANGULAR_SPEED_MAX,
-            Constants.Swerve.ANGULAR_SPEED_MAX);
 
     m_angularVelocity = Rotation2d.fromDegrees(angularVelocityDegrees);
 

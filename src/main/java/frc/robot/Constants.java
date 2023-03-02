@@ -180,13 +180,22 @@ public final class Constants {
     // TODO Must tune for this robot
     /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
     public static final double LINEAR_SPEED_MAX = 4.5;
-    /** Maximum angular speed, in meters per second. TODO Tune while driving on carpet. */
-    public static final double ANGULAR_SPEED_MAX = 10.0;
+    /** Maximum angular speed, in rotations per second. TODO Tune while driving on carpet. */
+    public static final double ANGULAR_SPEED_MAX = 2;
     /**
-     * Maximum angular acceleration, in meters per second squared. TODO Tune while driving on
+     * Maximum angular acceleration, in rotations per second squared. TODO Tune while driving on
      * carpet.
      */
-    public static final double ANGULAR_ACCELERATION_MAX = 0;
+    public static final double ANGULAR_ACCELERATION_MAX = 1;
+
+    /** Theta (rotation) controller KP. */
+    public static final double THETA_CONTROLLER_KP = 1;
+    /** Theta (rotation) controller KI. */
+    public static final double THETA_CONTROLLER_KI = 0;
+    /** Theta (rotation) controller KD. */
+    public static final double THETA_CONTROLLER_KD = 0;
+    /** Theta (rotation) controller deadband. */
+    public static final double THETA_CONTROLLER_TOLERANCE = 0;
 
     // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
     /**
@@ -205,15 +214,6 @@ public final class Constants {
      * to allow deceleration before fully stopping.
      */
     public static final double CROSS_FORMATION_DELAY = 0.15;
-
-    /** Theta (rotation) controller KP. */
-    public static final double THETA_CONTROLLER_KP = 1;
-    /** Theta (rotation) controller KI. */
-    public static final double THETA_CONTROLLER_KI = 0;
-    /** Theta (rotation) controller KD. */
-    public static final double THETA_CONTROLLER_KD = 0.5;
-    /** Theta (rotation) controller deadband. */
-    public static final double THETA_CONTROLLER_TOLERANCE = 0;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
