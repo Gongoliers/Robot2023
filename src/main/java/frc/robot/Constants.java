@@ -178,10 +178,15 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
     // TODO Must tune for this robot
-    /** Maximum linear speed, in meters per second. Tune while driving on carpet. */
+    /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
     public static final double LINEAR_SPEED_MAX = 4.5;
-    /** Maximum angular speed, in meters per second. Tune while driving on carpet. */
+    /** Maximum angular speed, in meters per second. TODO Tune while driving on carpet. */
     public static final double ANGULAR_SPEED_MAX = 10.0;
+    /**
+     * Maximum angular acceleration, in meters per second squared. TODO Tune while driving on
+     * carpet.
+     */
+    public static final double ANGULAR_ACCELERATION_MAX = 0;
 
     // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
     /**
@@ -203,6 +208,8 @@ public final class Constants {
 
     /** Theta (rotation) controller KP. */
     public static final double THETA_CONTROLLER_KP = 1;
+    /** Theta (rotation) controller KI. */
+    public static final double THETA_CONTROLLER_KI = 0;
     /** Theta (rotation) controller KD. */
     public static final double THETA_CONTROLLER_KD = 0.5;
     /** Theta (rotation) controller deadband. */
