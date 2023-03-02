@@ -184,6 +184,12 @@ public final class Constants {
      */
     public static final double ANGULAR_ACCELERATION_MAX = 1;
 
+    /** Constraints for the theta (rotation) controller. */
+    public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
+        new TrapezoidProfile.Constraints(
+            Units.rotationsToRadians(ANGULAR_SPEED_MAX),
+            Units.rotationsToRadians(ANGULAR_ACCELERATION_MAX));
+
     /** Theta (rotation) controller KP. */
     public static final double THETA_CONTROLLER_KP = 1;
     /** Theta (rotation) controller KI. */

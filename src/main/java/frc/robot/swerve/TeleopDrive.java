@@ -3,8 +3,6 @@ package frc.robot.swerve;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -38,15 +36,12 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void initialize() {
-    double maxVelocity = Units.rotationsToRadians(Constants.Swerve.ANGULAR_SPEED_MAX);
-    double maxAcceleration = Units.rotationsToRadians(Constants.Swerve.ANGULAR_ACCELERATION_MAX);
-
     m_thetaController =
         new ProfiledPIDController(
             Constants.Swerve.THETA_CONTROLLER_KP,
             Constants.Swerve.THETA_CONTROLLER_KI,
             Constants.Swerve.THETA_CONTROLLER_KD,
-            new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+            Constants.Swerve.THETA_CONTROLLER_CONSTRAINTS);
 
     m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     m_thetaController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
@@ -64,8 +59,7 @@ public class TeleopDrive extends CommandBase {
     double headingGoal = m_heading.getRadians();
 
     // Calculate the angular velocity needed to reach the heading goal from the heading measurement
-    double angularVelocity =
-        m_thetaController.calculate(headingMeasurement, headingGoal);
+    double angularVelocity = m_thetaController.calculate(headingMeasurement, headingGoal);
 
     m_angularVelocity = Rotation2d.fromRadians(angularVelocity);
 
