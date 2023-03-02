@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
@@ -17,7 +18,7 @@ public class TeleopDrive extends CommandBase {
   private DoubleSupplier m_desiredHeadingSin;
 
   private Translation2d m_velocity;
-  private ProfiledPIDController m_thetaDegreesController;
+  private ProfiledPIDController m_thetaController;
   private Rotation2d m_heading, m_angularVelocity;
 
   public TeleopDrive(
@@ -37,20 +38,18 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void initialize() {
+    double maxVelocity = Units.rotationsToRadians(Constants.Swerve.ANGULAR_SPEED_MAX);
+    double maxAcceleration = Units.rotationsToRadians(Constants.Swerve.ANGULAR_ACCELERATION_MAX);
 
-    // Converts the maxes from rotations per second to degrees per second
-    double maxVelocity = Constants.Swerve.ANGULAR_SPEED_MAX * 360;
-    double maxAcceleration = Constants.Swerve.ANGULAR_ACCELERATION_MAX * 360;
-
-    m_thetaDegreesController =
+    m_thetaController =
         new ProfiledPIDController(
             Constants.Swerve.THETA_CONTROLLER_KP,
             Constants.Swerve.THETA_CONTROLLER_KI,
             Constants.Swerve.THETA_CONTROLLER_KD,
             new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
 
-    m_thetaDegreesController.enableContinuousInput(-180, 180);
-    m_thetaDegreesController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
+    m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    m_thetaController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
   }
 
   @Override
@@ -60,15 +59,15 @@ public class TeleopDrive extends CommandBase {
         headingFromJoystick(m_desiredHeadingCos, m_desiredHeadingSin, Constants.Driver.DEADBAND);
 
     // Current measurement of the process variable
-    double headingMeasurement = m_swerve.yaw().getDegrees();
+    double headingMeasurement = m_swerve.yaw().getRadians();
     // Desired measurement; "goal"
-    double headingGoal = m_heading.getDegrees();
+    double headingGoal = m_heading.getRadians();
 
     // Calculate the angular velocity needed to reach the heading goal from the heading measurement
-    double angularVelocityDegrees =
-        m_thetaDegreesController.calculate(headingMeasurement, headingGoal);
+    double angularVelocity =
+        m_thetaController.calculate(headingMeasurement, headingGoal);
 
-    m_angularVelocity = Rotation2d.fromDegrees(angularVelocityDegrees);
+    m_angularVelocity = Rotation2d.fromRadians(angularVelocity);
 
     m_swerve.drive(m_velocity, m_angularVelocity, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
   }
@@ -132,7 +131,7 @@ public class TeleopDrive extends CommandBase {
     Translation2d heading = new Translation2d(cos, sin);
 
     // Shifts headings counterclockwise (left)
-    heading = heading.rotateBy(Rotation2d.fromDegrees(90));
+    heading = heading.rotateBy(Rotation2d.fromRadians(Math.PI / 2));
     return heading;
   }
 

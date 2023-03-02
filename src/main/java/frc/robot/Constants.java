@@ -158,9 +158,6 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KF = 0.0;
 
     // TODO Must tune for this robot
-    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
-    // V (volts) = KS (volts) + KV (volts / velocity) * d' (velocity) + KA (volts / acceleration) *
-    // d'' (acceleration)
     /**
      * Drive motor KS. KS is the voltage needed to overcome static friction. Copy these values from
      * the System Identification application.
@@ -177,7 +174,6 @@ public final class Constants {
      */
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
-    // TODO Must tune for this robot
     /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
     public static final double LINEAR_SPEED_MAX = 4.5;
     /** Maximum angular speed, in rotations per second. TODO Tune while driving on carpet. */
@@ -197,14 +193,13 @@ public final class Constants {
     /** Theta (rotation) controller deadband. */
     public static final double THETA_CONTROLLER_TOLERANCE = 0;
 
-    // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode ANGLE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
