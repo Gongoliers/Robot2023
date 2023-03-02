@@ -37,20 +37,27 @@ public class TeleopDrive extends CommandBase {
 
   @Override
   public void initialize() {
-    m_thetaDegreesController = new PIDController(Constants.Swerve.THETA_CONTROLLER_KP, 0, 0);
+    m_thetaDegreesController = new PIDController(Constants.Swerve.THETA_CONTROLLER_KP, 0, Constants.Swerve.THETA_CONTROLLER_KD);
     m_thetaDegreesController.enableContinuousInput(-180, 180);
-    m_thetaDegreesController.setTolerance(0);
+    m_thetaDegreesController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
   }
 
   @Override
   public void execute() {
     m_velocity = velocityFromJoystick(m_desiredVelocityX, m_desiredVelocityY);
-    m_heading = headingFromJoystick(m_desiredHeadingCos, m_desiredHeadingSin, 0.5);
+    m_heading = headingFromJoystick(m_desiredHeadingCos, m_desiredHeadingSin, Constants.Driver.DEADBAND);
 
+    // Current measurement of the process variable
+    double headingMeasurement = m_swerve.yaw().getDegrees();
+    // Desired setpoint
+    double headingSetpoint = m_heading.getDegrees();
+
+    // Calculate the angular velocity needed to reach the heading setpoint from the heading 
     double angularVelocityDegrees =
-        m_thetaDegreesController.calculate(m_swerve.yaw().getDegrees(), m_heading.getDegrees());
+        m_thetaDegreesController.calculate(headingMeasurement, headingSetpoint);
 
-    MathUtil.clamp(
+    // Clamp angular velocity between the minimum and maximum values 
+    angularVelocityDegrees = MathUtil.clamp(
         angularVelocityDegrees,
         -Constants.Swerve.ANGULAR_SPEED_MAX,
         Constants.Swerve.ANGULAR_SPEED_MAX);

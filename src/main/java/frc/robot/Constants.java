@@ -203,6 +203,10 @@ public final class Constants {
 
     /** Theta (rotation) controller KP. */
     public static final double THETA_CONTROLLER_KP = 1;
+    /** Theta (rotation) controller KD. */
+    public static final double THETA_CONTROLLER_KD = 0.5;
+    /** Theta (rotation) controller deadband. */
+    public static final double THETA_CONTROLLER_TOLERANCE = 0;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
