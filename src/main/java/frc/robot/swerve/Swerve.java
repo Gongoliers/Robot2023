@@ -98,7 +98,7 @@ public class Swerve extends SubsystemBase {
         Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
 
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_SPEED);
 
     // Set the desired state for each module
     for (var module : m_modules) {
@@ -113,7 +113,7 @@ public class Swerve extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.LINEAR_SPEED_MAX);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_SPEED);
 
     // Set the desired state for each module
     for (var module : m_modules) {

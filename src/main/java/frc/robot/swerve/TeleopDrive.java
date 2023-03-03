@@ -1,6 +1,6 @@
 package frc.robot.swerve;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -10,60 +10,54 @@ import java.util.function.DoubleSupplier;
 public class TeleopDrive extends CommandBase {
   private Swerve m_swerve;
 
-  private DoubleSupplier m_desiredVelocityX;
-  private DoubleSupplier m_desiredVelocityY;
-  private DoubleSupplier m_desiredHeadingCos;
-  private DoubleSupplier m_desiredHeadingSin;
+  private DoubleSupplier m_vX;
+  private DoubleSupplier m_vY;
+  private DoubleSupplier m_headingX;
+  private DoubleSupplier m_headingY;
 
   private Translation2d m_velocity;
-  private ProfiledPIDController m_thetaController;
-  private Rotation2d m_heading, m_angularVelocity;
+  private PIDController m_thetaController;
+  private Rotation2d m_heading, m_previousHeading, m_omega;
 
   public TeleopDrive(
       Swerve swerve,
-      DoubleSupplier desiredVelocityX,
-      DoubleSupplier desiredVelocityY,
-      DoubleSupplier desiredHeadingCos,
-      DoubleSupplier desiredHeadingSin) {
+      DoubleSupplier vX,
+      DoubleSupplier vY,
+      DoubleSupplier headingX,
+      DoubleSupplier headingY) {
     m_swerve = swerve;
     addRequirements(swerve);
 
-    m_desiredVelocityX = desiredVelocityX;
-    m_desiredVelocityY = desiredVelocityY;
-    m_desiredHeadingCos = desiredHeadingCos;
-    m_desiredHeadingSin = desiredHeadingSin;
+    m_vX = vX;
+    m_vY = vY;
+    m_headingX = headingX;
+    m_headingY = headingY;
   }
 
   @Override
   public void initialize() {
     m_thetaController =
-        new ProfiledPIDController(
+        new PIDController(
             Constants.Swerve.THETA_CONTROLLER_KP,
             Constants.Swerve.THETA_CONTROLLER_KI,
-            Constants.Swerve.THETA_CONTROLLER_KD,
-            Constants.Swerve.THETA_CONTROLLER_CONSTRAINTS);
+            Constants.Swerve.THETA_CONTROLLER_KD);
 
     m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     m_thetaController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
+
+    m_previousHeading = m_swerve.yaw();
   }
 
   @Override
   public void execute() {
-    m_velocity = velocityFromJoystick(m_desiredVelocityX, m_desiredVelocityY);
+    m_velocity = velocityFromJoystick(m_vX, m_vY);
     m_heading =
-        headingFromJoystick(m_desiredHeadingCos, m_desiredHeadingSin, Constants.Driver.DEADBAND);
+        thresholdHeading(headingFromJoystick(m_headingX, m_headingY), Constants.Driver.DEADBAND);
+    m_omega = calculateOmega(m_swerve.yaw(), m_heading);
 
-    // Current measurement of the process variable
-    double headingMeasurement = m_swerve.yaw().getRadians();
-    // Desired measurement; "goal"
-    double headingGoal = m_heading.getRadians();
+    m_swerve.drive(m_velocity, m_omega, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
 
-    // Calculate the angular velocity needed to reach the heading goal from the heading measurement
-    double angularVelocity = m_thetaController.calculate(headingMeasurement, headingGoal);
-
-    m_angularVelocity = Rotation2d.fromRadians(angularVelocity);
-
-    m_swerve.drive(m_velocity, m_angularVelocity, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
+    m_previousHeading = m_heading;
   }
 
   /**
@@ -81,30 +75,12 @@ public class TeleopDrive extends CommandBase {
     Translation2d velocity = new Translation2d(vX, vY);
 
     // Scales velocity vector so that full pushes are maximum speed
-    velocity = velocity.times(Constants.Swerve.LINEAR_SPEED_MAX);
+    velocity = velocity.times(Constants.Swerve.MAX_SPEED);
 
     // Limits the velocity vector so that it doesn't exceed the maximum speed
     velocity = limitVelocity(velocity);
 
     return velocity;
-  }
-
-  /**
-   * Transforms the heading cosine and sine values from the joystick into actual cosine and sine
-   * values. Performs a mapping between the ENWS (East-North-West-South) headings of the joystick to
-   * the NESW (North-East-South-West) headings of the robot. Also thresholds the joystick heading so
-   * that only large displacements cause the actual heading to change. If the joystick displacement
-   * does not pass the threshold, the previous heading is returned.
-   *
-   * @param headingCos DoubleSupplier for the cosine value.
-   * @param headingSin DoubleSupplier for the sine value.
-   * @param threshold the amount of displacement required to register a change.
-   * @return Rotation2d representing the desired heading.
-   */
-  private Rotation2d headingFromJoystick(
-      DoubleSupplier headingCos, DoubleSupplier headingSin, double threshold) {
-    Translation2d heading = headingFromJoystick(headingCos, headingSin);
-    return thresholdHeading(heading, threshold);
   }
 
   /**
@@ -140,10 +116,27 @@ public class TeleopDrive extends CommandBase {
    */
   private Rotation2d thresholdHeading(Translation2d heading, double threshold) {
     if (heading.getNorm() < threshold) {
-      return m_swerve.yaw();
+      return m_previousHeading;
     }
 
     return heading.getAngle();
+  }
+
+  /**
+   * Calculates the omega value (angular velocity) in radians per second depending on the measurement and setpoint. If the measurement is within some tolerance of the setpoint, no angular velocity is produced. 
+   * @param measurement Rotation2d containing the current measurement. 
+   * @param setpoint Rotation2d containing the setpoint. 
+   * @return Rotation2d representing the desired angular velocity.
+   */
+  private Rotation2d calculateOmega(Rotation2d measurement, Rotation2d setpoint) {
+    double _measurement = measurement.getRadians();
+    double _setpoint = setpoint.getRadians();
+
+    // Don't apply any angular velocity if the error is within tolerance, otherwise
+    // calculate the angular velocity needed to reach the heading goal from the heading measurement
+    double omega = m_thetaController.atSetpoint() ? 0 : m_thetaController.calculate(_measurement, _setpoint);
+
+    return Rotation2d.fromRadians(omega);
   }
 
   /**
@@ -153,7 +146,7 @@ public class TeleopDrive extends CommandBase {
    * @return the maximum velocity that is achievable for this direction.
    */
   private Translation2d getMaxAchievableVelocity(Rotation2d angle) {
-    return new Translation2d(Constants.Swerve.LINEAR_SPEED_MAX, angle);
+    return new Translation2d(Constants.Swerve.MAX_SPEED, angle);
   }
 
   /**

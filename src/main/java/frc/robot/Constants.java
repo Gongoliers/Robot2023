@@ -175,29 +175,18 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
     /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
-    public static final double LINEAR_SPEED_MAX = 4.5;
-    /** Maximum angular speed, in rotations per second. TODO Tune while driving on carpet. */
-    public static final double ANGULAR_SPEED_MAX = 2;
-    /**
-     * Maximum angular acceleration, in rotations per second squared. TODO Tune while driving on
-     * carpet.
-     */
-    public static final double ANGULAR_ACCELERATION_MAX = 1;
-
-    /** Constraints for the theta (rotation) controller. */
-    public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
-        new TrapezoidProfile.Constraints(
-            Units.rotationsToRadians(ANGULAR_SPEED_MAX),
-            Units.rotationsToRadians(ANGULAR_ACCELERATION_MAX));
+    public static final double MAX_SPEED = 5;
+    /** Maximum angular speed, in radians per second. TODO Tune while driving on carpet. */
+    public static final double MAX_ANGULAR_SPEED = MAX_SPEED / Math.hypot(WHEEL_BASE, TRACK_WIDTH);
 
     /** Theta (rotation) controller KP. */
-    public static final double THETA_CONTROLLER_KP = 1;
+    public static final double THETA_CONTROLLER_KP = MAX_ANGULAR_SPEED / Math.PI;
     /** Theta (rotation) controller KI. */
     public static final double THETA_CONTROLLER_KI = 0;
     /** Theta (rotation) controller KD. */
     public static final double THETA_CONTROLLER_KD = 0;
     /** Theta (rotation) controller deadband. */
-    public static final double THETA_CONTROLLER_TOLERANCE = 0;
+    public static final double THETA_CONTROLLER_TOLERANCE = Units.degreesToRadians(2);
 
     /**
      * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this

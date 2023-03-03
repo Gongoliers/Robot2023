@@ -147,7 +147,7 @@ public class SwerveModule extends SubsystemBase {
    */
   private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
     if (isOpenLoop) {
-      double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.LINEAR_SPEED_MAX;
+      double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.MAX_SPEED;
       m_driveMotor.set(ControlMode.PercentOutput, percentOutput);
     } else {
       double velocity =
@@ -172,7 +172,7 @@ public class SwerveModule extends SubsystemBase {
     Rotation2d angle = desiredState.angle;
 
     // Don't rotate module if speed is less than 1%
-    if (Math.abs(desiredState.speedMetersPerSecond) < (Constants.Swerve.LINEAR_SPEED_MAX * 0.01)) {
+    if (Math.abs(desiredState.speedMetersPerSecond) < (Constants.Swerve.MAX_SPEED * 0.01)) {
       angle = m_previousAngle;
     }
 
