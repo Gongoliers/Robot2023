@@ -72,6 +72,10 @@ public class TeleopDrive extends CommandBase {
     double vX = -velocityX.getAsDouble();
     double vY = -velocityY.getAsDouble();
 
+    // Applies cubic mapping for joysticks 
+    vX = Math.pow(vX, 3);
+    vY = Math.pow(vY, 3);
+
     Translation2d velocity = new Translation2d(vX, vY);
 
     // Scales velocity vector so that full pushes are maximum speed
