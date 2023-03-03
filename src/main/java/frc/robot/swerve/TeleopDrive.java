@@ -88,9 +88,11 @@ public class TeleopDrive extends CommandBase {
   }
 
   /**
-   * Transforms the heading cosine and sine values from the joystick into actual cosine and sine
-   * values. Performs a mapping between the ENWS (East-North-West-South) headings of the joystick to
-   * the NESW (North-East-South-West) headings of the robot.
+   * Transforms the heading cosine and sine values from the joystick into an actual heading.
+   * Performs a mapping between the ENWS (East-North-West-South) headings of the joystick to
+   * the NESW (North-East-South-West) headings of the robot. Thresholds a joystick heading so that only large displacements cause the actual heading to
+   * change. If the joystick displacement does not pass the threshold, the previous heading is
+   * returned.
    *
    * @param headingCos DoubleSupplier for the cosine value.
    * @param headingSin DoubleSupplier for the sine value.
@@ -110,9 +112,6 @@ public class TeleopDrive extends CommandBase {
   }
 
   /**
-   * Thresholds a joystick heading so that only large displacements cause the actual heading to
-   * change. If the joystick displacement does not pass the threshold, the previous heading is
-   * returned.
    *
    * @param heading Translation2d representing the heading and the joystick displacement.
    * @param threshold the amount of displacement required to register a change.
@@ -127,18 +126,19 @@ public class TeleopDrive extends CommandBase {
   }
 
   /**
-   * Calculates the omega value (angular velocity) in radians per second depending on the measurement and setpoint. If the measurement is within some tolerance of the setpoint, no angular velocity is produced. 
-   * @param measurement Rotation2d containing the current measurement. 
-   * @param setpoint Rotation2d containing the setpoint. 
+   * Calculates the omega value (angular velocity) in radians per second depending on the measurement and setpoint.
+   * If the measurement is within some tolerance of the setpoint, no angular velocity is produced. 
+   * @param headingMeasurement Rotation2d containing the current measurement. 
+   * @param headingSetpoint Rotation2d containing the setpoint. 
    * @return Rotation2d representing the desired angular velocity.
    */
-  private Rotation2d calculateOmega(Rotation2d measurement, Rotation2d setpoint) {
-    double _measurement = measurement.getRadians();
-    double _setpoint = setpoint.getRadians();
+  private Rotation2d calculateOmega(Rotation2d headingMeasurement, Rotation2d headingSetpoint) {
+    double measurement = headingMeasurement.getRadians();
+    double setpoint = headingSetpoint.getRadians();
 
     // Don't apply any angular velocity if the error is within tolerance, otherwise
     // calculate the angular velocity needed to reach the heading goal from the heading measurement
-    double omega = m_thetaController.atSetpoint() ? 0 : m_thetaController.calculate(_measurement, _setpoint);
+    double omega = m_thetaController.atSetpoint() ? 0 : m_thetaController.calculate(measurement, setpoint);
 
     return Rotation2d.fromRadians(omega);
   }

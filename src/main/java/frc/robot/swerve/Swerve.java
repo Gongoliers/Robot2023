@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -67,6 +68,10 @@ public class Swerve extends SubsystemBase {
     SwerveTelemetry.createShuffleboardTab(this, "Swerve");
     m_field = new Field2d();
     SmartDashboard.putData("Field", m_field);
+
+    SmartDashboard.putData("Realign CANCoders", new InstantCommand(() -> realignEncodersToCANCoder()));
+    SmartDashboard.putData("Zero Gyro", new InstantCommand(() -> setYawZero()));
+
   }
 
   /** Stop all modules. */

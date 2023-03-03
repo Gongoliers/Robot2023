@@ -177,14 +177,14 @@ public final class Constants {
     /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
     public static final double MAX_SPEED = 5;
     /** Maximum angular speed, in radians per second. TODO Tune while driving on carpet. */
-    public static final double MAX_ANGULAR_SPEED = MAX_SPEED / Math.hypot(WHEEL_BASE, TRACK_WIDTH);
+    public static final double MAX_ANGULAR_SPEED = MAX_SPEED / Math.hypot(WHEEL_BASE / 2, TRACK_WIDTH / 2);
 
     /** Theta (rotation) controller KP. */
-    public static final double THETA_CONTROLLER_KP = MAX_ANGULAR_SPEED / Math.PI;
+    public static final double THETA_CONTROLLER_KP = 1.7 * (MAX_ANGULAR_SPEED / Math.PI);
     /** Theta (rotation) controller KI. */
     public static final double THETA_CONTROLLER_KI = 0;
     /** Theta (rotation) controller KD. */
-    public static final double THETA_CONTROLLER_KD = 0;
+    public static final double THETA_CONTROLLER_KD = 0.1 * (MAX_ANGULAR_SPEED / Math.PI);
     /** Theta (rotation) controller deadband. */
     public static final double THETA_CONTROLLER_TOLERANCE = Units.degreesToRadians(2);
 
