@@ -22,17 +22,17 @@ public class SwerveTelemetry {
   }
 
   private static SuppliedValueWidget<Double> addHeading(Swerve swerve, ShuffleboardTab tab) {
-    var widget = tab.addNumber("Heading", () -> swerve.pose().getRotation().getDegrees());
+    var widget = tab.addNumber("Heading", () -> swerve.getPose().getRotation().getDegrees());
     return widget;
   }
 
   private static SuppliedValueWidget<Double> addOdometryX(Swerve swerve, ShuffleboardTab tab) {
-    var widget = tab.addNumber("Odometry X", () -> swerve.pose().getX());
+    var widget = tab.addNumber("Odometry X", () -> swerve.getPose().getX());
     return widget;
   }
 
   private static SuppliedValueWidget<Double> addOdometryY(Swerve swerve, ShuffleboardTab tab) {
-    var widget = tab.addNumber("Odometry Y", () -> swerve.pose().getY());
+    var widget = tab.addNumber("Odometry Y", () -> swerve.getPose().getY());
     return widget;
   }
 
@@ -41,18 +41,18 @@ public class SwerveTelemetry {
     var layout = tab.getLayout(moduleName, BuiltInLayouts.kGrid);
     layout.withProperties(Map.of("Label position", "TOP"));
 
-    SwerveModule module = swerve.module(moduleNumber);
+    SwerveModule module = swerve.getModule(moduleNumber);
 
     var cancoderAngleWidget =
-        layout.addNumber("CANCoder Angle", () -> module.cancoderAngle().getDegrees());
+        layout.addNumber("CANCoder Angle", () -> module.getCANCoderAngle().getDegrees());
     cancoderAngleWidget.withPosition(0, 0);
 
     var encoderAngleWidget =
-        layout.addNumber("Integrated Encoder Angle", () -> module.encoderAngle().getDegrees());
+        layout.addNumber("Integrated Encoder Angle", () -> module.getEncoderAngle().getDegrees());
     encoderAngleWidget.withPosition(0, 1);
 
     var velocityWidget =
-        layout.addNumber("Wheel Velocity", () -> module.state().speedMetersPerSecond);
+        layout.addNumber("Wheel Velocity", () -> module.getState().speedMetersPerSecond);
     velocityWidget.withPosition(0, 2);
     return layout;
   }

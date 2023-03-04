@@ -62,8 +62,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
-  }
+  private void configureButtonBindings() {}
 
   private void configureTriggers() {}
 

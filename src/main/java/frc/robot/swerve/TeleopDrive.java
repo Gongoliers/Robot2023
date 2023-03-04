@@ -45,7 +45,7 @@ public class TeleopDrive extends CommandBase {
     m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     m_thetaController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
 
-    m_previousHeading = m_swerve.yaw();
+    m_previousHeading = m_swerve.getYaw();
   }
 
   @Override
@@ -53,7 +53,7 @@ public class TeleopDrive extends CommandBase {
     m_velocity = velocityFromJoystick(m_vX, m_vY);
     m_heading =
         thresholdHeading(headingFromJoystick(m_headingX, m_headingY), Constants.Driver.DEADBAND);
-    m_omega = calculateOmega(m_swerve.yaw(), m_heading);
+    m_omega = calculateOmega(m_swerve.getYaw(), m_heading);
 
     m_swerve.drive(m_velocity, m_omega, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
 
@@ -72,7 +72,7 @@ public class TeleopDrive extends CommandBase {
     double vX = -velocityX.getAsDouble();
     double vY = -velocityY.getAsDouble();
 
-    // Applies cubic mapping for joysticks 
+    // Applies cubic mapping for joysticks
     vX = Math.pow(vX, 3);
     vY = Math.pow(vY, 3);
 
@@ -89,10 +89,10 @@ public class TeleopDrive extends CommandBase {
 
   /**
    * Transforms the heading cosine and sine values from the joystick into an actual heading.
-   * Performs a mapping between the ENWS (East-North-West-South) headings of the joystick to
-   * the NESW (North-East-South-West) headings of the robot. Thresholds a joystick heading so that only large displacements cause the actual heading to
-   * change. If the joystick displacement does not pass the threshold, the previous heading is
-   * returned.
+   * Performs a mapping between the ENWS (East-North-West-South) headings of the joystick to the
+   * NESW (North-East-South-West) headings of the robot. Thresholds a joystick heading so that only
+   * large displacements cause the actual heading to change. If the joystick displacement does not
+   * pass the threshold, the previous heading is returned.
    *
    * @param headingCos DoubleSupplier for the cosine value.
    * @param headingSin DoubleSupplier for the sine value.
@@ -112,7 +112,6 @@ public class TeleopDrive extends CommandBase {
   }
 
   /**
-   *
    * @param heading Translation2d representing the heading and the joystick displacement.
    * @param threshold the amount of displacement required to register a change.
    * @return Rotation2d representing the desired heading.
@@ -126,10 +125,12 @@ public class TeleopDrive extends CommandBase {
   }
 
   /**
-   * Calculates the omega value (angular velocity) in radians per second depending on the measurement and setpoint.
-   * If the measurement is within some tolerance of the setpoint, no angular velocity is produced. 
-   * @param headingMeasurement Rotation2d containing the current measurement. 
-   * @param headingSetpoint Rotation2d containing the setpoint. 
+   * Calculates the omega value (angular velocity) in radians per second depending on the
+   * measurement and setpoint. If the measurement is within some tolerance of the setpoint, no
+   * angular velocity is produced.
+   *
+   * @param headingMeasurement Rotation2d containing the current measurement.
+   * @param headingSetpoint Rotation2d containing the setpoint.
    * @return Rotation2d representing the desired angular velocity.
    */
   private Rotation2d calculateOmega(Rotation2d headingMeasurement, Rotation2d headingSetpoint) {
@@ -138,7 +139,8 @@ public class TeleopDrive extends CommandBase {
 
     // Don't apply any angular velocity if the error is within tolerance, otherwise
     // calculate the angular velocity needed to reach the heading goal from the heading measurement
-    double omega = m_thetaController.atSetpoint() ? 0 : m_thetaController.calculate(measurement, setpoint);
+    double omega =
+        m_thetaController.atSetpoint() ? 0 : m_thetaController.calculate(measurement, setpoint);
 
     return Rotation2d.fromRadians(omega);
   }

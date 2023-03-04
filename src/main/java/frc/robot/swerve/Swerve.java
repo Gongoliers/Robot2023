@@ -60,18 +60,18 @@ public class Swerve extends SubsystemBase {
     realignEncodersToCANCoder();
 
     m_swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, yaw(), positions());
+        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, getYaw(), getPositions());
 
-    m_swerveModuleStates = states();
+    m_swerveModuleStates = getStates();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
     SwerveTelemetry.createShuffleboardTab(this, "Swerve");
     m_field = new Field2d();
     SmartDashboard.putData("Field", m_field);
 
-    SmartDashboard.putData("Realign CANCoders", new InstantCommand(() -> realignEncodersToCANCoder()));
+    SmartDashboard.putData(
+        "Realign CANCoders", new InstantCommand(() -> realignEncodersToCANCoder()));
     SmartDashboard.putData("Zero Gyro", new InstantCommand(() -> setYawZero()));
-
   }
 
   /** Stop all modules. */
@@ -96,7 +96,7 @@ public class Swerve extends SubsystemBase {
         new ChassisSpeeds(translation.getX(), translation.getY(), rotation.getRadians());
 
     // Transform the desired velocities to be relative to the robot heading
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, yaw());
+    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw());
 
     // Convert the desired velocities to module states
     SwerveModuleState[] desiredStates =
@@ -131,7 +131,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current pose (position) of the robot.
    */
-  public Pose2d pose() {
+  public Pose2d getPose() {
     return m_swerveOdometry.getPoseMeters();
   }
 
@@ -142,10 +142,10 @@ public class Swerve extends SubsystemBase {
    * @param toPose the pose the robot will be reset to.
    */
   public void resetOdometry(Pose2d toPose) {
-    m_swerveOdometry.resetPosition(yaw(), positions(), toPose);
+    m_swerveOdometry.resetPosition(getYaw(), getPositions(), toPose);
   }
 
-  public SwerveModule module(int moduleNumber) {
+  public SwerveModule getModule(int moduleNumber) {
     return m_modules[moduleNumber];
   }
 
@@ -154,12 +154,12 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module states.
    */
-  public SwerveModuleState[] states() {
+  public SwerveModuleState[] getStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
     // Get the state of each module
     for (var module : m_modules) {
-      states[module.id] = module.state();
+      states[module.id] = module.getState();
     }
 
     return states;
@@ -170,12 +170,12 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current swerve module positions.
    */
-  public SwerveModulePosition[] positions() {
+  public SwerveModulePosition[] getPositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
     // Get the position of each module
     for (var module : m_modules) {
-      positions[module.id] = module.position();
+      positions[module.id] = module.getPosition();
     }
 
     return positions;
@@ -186,7 +186,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current chassis speeds.
    */
-  public ChassisSpeeds speeds() {
+  public ChassisSpeeds getSpeeds() {
     return m_chassisSpeeds;
   }
 
@@ -206,7 +206,7 @@ public class Swerve extends SubsystemBase {
    *
    * @return the current yaw of the robot.
    */
-  public Rotation2d yaw() {
+  public Rotation2d getYaw() {
     if (!Robot.isReal()) {
       return new Rotation2d(m_simYaw);
     }
@@ -231,21 +231,21 @@ public class Swerve extends SubsystemBase {
   @Override
   public void periodic() {
     if (!Robot.isReal()) {
-      ChassisSpeeds speeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(states());
+      ChassisSpeeds speeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(getStates());
       double deltaTime = m_simTimer.get() - m_simPreviousTimestamp;
       m_simYaw += speeds.omegaRadiansPerSecond * deltaTime;
       m_simPreviousTimestamp = m_simTimer.get();
     }
 
     // Update the swerve odometry to the latest position measurements
-    m_swerveOdometry.update(yaw(), positions());
+    m_swerveOdometry.update(getYaw(), getPositions());
 
     // Update the Field display on SmartDashboard
-    m_field.setRobotPose(pose());
+    m_field.setRobotPose(getPose());
     SmartDashboard.putData("Field", m_field);
 
     // Update the current module states and chassis speeds
-    m_swerveModuleStates = states();
+    m_swerveModuleStates = getStates();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
     SmartDashboard.putNumberArray(

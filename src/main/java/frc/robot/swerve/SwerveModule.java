@@ -57,7 +57,7 @@ public class SwerveModule extends SubsystemBase {
     m_angleEncoder = new WPI_CANCoder(config.cancoderID, Constants.Swerve.CANBUS_NAME);
     configCANCoder();
 
-    m_absoluteAngle = cancoderAngle();
+    m_absoluteAngle = getCANCoderAngle();
 
     m_angleMotor = new WPI_TalonFX(config.angleMotorID, Constants.Swerve.CANBUS_NAME);
     configAngleMotor();
@@ -65,9 +65,9 @@ public class SwerveModule extends SubsystemBase {
     m_driveMotor = new WPI_TalonFX(config.driveMotorID, Constants.Swerve.CANBUS_NAME);
     configDriveMotor();
 
-    m_state = state();
-    m_position = position();
-    m_previousAngle = encoderAngle();
+    m_state = getState();
+    m_position = getPosition();
+    m_previousAngle = getEncoderAngle();
 
     if (!Robot.isReal()) {
       m_simTimer = new Timer();
@@ -105,9 +105,9 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_state = state();
-    m_position = position();
-    m_absoluteAngle = cancoderAngle();
+    m_state = getState();
+    m_position = getPosition();
+    m_absoluteAngle = getCANCoderAngle();
   }
 
   public void stop() {
@@ -124,7 +124,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
     // Use custom optimize function since CTRE is not a continuous controller
-    desiredState = CTREModuleState.optimize(desiredState, state().angle);
+    desiredState = CTREModuleState.optimize(desiredState, getState().angle);
     setAngle(desiredState);
     setSpeed(desiredState, isOpenLoop);
 
@@ -186,7 +186,7 @@ public class SwerveModule extends SubsystemBase {
   /** Realign the angle encoders to the current angle of the wheel. */
   public void realignEncoderToCANCoder() {
     // Get the absolute angle from the CANCoder
-    double cancoderAngle = cancoderAngle().getDegrees() - m_angleOffset.getDegrees();
+    double cancoderAngle = getCANCoderAngle().getDegrees() - m_angleOffset.getDegrees();
     // Update the heading of the angle encoder
     double encoderAngle =
         Conversions.degreesToFalcon(cancoderAngle, Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO);
@@ -198,7 +198,7 @@ public class SwerveModule extends SubsystemBase {
    *
    * @return the current state of the module.
    */
-  public SwerveModuleState state() {
+  public SwerveModuleState getState() {
     double speedMetersPerSecond;
     Rotation2d angle;
     if (!Robot.isReal()) {
@@ -210,7 +210,7 @@ public class SwerveModule extends SubsystemBase {
               m_driveMotor.getSelectedSensorVelocity(),
               Constants.Swerve.WHEEL_CIRCUMFERENCE,
               Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
-      angle = encoderAngle();
+      angle = getEncoderAngle();
     }
     return new SwerveModuleState(speedMetersPerSecond, angle);
   }
@@ -220,7 +220,7 @@ public class SwerveModule extends SubsystemBase {
    *
    * @return the current displacement of the module.
    */
-  public SwerveModulePosition position() {
+  public SwerveModulePosition getPosition() {
     double distanceMeters;
     Rotation2d angle;
     if (!Robot.isReal()) {
@@ -232,7 +232,7 @@ public class SwerveModule extends SubsystemBase {
               m_driveMotor.getSelectedSensorPosition(),
               Constants.Swerve.WHEEL_CIRCUMFERENCE,
               Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
-      angle = state().angle;
+      angle = getState().angle;
     }
     return new SwerveModulePosition(distanceMeters, angle);
   }
@@ -242,7 +242,7 @@ public class SwerveModule extends SubsystemBase {
    *
    * @return the current angle of the CANCoder.
    */
-  public Rotation2d cancoderAngle() {
+  public Rotation2d getCANCoderAngle() {
     return Rotation2d.fromDegrees(m_angleEncoder.getAbsolutePosition());
   }
 
@@ -251,7 +251,7 @@ public class SwerveModule extends SubsystemBase {
    *
    * @return the current angle of the integrated encoder.
    */
-  public Rotation2d encoderAngle() {
+  public Rotation2d getEncoderAngle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_angleMotor.getSelectedSensorPosition(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));

@@ -41,7 +41,7 @@ public class exampleAuto extends SequentialCommandGroup {
     SwerveControllerCommand swerveControllerCommand =
         new SwerveControllerCommand(
             exampleTrajectory,
-            swerve::pose,
+            swerve::getPose,
             Constants.Swerve.SWERVE_KINEMATICS,
             new PIDController(Constants.Auto.X_CONTROLLER_KP, 0, 0),
             new PIDController(Constants.Auto.Y_CONTROLLER_KP, 0, 0),
