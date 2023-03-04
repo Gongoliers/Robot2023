@@ -10,14 +10,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements TelemetrySubsystem {
 
   private final SwerveDriveOdometry m_swerveOdometry;
   private final SwerveModule[] m_modules;
@@ -25,8 +25,6 @@ public class Swerve extends SubsystemBase {
 
   private SwerveModuleState[] m_swerveModuleStates;
   private ChassisSpeeds m_chassisSpeeds;
-
-  private final Field2d m_field;
 
   private Timer m_simTimer;
   private double m_simPreviousTimestamp, m_simYaw;
@@ -65,13 +63,7 @@ public class Swerve extends SubsystemBase {
     m_swerveModuleStates = getStates();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
-    SwerveTelemetry.createShuffleboardTab(this, "Swerve");
-    m_field = new Field2d();
-    SmartDashboard.putData("Field", m_field);
-
-    SmartDashboard.putData(
-        "Realign CANCoders", new InstantCommand(() -> realignEncodersToCANCoder()));
-    SmartDashboard.putData("Zero Gyro", new InstantCommand(() -> setYawZero()));
+    addToShuffleboard(Shuffleboard.getTab("Swerve"));
   }
 
   /** Stop all modules. */
@@ -143,6 +135,22 @@ public class Swerve extends SubsystemBase {
    */
   public void resetOdometry(Pose2d toPose) {
     m_swerveOdometry.resetPosition(getYaw(), getPositions(), toPose);
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    container.addNumber("Heading", () -> this.getPose().getRotation().getDegrees());
+    container.addNumber("Odometry X", () -> this.getPose().getX());
+    container.addNumber("Odometry Y", () -> this.getPose().getY());
+
+    for (var module : m_modules) {
+      module.addToShuffleboard(container);
+    }
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
   }
 
   public SwerveModule getModule(int moduleNumber) {
@@ -240,26 +248,8 @@ public class Swerve extends SubsystemBase {
     // Update the swerve odometry to the latest position measurements
     m_swerveOdometry.update(getYaw(), getPositions());
 
-    // Update the Field display on SmartDashboard
-    m_field.setRobotPose(getPose());
-    SmartDashboard.putData("Field", m_field);
-
     // Update the current module states and chassis speeds
     m_swerveModuleStates = getStates();
     m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
-
-    SmartDashboard.putNumberArray(
-        "ModuleStates",
-        new double[] {
-          m_swerveModuleStates[0].angle.getDegrees(), m_swerveModuleStates[0].speedMetersPerSecond,
-          m_swerveModuleStates[1].angle.getDegrees(), m_swerveModuleStates[1].speedMetersPerSecond,
-          m_swerveModuleStates[2].angle.getDegrees(), m_swerveModuleStates[2].speedMetersPerSecond,
-          m_swerveModuleStates[3].angle.getDegrees(), m_swerveModuleStates[3].speedMetersPerSecond,
-        });
-
-    double velocity =
-        new Translation2d(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond)
-            .getNorm();
-    SmartDashboard.putNumber("Velocity", velocity);
   }
 }

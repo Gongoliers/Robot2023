@@ -9,14 +9,19 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.lib.ctre.CTREModuleState;
 import frc.lib.math.Conversions;
 import frc.lib.swerve.SwerveModuleConfig;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import java.util.Map;
 
-public class SwerveModule extends SubsystemBase {
+public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
   /** The identification number for this module. */
   public final int id;
 
@@ -79,6 +84,103 @@ public class SwerveModule extends SubsystemBase {
     }
   }
 
+  @Override
+  public void periodic() {
+    m_state = state();
+    m_position = position();
+    m_absoluteAngle = cancoderAngle();
+  }
+
+  public void stop() {
+    m_driveMotor.stopMotor();
+    m_angleMotor.stopMotor();
+  }
+
+  /** Realign the angle encoders to the current angle of the wheel. */
+  public void realignEncoderToCANCoder() {
+    // Get the absolute angle from the CANCoder
+    double cancoderAngle = cancoderAngle().getDegrees() - m_angleOffset.getDegrees();
+    // Update the heading of the angle encoder
+    double encoderAngle =
+        Conversions.degreesToFalcon(cancoderAngle, Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO);
+    m_angleMotor.setSelectedSensorPosition(encoderAngle);
+  }
+
+  /**
+   * Get the current state of the module.
+   *
+   * @return the current state of the module.
+   */
+  public SwerveModuleState state() {
+    return new SwerveModuleState(
+        Conversions.falconToMPS(
+            m_driveMotor.getSelectedSensorVelocity(),
+            Constants.Swerve.WHEEL_CIRCUMFERENCE,
+            Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO),
+        encoderAngle());
+  }
+
+  /**
+   * Get the current displacement of the module.
+   *
+   * @return the current displacement of the module.
+   */
+  public SwerveModulePosition position() {
+    double position =
+        Conversions.falconToMeters(
+            m_driveMotor.getSelectedSensorPosition(),
+            Constants.Swerve.WHEEL_CIRCUMFERENCE,
+            Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
+    return new SwerveModulePosition(position, state().angle);
+  }
+
+  /**
+   * Get the current angle of the CANCoder. This is equivalent the angle of the wheel.
+   *
+   * @return the current angle of the CANCoder.
+   */
+  public Rotation2d cancoderAngle() {
+    return Rotation2d.fromDegrees(m_angleEncoder.getAbsolutePosition());
+  }
+
+  /**
+   * Get the current angle of the integrated encoder.
+   *
+   * @return the current angle of the integrated encoder.
+   */
+  public Rotation2d encoderAngle() {
+    return Rotation2d.fromDegrees(
+        Conversions.falconToDegrees(
+            m_angleMotor.getSelectedSensorPosition(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    var layout = container.getLayout("Module " + this.id, BuiltInLayouts.kGrid);
+    layout
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(1 + this.id, 0)
+        .withSize(1, 3);
+
+    layout.addNumber("CANCoder Angle", () -> this.cancoderAngle().getDegrees()).withPosition(0, 0);
+
+    layout
+        .addNumber("Integrated Encoder Angle", () -> this.encoderAngle().getDegrees())
+        .withPosition(0, 1);
+
+    layout
+        .addNumber("Wheel Velocity", () -> this.state().speedMetersPerSecond)
+        .withPosition(0, 2)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(
+            Map.of("min", -Constants.Swerve.MAX_SPEED, "max", Constants.Swerve.MAX_SPEED));
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
+  }
+
   /** Configure the CANCoder using the default configuration. */
   private void configCANCoder() {
     m_angleEncoder.configFactoryDefault();
@@ -101,18 +203,6 @@ public class SwerveModule extends SubsystemBase {
     m_driveMotor.setInverted(Constants.Swerve.SHOULD_INVERT_DRIVE_MOTOR);
     m_driveMotor.setNeutralMode(Constants.Swerve.DRIVE_MOTOR_NEUTRAL_MODE);
     m_driveMotor.setSelectedSensorPosition(0);
-  }
-
-  @Override
-  public void periodic() {
-    m_state = getState();
-    m_position = getPosition();
-    m_absoluteAngle = getCANCoderAngle();
-  }
-
-  public void stop() {
-    m_driveMotor.stopMotor();
-    m_angleMotor.stopMotor();
   }
 
   /**
@@ -181,16 +271,6 @@ public class SwerveModule extends SubsystemBase {
         Conversions.degreesToFalcon(angle.getDegrees(), Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO));
 
     m_previousAngle = angle;
-  }
-
-  /** Realign the angle encoders to the current angle of the wheel. */
-  public void realignEncoderToCANCoder() {
-    // Get the absolute angle from the CANCoder
-    double cancoderAngle = getCANCoderAngle().getDegrees() - m_angleOffset.getDegrees();
-    // Update the heading of the angle encoder
-    double encoderAngle =
-        Conversions.degreesToFalcon(cancoderAngle, Constants.Swerve.ANGLE_MOTOR_GEAR_RATIO);
-    m_angleMotor.setSelectedSensorPosition(encoderAngle);
   }
 
   /**
