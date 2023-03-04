@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
 
@@ -306,14 +307,15 @@ public final class Constants {
     public static final int CANDLE_ID = 40; // TODO Configure
 
     /** Hex code for black (no status). */
-    public static final String COLOR_BLACK = "#000000";
+    public static final Color COLOR_BLACK = Color.kBlack;
     /** Hex code for yellow (cone). */
-    public static final String COLOR_YELLOW = "#ffe606";
+    public static final Color COLOR_YELLOW = Color.kYellow;
     /** Hex code for purple (cube). */
-    public static final String COLOR_PURPLE = "#e330ff";
+    // public static final Color COLOR_PURPLE = Color.kPurple;
+    public static final Color COLOR_PURPLE = Color.kMediumPurple;
     /** Hex code for red (not aligned). */
-    public static final String COLOR_RED = "#ff0000";
+    public static final Color COLOR_RED = Color.kRed;
     /** Hex code for green (aligned). */
-    public static final String COLOR_GREEN = "#00ff00";
+    public static final Color COLOR_GREEN = Color.kGreen;
   }
 }
