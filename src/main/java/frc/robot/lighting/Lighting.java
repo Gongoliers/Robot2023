@@ -1,19 +1,16 @@
 package frc.robot.lighting;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.CANdleFaults;
 import com.ctre.phoenix.led.StrobeAnimation;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
@@ -31,7 +28,7 @@ public class Lighting extends SubsystemBase implements TelemetrySubsystem {
 
   public Lighting() {
     m_candle.configAllSettings(config());
-    
+
     setColor(Constants.Lighting.COLOR_BLACK);
 
     addToShuffleboard(Shuffleboard.getTab("Lighting"));
