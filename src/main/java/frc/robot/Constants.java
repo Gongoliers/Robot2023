@@ -196,6 +196,7 @@ public final class Constants {
      * behavior.
      */
     public static final NeutralMode ANGLE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
+    
     /**
      * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
@@ -442,5 +443,18 @@ public final class Constants {
       kAngleToMaxLength.put(0.0, 0.0);
       kAngleToMaxLength.put(MAX_ANGLE, 0.0);
     }
+  }
+
+  public static final class Compressor {
+    /** TODO: revise all of these values */
+    /** The pressure that the compressor must reach (in PSI) before it is considered full */
+    public static final int compressorThreshold = 110;
+    /** The minimum pressure in PSI. The compressor will turn on when the pressure drops below this value. */
+    public static final int minPressure = 75;
+    /** The maximum pressure in PSI. The compressor will turn off when the pressure reaches this value. */
+    public static final int maxPressure = 120;
+    /** The module ID to use. */
+    //https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/Compressor.html#%3Cinit%3E(int,edu.wpi.first.wpilibj.PneumaticsModuleType)
+    public static final int module = 0;
   }
 }
