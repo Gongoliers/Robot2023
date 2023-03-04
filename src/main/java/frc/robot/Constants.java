@@ -24,24 +24,20 @@ public final class Constants {
     public static final double DEADBAND = 0.2;
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.5;
+    /** Minimum number of seconds for an active trigger to be considered active. */
+    public static final double DEBOUNCE_SECONDS = 0.1;
     /** Axis for forward-backward movement. */
-    public static final XboxController.Axis AXIS_TRANSLATION = XboxController.Axis.kLeftY;
+    public static final XboxController.Axis LEFT_VERTICAL_AXIS = XboxController.Axis.kLeftY;
     /** Axis for left-right movement. */
-    public static final XboxController.Axis AXIS_STRAFE = XboxController.Axis.kLeftX;
-    /** Axis for rotation. */
-    public static final XboxController.Axis AXIS_ROTATION = XboxController.Axis.kRightX;
+    public static final XboxController.Axis LEFT_HORIZONTAL_AXIS = XboxController.Axis.kLeftX;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_VERTICAL_AXIS = XboxController.Axis.kRightY;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_HORIZONTAL_AXIS = XboxController.Axis.kRightX;
     /** Button for zeroing the gyro. */
-    public static final XboxController.Button BUTTON_ZERO_GYRO = XboxController.Button.kY;
-    /** Button for driving in robot-centric. */
-    public static final XboxController.Button BUTTON_ROBOT_CENTRIC =
-        XboxController.Button.kLeftBumper;
-    /** Button for overriding the automatic stop delay for stopping instantly. */
-    public static final XboxController.Button BUTTON_INSTANTLY_STOP = XboxController.Button.kX;
-    /** Button for driving in "turbo mode". */
-    public static final XboxController.Axis AXIS_TURBO_MODE = XboxController.Axis.kRightTrigger;
-
-    public static final double NORMAL_SCALAR = 0.5;
-    public static final double TURBO_SCALAR = 1.0;
+    public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
+    /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
+    public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
   }
 
   public static final class Swerve {
@@ -163,9 +159,6 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KF = 0.0;
 
     // TODO Must tune for this robot
-    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
-    // V (volts) = KS (volts) + KV (volts / velocity) * d' (velocity) + KA (volts / acceleration) *
-    // d'' (acceleration)
     /**
      * Drive motor KS. KS is the voltage needed to overcome static friction. Copy these values from
      * the System Identification application.
@@ -182,26 +175,37 @@ public final class Constants {
      */
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
-    // TODO Must tune for this robot
-    /** Maximum linear speed, in meters per second. Tune while driving on carpet. */
-    public static final double LINEAR_SPEED_MAX = 4.5;
-    /** Maximum angular speed, in meters per second. Tune while driving on carpet. */
-    public static final double ANGULAR_SPEED_MAX = 10.0;
+    /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
+    public static final double MAX_SPEED = 5;
+    /** Maximum angular speed, in radians per second. TODO Tune while driving on carpet. */
+    public static final double MAX_ANGULAR_SPEED =
+        MAX_SPEED / Math.hypot(WHEEL_BASE / 2, TRACK_WIDTH / 2);
 
-    // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
+    /** Theta (rotation) controller KP. */
+    public static final double THETA_CONTROLLER_KP = 1.7 * (MAX_ANGULAR_SPEED / Math.PI);
+    /** Theta (rotation) controller KI. */
+    public static final double THETA_CONTROLLER_KI = 0;
+    /** Theta (rotation) controller KD. */
+    public static final double THETA_CONTROLLER_KD = 0.1 * (MAX_ANGULAR_SPEED / Math.PI);
+    /** Theta (rotation) controller deadband. */
+    public static final double THETA_CONTROLLER_TOLERANCE = Units.degreesToRadians(2);
+
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode ANGLE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
 
-    /** Number of seconds to wait before stopping the swerve, while the button is not held. */
-    public static final double AUTOMATIC_STOP_DELAY = 5.0;
+    /**
+     * Number of seconds to before entering cross formation. Blocks velocity input for this period
+     * to allow deceleration before fully stopping.
+     */
+    public static final double CROSS_FORMATION_DELAY = 0.15;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
