@@ -12,8 +12,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.lib.swerve.COTSFalconSwerveConstants;
-import frc.lib.swerve.SwerveModuleConstants;
+import frc.lib.swerve.SwerveModuleConfig;
 
 public final class Constants {
 
@@ -22,16 +23,22 @@ public final class Constants {
     public static final int CONTROLLER_PORT = 1;
     /** Minimum axis displacement to register movement. */
     public static final double DEADBAND = 0.2;
+    /** Minimum trigger displacement to register a press. */
+    public static final double TRIGGER_THRESHOLD = 0.5;
+    /** Minimum number of seconds for an active trigger to be considered active. */
+    public static final double DEBOUNCE_SECONDS = 0.1;
     /** Axis for forward-backward movement. */
-    public static final int AXIS_TRANSLATION = XboxController.Axis.kLeftY.value;
+    public static final XboxController.Axis LEFT_VERTICAL_AXIS = XboxController.Axis.kLeftY;
     /** Axis for left-right movement. */
-    public static final int AXIS_STRAFE = XboxController.Axis.kLeftX.value;
-    /** Axis for rotation. */
-    public static final int AXIS_ROTATION = XboxController.Axis.kRightX.value;
+    public static final XboxController.Axis LEFT_HORIZONTAL_AXIS = XboxController.Axis.kLeftX;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_VERTICAL_AXIS = XboxController.Axis.kRightY;
+    /** Axis for controlling heading. */
+    public static final XboxController.Axis RIGHT_HORIZONTAL_AXIS = XboxController.Axis.kRightX;
     /** Button for zeroing the gyro. */
-    public static final int BUTTON_ZERO_GYRO = XboxController.Button.kY.value;
-    /** Button for driving in robot-centric. */
-    public static final int BUTTON_ROBOT_CENTRIC = XboxController.Button.kLeftBumper.value;
+    public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
+    /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
+    public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
   }
 
   public static final class Swerve {
@@ -153,9 +160,6 @@ public final class Constants {
     public static final double DRIVE_MOTOR_KF = 0.0;
 
     // TODO Must tune for this robot
-    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
-    // V (volts) = KS (volts) + KV (volts / velocity) * d' (velocity) + KA (volts / acceleration) *
-    // d'' (acceleration)
     /**
      * Drive motor KS. KS is the voltage needed to overcome static friction. Copy these values from
      * the System Identification application.
@@ -172,23 +176,37 @@ public final class Constants {
      */
     public static final double DRIVE_MOTOR_KA = (0.27 / 12);
 
-    // TODO Must tune for this robot
-    /** Maximum linear speed, in meters per second. Tune while driving on carpet. */
-    public static final double LINEAR_SPEED_MAX = 4.5;
-    /** Maximum angular speed, in meters per second. Tune while driving on carpet. */
-    public static final double ANGULAR_SPEED_MAX = 10.0;
+    /** Maximum linear speed, in meters per second. TODO Tune while driving on carpet. */
+    public static final double MAX_SPEED = 5;
+    /** Maximum angular speed, in radians per second. TODO Tune while driving on carpet. */
+    public static final double MAX_ANGULAR_SPEED =
+        MAX_SPEED / Math.hypot(WHEEL_BASE / 2, TRACK_WIDTH / 2);
 
-    // https://api.ctr-electronics.com/phoenix/release/java/com/ctre/phoenix/motorcontrol/NeutralMode.html
+    /** Theta (rotation) controller KP. */
+    public static final double THETA_CONTROLLER_KP = 1.7 * (MAX_ANGULAR_SPEED / Math.PI);
+    /** Theta (rotation) controller KI. */
+    public static final double THETA_CONTROLLER_KI = 0;
+    /** Theta (rotation) controller KD. */
+    public static final double THETA_CONTROLLER_KD = 0.1 * (MAX_ANGULAR_SPEED / Math.PI);
+    /** Theta (rotation) controller deadband. */
+    public static final double THETA_CONTROLLER_TOLERANCE = Units.degreesToRadians(2);
+
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode ANGLE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
     /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+     * Mode to enter when the motor is "neutral." TODO Check with the Lead Mentors to decide this
      * behavior.
      */
     public static final NeutralMode DRIVE_MOTOR_NEUTRAL_MODE = NeutralMode.Coast;
+
+    /**
+     * Number of seconds to before entering cross formation. Blocks velocity input for this period
+     * to allow deceleration before fully stopping.
+     */
+    public static final double CROSS_FORMATION_DELAY = 0.15;
 
     /** Front Left Module */
     public static final class FRONT_LEFT_MODULE {
@@ -200,9 +218,12 @@ public final class Constants {
       public static final int CANCODER_ID = 2;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(335.43);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Front Right Module */
@@ -215,9 +236,12 @@ public final class Constants {
       public static final int CANCODER_ID = 5;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(253.74);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Left Module */
@@ -230,9 +254,12 @@ public final class Constants {
       public static final int CANCODER_ID = 12;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(162.15);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(-45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
 
     /** Back Right Module */
@@ -245,9 +272,12 @@ public final class Constants {
       public static final int CANCODER_ID = 9;
       /** Difference between the CANCoder angle and module angle. */
       public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(186.715);
+      /** Angle to return to when stopped. */
+      public static final Rotation2d ANGLE_STOP = Rotation2d.fromDegrees(45);
       /** FIXME */
-      public static final SwerveModuleConstants CONSTANTS =
-          new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET);
+      public static final SwerveModuleConfig CONFIG =
+          new SwerveModuleConfig(
+              DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CANCODER_ID, ANGLE_OFFSET, ANGLE_STOP);
     }
   }
 
@@ -278,15 +308,16 @@ public final class Constants {
     public static final int CANDLE_ID = 40; // TODO Configure
 
     /** Hex code for black (no status). */
-    public static final String COLOR_BLACK = "#000000";
+    public static final Color COLOR_BLACK = Color.kBlack;
     /** Hex code for yellow (cone). */
-    public static final String COLOR_YELLOW = "#ffe606";
+    public static final Color COLOR_YELLOW = Color.kYellow;
     /** Hex code for purple (cube). */
-    public static final String COLOR_PURPLE = "#e330ff";
+    // public static final Color COLOR_PURPLE = Color.kPurple;
+    public static final Color COLOR_PURPLE = Color.kMediumPurple;
     /** Hex code for red (not aligned). */
-    public static final String COLOR_RED = "#ff0000";
+    public static final Color COLOR_RED = Color.kRed;
     /** Hex code for green (aligned). */
-    public static final String COLOR_GREEN = "#00ff00";
+    public static final Color COLOR_GREEN = Color.kGreen;
   }
 
   public static final class Arm {

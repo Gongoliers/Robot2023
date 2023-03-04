@@ -1,6 +1,5 @@
 package frc.lib.ctre;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -16,10 +15,9 @@ public class CTREModuleState {
    */
   public static SwerveModuleState optimize(
       SwerveModuleState desiredState, Rotation2d currentAngle) {
-    // FIXME Temporary fix; revert if this messes up the optimiziation
     // https://github.com/Team364/BaseFalconSwerve/issues/14
-    double currentAngleDegrees = MathUtil.inputModulus(currentAngle.getDegrees(), -180, 180);
-    double desiredAngleDegrees = MathUtil.inputModulus(desiredState.angle.getDegrees(), -180, 180);
+    double currentAngleDegrees = currentAngle.getDegrees();
+    double desiredAngleDegrees = desiredState.angle.getDegrees();
     double targetAngle = placeInAppropriate0To360Scope(currentAngleDegrees, desiredAngleDegrees);
     double targetSpeed = desiredState.speedMetersPerSecond;
     double delta = targetAngle - currentAngleDegrees;

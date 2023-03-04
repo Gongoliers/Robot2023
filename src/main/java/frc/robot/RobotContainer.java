@@ -1,12 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.autos.*;
+import frc.robot.autos.exampleAuto;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -17,30 +16,44 @@ import frc.robot.swerve.TeleopDrive;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  /* Controllers */
-  private final Joystick driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
-  /* Driver Buttons */
-  private final JoystickButton zeroGyroButton =
-      new JoystickButton(driverController, Constants.Driver.BUTTON_ZERO_GYRO);
-  private final JoystickButton robotCentricButton =
-      new JoystickButton(driverController, Constants.Driver.BUTTON_ROBOT_CENTRIC);
+  // Subsystems
+  private final Swerve m_swerve = new Swerve();
 
-  /* Subsystems */
-  private final Swerve swerve = new Swerve();
+  // Controllers
+  private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    swerve.setDefaultCommand(
-        new TeleopDrive(
-            swerve,
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_TRANSLATION),
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_STRAFE),
-            () -> -driverController.getRawAxis(Constants.Driver.AXIS_ROTATION),
-            () -> robotCentricButton.getAsBoolean()));
-
-    // Configure the button bindings
+    setDefaultCommands();
     configureButtonBindings();
+    configureTriggers();
+  }
+
+  /**
+   * The default command will be automatically scheduled when no other commands are scheduled that
+   * require the subsystem.
+   */
+  private void setDefaultCommands() {
+    m_swerve.setDefaultCommand(
+        new TeleopDrive(
+            m_swerve,
+            () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driverController.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
+                    Constants.Driver.DEADBAND)));
   }
 
   /**
@@ -49,10 +62,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
-    /* Driver Buttons */
-    zeroGyroButton.onTrue(new InstantCommand(() -> swerve.setYawZero()));
-  }
+  private void configureButtonBindings() {}
+
+  private void configureTriggers() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -61,6 +73,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(swerve);
+    return new exampleAuto(m_swerve);
   }
 }
