@@ -241,7 +241,7 @@ public class SwerveModule extends SubsystemBase implements TelemetrySubsystem {
       m_driveMotor.set(ControlMode.PercentOutput, percentOutput);
     } else {
       double velocity =
-          Conversions.MPSToFalcon(
+          Conversions.mpsToFalcon(
               desiredState.speedMetersPerSecond,
               Constants.Swerve.WHEEL_CIRCUMFERENCE,
               Constants.Swerve.DRIVE_MOTOR_GEAR_RATIO);
