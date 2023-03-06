@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -34,9 +35,18 @@ public class Arm extends SubsystemBase
 
   private ArmState m_stowedState;
   private ArmState m_extendedState;
-  private ArmState m_actualState;
+  private ArmState m_state;
+
+  private Timer m_simTimer;
+  private double m_simPreviousTimestamp, m_simAngle, m_simLength;
 
   public Arm() {
+    if (!Robot.isReal()) {
+      m_simTimer = new Timer();
+      m_simTimer.start();
+      m_simPreviousTimestamp = 0;
+    }
+
     m_rotationMotor =
         new WPI_TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
@@ -60,7 +70,7 @@ public class Arm extends SubsystemBase
     m_extendedState = Constants.Arm.States.STOWED;
 
     // Automatically start in the stowed state
-    m_actualState = m_stowedState;
+    m_state = m_stowedState;
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
@@ -131,6 +141,10 @@ public class Arm extends SubsystemBase
    * @return the current extension in meters.
    */
   private double getExtension() {
+    if (!Robot.isReal()) {
+      return m_simLength;
+    }
+
     return Conversions.falconToMeters(
         m_extensionMotor.getSelectedSensorPosition(),
         Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
@@ -143,6 +157,10 @@ public class Arm extends SubsystemBase
    * @return the current angle.
    */
   private Rotation2d getAngle() {
+    if (!Robot.isReal()) {
+      return Rotation2d.fromDegrees(m_simAngle);
+    }
+
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_rotationMotor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
@@ -153,7 +171,7 @@ public class Arm extends SubsystemBase
    *
    * @return the current arm state.
    */
-  public ArmState state() {
+  public ArmState getState() {
     return new ArmState(getExtension(), getAngle());
   }
 
@@ -181,8 +199,15 @@ public class Arm extends SubsystemBase
 
   @Override
   public void periodic() {
+    if (!Robot.isReal()) {
+      double deltaTime = m_simTimer.get() - m_simPreviousTimestamp;
+      // TODO Actually modify the sim angle / length
+      m_simAngle += 0.1 * deltaTime;
+      m_simLength += 0.1 * deltaTime;
+      m_simPreviousTimestamp = m_simTimer.get();
+    }
     // Update the current state
-    m_actualState = state();
+    m_state = getState();
   }
 
   @Override
@@ -193,7 +218,7 @@ public class Arm extends SubsystemBase
 
   @Override
   public boolean isRetracted() {
-    return m_actualState.equals(Constants.Arm.States.STOWED);
+    return m_state.equals(Constants.Arm.States.STOWED);
   }
 
   @Override
@@ -204,7 +229,7 @@ public class Arm extends SubsystemBase
 
   @Override
   public boolean isExtended() {
-    return (isRetracted() == false) && m_actualState.equals(m_extendedState);
+    return (isRetracted() == false) && m_state.equals(m_extendedState);
   }
 
   @Override
@@ -239,7 +264,7 @@ public class Arm extends SubsystemBase
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     extendedLayout
-        .addNumber("Extended Length", () -> m_extendedState.getLength())
+        .addNumber("Extended Length", m_extendedState::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
@@ -261,7 +286,7 @@ public class Arm extends SubsystemBase
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     stowedLayout
-        .addNumber("Stowed Length", () -> m_stowedState.getLength())
+        .addNumber("Stowed Length", m_stowedState::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
@@ -277,31 +302,31 @@ public class Arm extends SubsystemBase
     actualLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(4, 0);
 
     actualLayout
-        .addNumber("Actual Angle", () -> m_actualState.getAngle().getDegrees())
+        .addNumber("Actual Angle", () -> m_state.getAngle().getDegrees())
         .withPosition(0, 0)
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     actualLayout
-        .addNumber("Actual Length", () -> m_actualState.getLength())
+        .addNumber("Actual Length", m_state::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
             Map.of(
                 "min",
-                getMinimumLength(m_actualState.getAngle()),
+                getMinimumLength(m_state.getAngle()),
                 "max",
-                getMaximumLength(m_actualState.getAngle())));
+                getMaximumLength(m_state.getAngle())));
 
     var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
     brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
 
     brakeLayout
-        .addBoolean("Rotation Brake Active?", () -> m_rotationBrake.get())
+        .addBoolean("Rotation Brake Active?", m_rotationBrake::get)
         .withPosition(0, 0);
 
     brakeLayout
-        .addBoolean("Extension Brake Active?", () -> m_extensionBrake.get())
+        .addBoolean("Extension Brake Active?", m_extensionBrake::get)
         .withPosition(0, 1);
   }
 
