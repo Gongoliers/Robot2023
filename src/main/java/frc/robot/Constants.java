@@ -429,9 +429,9 @@ public final class Constants {
      */
     public static final double MAX_ANGLE = 0;
 
-    public static final int ROTATION_BRAKE_CHANNEL = 0;
+    public static final int ROTATION_BRAKE_CHANNEL = 8; // TODO
 
-    public static final int EXTENSION_BRAKE_CHANNEL = 0;
+    public static final int EXTENSION_BRAKE_CHANNEL = 9; // TODO
 
     // TODO Implement as <Rotation2d, Double>
     public static InterpolatingTreeMap<Double, Double> kAngleToMinLength =

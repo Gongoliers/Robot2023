@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.arm.Arm;
 import frc.robot.autos.exampleAuto;
+import frc.robot.claw.Claw;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -19,6 +21,8 @@ public class RobotContainer {
 
   // Subsystems
   private final Swerve m_swerve = new Swerve();
+  private final Claw m_claw = new Claw();
+  private final Arm m_arm = new Arm();
 
   // Controllers
   private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);

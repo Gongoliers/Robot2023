@@ -1,8 +1,8 @@
 package frc.robot.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.thegongoliers.output.interfaces.Extendable;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Retractable;
@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
@@ -24,9 +25,9 @@ import java.util.Map;
 public class Arm extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
 
-  private TalonFX m_rotationMotor;
-  private TalonFX m_extensionMotor;
-  private CANCoder m_rotationCANCoder;
+  private WPI_TalonFX m_rotationMotor;
+  private WPI_TalonFX m_extensionMotor;
+  private WPI_CANCoder m_rotationCANCoder;
 
   private Solenoid m_rotationBrake;
   private Solenoid m_extensionBrake;
@@ -36,14 +37,16 @@ public class Arm extends SubsystemBase
   private ArmState m_actualState;
 
   public Arm() {
-    m_rotationMotor = new TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
-    configExtensionMotor();
-
-    m_extensionMotor = new TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    m_rotationMotor =
+        new WPI_TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
 
+    m_extensionMotor =
+        new WPI_TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    configExtensionMotor();
+
     m_rotationCANCoder =
-        new CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
+        new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
 
     m_rotationBrake =
@@ -58,6 +61,8 @@ public class Arm extends SubsystemBase
 
     // Automatically start in the stowed state
     m_actualState = m_stowedState;
+
+    addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
   /**
@@ -74,8 +79,7 @@ public class Arm extends SubsystemBase
     Rotation2d angle = Rotation2d.fromDegrees(degrees);
 
     double extension =
-        MathUtil.clamp(
-            desiredState.getLength(), getMinimumLength(angle), getMaximumLength(angle));
+        MathUtil.clamp(desiredState.getLength(), getMinimumLength(angle), getMaximumLength(angle));
     return new ArmState(extension, angle);
   }
 
@@ -90,10 +94,10 @@ public class Arm extends SubsystemBase
   /**
    * Approach the desired state.
    *
-   * @param desiredState the state to approach.
+   * @param extendedState the state to approach.
    */
-  public void set(ArmState desiredState) {
-    m_extendedState = validate(desiredState);
+  public void set(ArmState extendedState) {
+    m_extendedState = validate(extendedState);
   }
 
   /**
@@ -224,15 +228,19 @@ public class Arm extends SubsystemBase
   public void addToShuffleboard(ShuffleboardContainer container) {
     var extendedLayout = container.getLayout("Extended State", BuiltInLayouts.kList);
     extendedLayout
-      .withProperties(Map.of("Label position", "TOP"));
+        .withProperties(Map.of("Label position", "TOP"))
+        .withSize(2, 4)
+        .withPosition(0, 0);
 
     extendedLayout
         .addNumber("Extended Angle", () -> m_extendedState.getAngle().getDegrees())
+        .withPosition(0, 0)
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     extendedLayout
         .addNumber("Extended Length", () -> m_extendedState.getLength())
+        .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
             Map.of(
@@ -241,20 +249,20 @@ public class Arm extends SubsystemBase
                 "max",
                 getMaximumLength(m_extendedState.getAngle())));
 
-    extendedLayout
-      .addBoolean("Is Extended?", this::isExtended);
+    extendedLayout.addBoolean("Is Extended?", this::isExtended).withPosition(0, 2);
 
     var stowedLayout = container.getLayout("Stowed State", BuiltInLayouts.kList);
-    stowedLayout
-      .withProperties(Map.of("Label position", "TOP"));
+    stowedLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(2, 0);
 
     stowedLayout
         .addNumber("Stowed Angle", () -> m_stowedState.getAngle().getDegrees())
+        .withPosition(0, 0)
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     stowedLayout
         .addNumber("Stowed Length", () -> m_stowedState.getLength())
+        .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
             Map.of(
@@ -263,20 +271,20 @@ public class Arm extends SubsystemBase
                 "max",
                 getMaximumLength(m_stowedState.getAngle())));
 
-    stowedLayout
-      .addBoolean("Is Stowed?", this::isRetracted);
+    stowedLayout.addBoolean("Is Stowed?", this::isRetracted).withPosition(0, 3);
 
     var actualLayout = container.getLayout("Actual State", BuiltInLayouts.kList);
-    actualLayout
-      .withProperties(Map.of("Label position", "TOP"));
+    actualLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(4, 0);
 
     actualLayout
         .addNumber("Actual Angle", () -> m_actualState.getAngle().getDegrees())
+        .withPosition(0, 0)
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
     actualLayout
         .addNumber("Actual Length", () -> m_actualState.getLength())
+        .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(
             Map.of(
@@ -286,11 +294,15 @@ public class Arm extends SubsystemBase
                 getMaximumLength(m_actualState.getAngle())));
 
     var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
-    brakeLayout
-      .addBoolean("Rotation Brake Active?", () -> m_rotationBrake.get());
+    brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
 
     brakeLayout
-      .addBoolean("Extension Brake Active?", () -> m_extensionBrake.get());
+        .addBoolean("Rotation Brake Active?", () -> m_rotationBrake.get())
+        .withPosition(0, 0);
+
+    brakeLayout
+        .addBoolean("Extension Brake Active?", () -> m_extensionBrake.get())
+        .withPosition(0, 1);
   }
 
   @Override
