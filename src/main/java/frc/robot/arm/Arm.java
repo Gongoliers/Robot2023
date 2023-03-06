@@ -3,15 +3,22 @@ package frc.robot.arm;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.thegongoliers.output.interfaces.Elevator;
+import com.thegongoliers.output.interfaces.Extendable;
+import com.thegongoliers.output.interfaces.Lockable;
+import com.thegongoliers.output.interfaces.Retractable;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class Arm extends SubsystemBase {
+public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable, Retractable, TelemetrySubsystem {
 
   private TalonFX m_rotationMotor;
   private TalonFX m_extensionMotor;
@@ -156,5 +163,71 @@ public class Arm extends SubsystemBase {
     SmartDashboard.putNumber("Desired Angle (deg)", m_desiredState.angle().getDegrees());
     SmartDashboard.putNumber("Actual Extension (m)", m_actualState.extensionLength());
     SmartDashboard.putNumber("Actual Angle (deg)", m_actualState.angle().getDegrees());
+  }
+
+  @Override
+  public void retract() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean isRetracted() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public void extend() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean isExtended() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public void lock() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void unlock() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void stop() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setHeight(double height) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public double getHeight() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }
