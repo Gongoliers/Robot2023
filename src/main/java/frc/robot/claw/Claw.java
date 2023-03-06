@@ -5,7 +5,6 @@
 package frc.robot.claw;
 
 import com.thegongoliers.output.interfaces.Gripper;
-
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
@@ -14,7 +13,7 @@ import frc.lib.TelemetrySubsystem;
 import frc.robot.Constants;
 
 public class Claw extends SubsystemBase implements Gripper, TelemetrySubsystem {
-  
+
   private Solenoid m_solenoid;
 
   public Claw() {
@@ -44,7 +43,6 @@ public class Claw extends SubsystemBase implements Gripper, TelemetrySubsystem {
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
-    
-  }
 
+  }
 }

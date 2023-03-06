@@ -3,28 +3,33 @@ package frc.robot.arm;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.thegongoliers.output.interfaces.Elevator;
 import com.thegongoliers.output.interfaces.Extendable;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Retractable;
-
+import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable, Retractable, TelemetrySubsystem {
+public class Arm extends SubsystemBase
+    implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
 
   private TalonFX m_rotationMotor;
   private TalonFX m_extensionMotor;
   private CANCoder m_rotationCANCoder;
 
-  private ArmState m_desiredState;
+  private Solenoid m_rotationBrake;
+  private Solenoid m_extensionBrake;
+
+  private ArmState m_stowedState;
+  private ArmState m_extendedState;
   private ArmState m_actualState;
 
   public Arm() {
@@ -37,6 +42,19 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
     m_rotationCANCoder =
         new CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
+
+    m_rotationBrake =
+        new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.ROTATION_BRAKE_CHANNEL);
+    m_extensionBrake =
+        new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.EXTENSION_BRAKE_CHANNEL);
+    lock();
+
+    m_stowedState = Constants.Arm.States.STOWED;
+    // TODO Select default extended state
+    m_extendedState = Constants.Arm.States.STOWED;
+
+    // Automatically start in the stowed state
+    m_actualState = m_stowedState;
   }
 
   /**
@@ -49,13 +67,13 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
   private ArmState validate(ArmState desiredState) {
     double degrees =
         MathUtil.clamp(
-            desiredState.angle().getDegrees(), Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE);
+            desiredState.getAngle().getDegrees(), Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE);
     Rotation2d angle = Rotation2d.fromDegrees(degrees);
 
     double minExtension = Constants.Arm.kAngleToMinLength.get(angle.getDegrees());
     double maxExtension = Constants.Arm.kAngleToMaxLength.get(angle.getDegrees());
 
-    double extension = MathUtil.clamp(desiredState.extensionLength(), minExtension, maxExtension);
+    double extension = MathUtil.clamp(desiredState.getLength(), minExtension, maxExtension);
     return new ArmState(extension, angle);
   }
 
@@ -67,10 +85,7 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
   public void set(ArmState desiredState) {
     desiredState = validate(desiredState);
 
-    setAngle(desiredState.angle());
-    setExtension(desiredState.extensionLength());
-
-    m_desiredState = desiredState;
+    m_extendedState = desiredState;
   }
 
   /**
@@ -103,7 +118,7 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
    *
    * @return the current extension in meters.
    */
-  private double extension() {
+  private double getExtension() {
     return Conversions.falconToMeters(
         m_extensionMotor.getSelectedSensorPosition(),
         Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
@@ -115,7 +130,7 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
    *
    * @return the current angle.
    */
-  private Rotation2d angle() {
+  private Rotation2d getAngle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_rotationMotor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
@@ -127,7 +142,7 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
    * @return the current arm state.
    */
   public ArmState state() {
-    return new ArmState(extension(), angle());
+    return new ArmState(getExtension(), getAngle());
   }
 
   private void configRotationMotor() {
@@ -156,78 +171,56 @@ public class Arm extends SubsystemBase implements Elevator, Lockable, Extendable
   public void periodic() {
     // Update the current state
     m_actualState = state();
-
-    // Publish info to SmartDashboard
-    // TODO Port to ShuffleBoard
-    SmartDashboard.putNumber("Desired Extension (m)", m_desiredState.extensionLength());
-    SmartDashboard.putNumber("Desired Angle (deg)", m_desiredState.angle().getDegrees());
-    SmartDashboard.putNumber("Actual Extension (m)", m_actualState.extensionLength());
-    SmartDashboard.putNumber("Actual Angle (deg)", m_actualState.angle().getDegrees());
   }
 
   @Override
   public void retract() {
-    // TODO Auto-generated method stub
-    
+    setAngle(m_stowedState.getAngle());
+    setExtension(m_stowedState.getLength());
   }
 
   @Override
   public boolean isRetracted() {
-    // TODO Auto-generated method stub
-    return false;
+    return m_actualState.equals(Constants.Arm.States.STOWED);
   }
 
   @Override
   public void extend() {
-    // TODO Auto-generated method stub
-    
+    setAngle(m_extendedState.getAngle());
+    setExtension(m_extendedState.getLength());
   }
 
   @Override
   public boolean isExtended() {
-    // TODO Auto-generated method stub
-    return false;
+    return (isRetracted() == false) && m_actualState.equals(m_extendedState);
   }
 
   @Override
   public void lock() {
-    // TODO Auto-generated method stub
-    
+    m_extensionBrake.set(true);
+    m_rotationBrake.set(true);
   }
 
   @Override
   public void unlock() {
-    // TODO Auto-generated method stub
-    
+    m_extensionBrake.set(false);
+    m_rotationBrake.set(false);
   }
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-    
+    lock();
   }
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     // TODO Auto-generated method stub
-    
+
   }
 
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
-    
-  }
 
-  @Override
-  public void setHeight(double height) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public double getHeight() {
-    // TODO Auto-generated method stub
-    return 0;
   }
 }

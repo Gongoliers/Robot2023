@@ -29,16 +29,7 @@ public class ArmState extends Translation2d {
    *
    * @return the extension length of the arm.
    */
-  public double extensionLength() {
+  public double getLength() {
     return this.getNorm();
-  }
-
-  /**
-   * Returns the angle of the arm.
-   *
-   * @return the angle of the arm.
-   */
-  public Rotation2d angle() {
-    return this.getAngle();
   }
 }

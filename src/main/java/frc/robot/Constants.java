@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
+import frc.robot.arm.ArmState;
 
 public final class Constants {
 
@@ -423,10 +424,14 @@ public final class Constants {
     public static final double MIN_ANGLE = 0;
 
     /**
-     * The maximum anglet hat the arm can rotate to. This value is measured in degrees, and
+     * The maximum angle that the arm can rotate to. This value is measured in degrees, and
      * represents the upper bound that the arm will never cross.
      */
     public static final double MAX_ANGLE = 0;
+
+    public static final int ROTATION_BRAKE_CHANNEL = 0;
+
+    public static final int EXTENSION_BRAKE_CHANNEL = 0;
 
     // TODO Implement as <Rotation2d, Double>
     public static InterpolatingTreeMap<Double, Double> kAngleToMinLength =
@@ -447,11 +452,16 @@ public final class Constants {
       kAngleToMaxLength.put(0.0, 0.0);
       kAngleToMaxLength.put(MAX_ANGLE, 0.0);
     }
+
+    public static final class States {
+      // TODO
+      public static final ArmState STOWED =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
+    }
   }
 
   public static final class Claw {
 
     public static final int CHANNEL = 0; // TODO
-
   }
 }
