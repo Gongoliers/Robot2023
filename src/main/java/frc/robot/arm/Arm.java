@@ -11,12 +11,15 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import java.util.Map;
 
 public class Arm extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
@@ -70,11 +73,18 @@ public class Arm extends SubsystemBase
             desiredState.getAngle().getDegrees(), Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE);
     Rotation2d angle = Rotation2d.fromDegrees(degrees);
 
-    double minExtension = Constants.Arm.kAngleToMinLength.get(angle.getDegrees());
-    double maxExtension = Constants.Arm.kAngleToMaxLength.get(angle.getDegrees());
-
-    double extension = MathUtil.clamp(desiredState.getLength(), minExtension, maxExtension);
+    double extension =
+        MathUtil.clamp(
+            desiredState.getLength(), getMinimumLength(angle), getMaximumLength(angle));
     return new ArmState(extension, angle);
+  }
+
+  private double getMinimumLength(Rotation2d angle) {
+    return Constants.Arm.kAngleToMinLength.get(angle.getDegrees());
+  }
+
+  private double getMaximumLength(Rotation2d angle) {
+    return Constants.Arm.kAngleToMaxLength.get(angle.getDegrees());
   }
 
   /**
@@ -83,9 +93,7 @@ public class Arm extends SubsystemBase
    * @param desiredState the state to approach.
    */
   public void set(ArmState desiredState) {
-    desiredState = validate(desiredState);
-
-    m_extendedState = desiredState;
+    m_extendedState = validate(desiredState);
   }
 
   /**
@@ -214,8 +222,75 @@ public class Arm extends SubsystemBase
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
-    // TODO Auto-generated method stub
+    var extendedLayout = container.getLayout("Extended State", BuiltInLayouts.kList);
+    extendedLayout
+      .withProperties(Map.of("Label position", "TOP"));
 
+    extendedLayout
+        .addNumber("Extended Angle", () -> m_extendedState.getAngle().getDegrees())
+        .withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
+
+    extendedLayout
+        .addNumber("Extended Length", () -> m_extendedState.getLength())
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(
+            Map.of(
+                "min",
+                getMinimumLength(m_extendedState.getAngle()),
+                "max",
+                getMaximumLength(m_extendedState.getAngle())));
+
+    extendedLayout
+      .addBoolean("Is Extended?", this::isExtended);
+
+    var stowedLayout = container.getLayout("Stowed State", BuiltInLayouts.kList);
+    stowedLayout
+      .withProperties(Map.of("Label position", "TOP"));
+
+    stowedLayout
+        .addNumber("Stowed Angle", () -> m_stowedState.getAngle().getDegrees())
+        .withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
+
+    stowedLayout
+        .addNumber("Stowed Length", () -> m_stowedState.getLength())
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(
+            Map.of(
+                "min",
+                getMinimumLength(m_stowedState.getAngle()),
+                "max",
+                getMaximumLength(m_stowedState.getAngle())));
+
+    stowedLayout
+      .addBoolean("Is Stowed?", this::isRetracted);
+
+    var actualLayout = container.getLayout("Actual State", BuiltInLayouts.kList);
+    actualLayout
+      .withProperties(Map.of("Label position", "TOP"));
+
+    actualLayout
+        .addNumber("Actual Angle", () -> m_actualState.getAngle().getDegrees())
+        .withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
+
+    actualLayout
+        .addNumber("Actual Length", () -> m_actualState.getLength())
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(
+            Map.of(
+                "min",
+                getMinimumLength(m_actualState.getAngle()),
+                "max",
+                getMaximumLength(m_actualState.getAngle())));
+
+    var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
+    brakeLayout
+      .addBoolean("Rotation Brake Active?", () -> m_rotationBrake.get());
+
+    brakeLayout
+      .addBoolean("Extension Brake Active?", () -> m_extensionBrake.get());
   }
 
   @Override
