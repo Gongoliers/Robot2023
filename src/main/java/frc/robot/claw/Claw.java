@@ -6,35 +6,39 @@ package frc.robot.claw;
 
 import com.thegongoliers.output.interfaces.Gripper;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
+import frc.robot.Constants;
 
 public class Claw extends SubsystemBase implements Gripper, TelemetrySubsystem {
-  public Claw() {}
+  
+  private Solenoid m_solenoid;
+
+  public Claw() {
+    m_solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.Claw.CHANNEL);
+  }
 
   @Override
   public void open() {
-    // TODO Auto-generated method stub
-    
+    m_solenoid.set(true);
   }
 
   @Override
   public void close() {
-    // TODO Auto-generated method stub
-    
+    m_solenoid.set(false);
   }
 
   @Override
   public boolean isOpen() {
-    // TODO Auto-generated method stub
-    return false;
+    return m_solenoid.get();
   }
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
-    // TODO Auto-generated method stub
-    
+    container.addBoolean("Claw Open?", this::isOpen);
   }
 
   @Override
