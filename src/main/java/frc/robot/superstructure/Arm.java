@@ -1,4 +1,4 @@
-package frc.robot.arm;
+package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -21,6 +21,7 @@ import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
+
 import java.util.Map;
 
 public class Arm extends SubsystemBase

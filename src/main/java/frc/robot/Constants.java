@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
-import frc.robot.arm.ArmState;
+import frc.robot.superstructure.ArmState;
 
 public final class Constants {
 
