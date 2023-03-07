@@ -21,7 +21,7 @@ public final class Constants {
 
   public static final class Driver {
     /** Port in Driver Station for the driver controller. */
-    public static final int CONTROLLER_PORT = 1;
+    public static final int CONTROLLER_PORT = 0;
     /** Minimum axis displacement to register movement. */
     public static final double DEADBAND = 0.2;
     /** Minimum trigger displacement to register a press. */
@@ -40,6 +40,25 @@ public final class Constants {
     public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
     /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
     public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
+  }
+
+  public static final class Manipulator {
+    /** Port in Driver Station for the driver controller. */
+    public static final int CONTROLLER_PORT = 1;
+    /** Minimum trigger displacement to register a press. */
+    public static final double TRIGGER_THRESHOLD = 0.8;
+    /** Button for extending to the floor state. */
+    public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
+    /** Button for extending to the middle row state. */
+    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    /** Button for extending to the top row state. */
+    public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
+    /** Button for extending to the substation pickup state. */
+    public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
+    /** Button for intaking. */
+    public static final XboxController.Axis INTAKE_AXIS = XboxController.Axis.kLeftTrigger;
+    /** Button for outtaking. */
+    public static final XboxController.Axis OUTTAKE_AXIS = XboxController.Axis.kLeftTrigger;
   }
 
   public static final class Swerve {
@@ -382,8 +401,9 @@ public final class Constants {
     /** Extension motor KF. */
     public static final double EXTENSION_MOTOR_KF = 0; // TODO
 
-    /** Toggle for if the CANCoder should be inverted. Ensure that CCW+ CW-. */
-    public static final boolean SHOULD_INVERT_CANCODER = false; // TODO
+    public static final boolean SHOULD_INVERT_ROTATION_CANCODER = false;
+
+    public static final boolean SHOULD_INVERT_EXTENSION_CANCODER = false;
 
     /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
     public static final boolean SHOULD_INVERT_ROTATION_MOTOR = false; // TODO
@@ -416,6 +436,9 @@ public final class Constants {
 
     /** The gear ratio between the rotation motor and the arm. */
     public static final double ROTATION_MOTOR_GEAR_RATIO = 0;
+
+    /** The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. */
+    public static final double CANCODER_OFFSET = 0;
 
     /**
      * The minimum angle that the arm can rotate to. This value is measured in degrees, and
@@ -454,9 +477,16 @@ public final class Constants {
     }
 
     public static final class States {
-      // TODO
       public static final ArmState STOWED =
           new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
+      public static final ArmState FLOOR =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(45));
+      public static final ArmState MIDDLE =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(50));
+      public static final ArmState TOP =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(60));
+      public static final ArmState SUBSTATION =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(75));
     }
   }
 

@@ -29,6 +29,7 @@ public class Arm extends SubsystemBase
   private WPI_TalonFX m_rotationMotor;
   private WPI_TalonFX m_extensionMotor;
   private WPI_CANCoder m_rotationCANCoder;
+  private WPI_CANCoder m_extensionCANCoder;
 
   private Solenoid m_rotationBrake;
   private Solenoid m_extensionBrake;
@@ -59,17 +60,24 @@ public class Arm extends SubsystemBase
         new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
 
+    m_extensionCANCoder =
+        new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
+    configExtensionCANCoder();
+
     m_rotationBrake =
         new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.ROTATION_BRAKE_CHANNEL);
     m_extensionBrake =
         new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.EXTENSION_BRAKE_CHANNEL);
     lock();
 
+    realignRotationSensor();
+
     m_stowedState = Constants.Arm.States.STOWED;
     // TODO Select default extended state
     m_extendedState = Constants.Arm.States.STOWED;
 
-    // Automatically start in the stowed state
+    // Assumes that the arm begins the match in the stowed state
+    zeroExtensionLength();
     m_state = m_stowedState;
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
@@ -106,16 +114,21 @@ public class Arm extends SubsystemBase
    *
    * @param extendedState the state to approach.
    */
-  public void set(ArmState extendedState) {
+  public void setExtendedState(ArmState extendedState) {
     m_extendedState = validate(extendedState);
   }
 
   /**
-   * Approach the desired extension length.
+   * Approaches the extension desired length. Commands the extension motor's PID controller to
+   * approach the extension length.
    *
    * @param extension the extension length (in meters) to approach.
    */
   private void setExtension(double extension) {
+    if (!Robot.isReal()) {
+      m_simLength = extension;
+    }
+
     double setpoint =
         Conversions.metersToFalcon(
             extension,
@@ -125,11 +138,16 @@ public class Arm extends SubsystemBase
   }
 
   /**
-   * Approach the desired angle.
+   * Approaches the desired angle. Commands the angle motor's PID controller to approach the desired
+   * angle.
    *
    * @param angle the angle to approach.
    */
   private void setAngle(Rotation2d angle) {
+    if (!Robot.isReal()) {
+      m_simAngle = angle.getDegrees();
+    }
+
     double setpoint =
         Conversions.degreesToFalcon(angle.getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO);
     m_rotationMotor.set(ControlMode.Position, setpoint);
@@ -194,16 +212,38 @@ public class Arm extends SubsystemBase
 
   private void configRotationCANCoder() {
     m_rotationCANCoder.configFactoryDefault();
-    m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.armCanCoderConfig);
+    m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.rotationCanCoderConfig);
+  }
+
+  private void configExtensionCANCoder() {
+    m_rotationCANCoder.configFactoryDefault();
+    m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.extensionCanCoderConfig);
+  }
+
+  private void realignRotationSensor() {
+    m_rotationMotor.setSelectedSensorPosition(
+        Conversions.degreesToFalcon(
+            getCANCoderAngle().getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
+  }
+
+  private void zeroExtensionLength() {
+    double stowedLength = Constants.Arm.States.STOWED.getLength();
+    m_extensionMotor.setSelectedSensorPosition(
+        Conversions.metersToFalcon(
+            stowedLength,
+            Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
+            Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO));
+  }
+
+  private Rotation2d getCANCoderAngle() {
+    double measurement = m_rotationCANCoder.getAbsolutePosition();
+    double angle = measurement - Constants.Arm.CANCODER_OFFSET;
+    return Rotation2d.fromDegrees(angle);
   }
 
   @Override
   public void periodic() {
     if (!Robot.isReal()) {
-      double deltaTime = m_simTimer.get() - m_simPreviousTimestamp;
-      // TODO Actually modify the sim angle / length
-      m_simAngle += 0.1 * deltaTime;
-      m_simLength += 0.1 * deltaTime;
       m_simPreviousTimestamp = m_simTimer.get();
     }
     // Update the current state
@@ -321,13 +361,9 @@ public class Arm extends SubsystemBase
     var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
     brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
 
-    brakeLayout
-        .addBoolean("Rotation Brake Active?", m_rotationBrake::get)
-        .withPosition(0, 0);
+    brakeLayout.addBoolean("Rotation Brake Active?", m_rotationBrake::get).withPosition(0, 0);
 
-    brakeLayout
-        .addBoolean("Extension Brake Active?", m_extensionBrake::get)
-        .withPosition(0, 1);
+    brakeLayout.addBoolean("Extension Brake Active?", m_extensionBrake::get).withPosition(0, 1);
   }
 
   @Override

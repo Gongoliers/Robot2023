@@ -15,7 +15,8 @@ public final class CTREConfigs {
 
   public TalonFXConfiguration armRotationFXConfig;
   public TalonFXConfiguration armExtensionFXConfig;
-  public CANCoderConfiguration armCanCoderConfig;
+  public CANCoderConfiguration rotationCanCoderConfig;
+  public CANCoderConfiguration extensionCanCoderConfig;
 
   public CTREConfigs() {
     swerveAngleFXConfig = new TalonFXConfiguration();
@@ -61,7 +62,8 @@ public final class CTREConfigs {
 
     armRotationFXConfig = new TalonFXConfiguration();
     armExtensionFXConfig = new TalonFXConfiguration();
-    armCanCoderConfig = new CANCoderConfiguration();
+    rotationCanCoderConfig = new CANCoderConfiguration();
+    extensionCanCoderConfig = new CANCoderConfiguration();
 
     // Arm rotation motor config
     SupplyCurrentLimitConfiguration rotationSupplyLimit =
@@ -91,10 +93,18 @@ public final class CTREConfigs {
     armExtensionFXConfig.slot0.kF = Constants.Arm.EXTENSION_MOTOR_KF;
     armExtensionFXConfig.supplyCurrLimit = extensionSupplyLimit;
 
-    // Arm CANCoder config
-    armCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    armCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_CANCODER;
-    armCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-    armCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+    // Arm rotation CANCoder config
+    rotationCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+    rotationCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_ROTATION_CANCODER;
+    rotationCanCoderConfig.initializationStrategy =
+        SensorInitializationStrategy.BootToAbsolutePosition;
+    rotationCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+
+    // Arm extension CANCoder config
+    extensionCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+    extensionCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_EXTENSION_CANCODER;
+    extensionCanCoderConfig.initializationStrategy =
+        SensorInitializationStrategy.BootToAbsolutePosition;
+    extensionCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
   }
 }
