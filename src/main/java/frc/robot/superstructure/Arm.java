@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.ArmState;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -30,7 +31,6 @@ public class Arm extends SubsystemBase
   private WPI_TalonFX m_rotationMotor;
   private WPI_TalonFX m_extensionMotor;
   private WPI_CANCoder m_rotationCANCoder;
-  private WPI_CANCoder m_extensionCANCoder;
 
   private Solenoid m_rotationBrake;
   private Solenoid m_extensionBrake;
@@ -40,13 +40,12 @@ public class Arm extends SubsystemBase
   private ArmState m_state;
 
   private Timer m_simTimer;
-  private double m_simPreviousTimestamp, m_simAngle, m_simLength;
+  private double m_simAngle, m_simLength;
 
   public Arm() {
     if (!Robot.isReal()) {
       m_simTimer = new Timer();
       m_simTimer.start();
-      m_simPreviousTimestamp = 0;
     }
 
     m_rotationMotor =
@@ -60,10 +59,6 @@ public class Arm extends SubsystemBase
     m_rotationCANCoder =
         new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
-
-    m_extensionCANCoder =
-        new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
-    configExtensionCANCoder();
 
     m_rotationBrake =
         new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.ROTATION_BRAKE_CHANNEL);
@@ -216,17 +211,22 @@ public class Arm extends SubsystemBase
     m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.rotationCanCoderConfig);
   }
 
-  private void configExtensionCANCoder() {
-    m_rotationCANCoder.configFactoryDefault();
-    m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.extensionCanCoderConfig);
-  }
-
+  /**
+   * Realigns the rotation motor encoder to the CANCoder angle.
+   * 
+   * Resets the rotation motor's internal encoder to the CANCoder angle value. This ensures that future encoder measurements will align with the angle of the arm.
+   */
   private void realignRotationSensor() {
     m_rotationMotor.setSelectedSensorPosition(
         Conversions.degreesToFalcon(
             getCANCoderAngle().getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
   }
 
+  /**
+   * Zeroes the extension motor encoder.
+   * 
+   * Resets the extension motor's internal encoder to zero. This ensures that future encoder measurements correspond to the length of the arm. 
+   */
   private void zeroExtensionLength() {
     double stowedLength = Constants.Arm.States.STOWED.getLength();
     m_extensionMotor.setSelectedSensorPosition(
@@ -236,6 +236,10 @@ public class Arm extends SubsystemBase
             Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO));
   }
 
+  /**
+   * Gets the angle of the CANCoder.
+   * @return the angle measured by the CANCoder.
+   */
   private Rotation2d getCANCoderAngle() {
     double measurement = m_rotationCANCoder.getAbsolutePosition();
     double angle = measurement - Constants.Arm.CANCODER_OFFSET;
@@ -244,47 +248,77 @@ public class Arm extends SubsystemBase
 
   @Override
   public void periodic() {
-    if (!Robot.isReal()) {
-      m_simPreviousTimestamp = m_simTimer.get();
-    }
     // Update the current state
     m_state = getState();
   }
 
+  /**
+   * Retracts the arm to the stowed position.
+   * 
+   * Note that this does not block functions of the subsystem; the PID controllers of each motor runs.
+   */
   @Override
   public void retract() {
     setAngle(m_stowedState.getAngle());
     setExtension(m_stowedState.getLength());
   }
 
+  /**
+   * Gets whether the arm is fully retracted ("stowed position").
+   * @return whether the arm is fully retracted ("stowed position").
+   */
   @Override
   public boolean isRetracted() {
     return m_state.equals(Constants.Arm.States.STOWED);
   }
 
+  /**
+   * Extends the arm to the selected position.
+   * 
+   * Note that this does not block functions of the subsystem; the PID controllers of each motor runs.
+   */
   @Override
   public void extend() {
     setAngle(m_extendedState.getAngle());
     setExtension(m_extendedState.getLength());
   }
 
+  /**
+   * Gets whether the arm is fully extended.
+   * @return whether the arm is fully extended.
+   */
   @Override
   public boolean isExtended() {
     return (isRetracted() == false) && m_state.equals(m_extendedState);
   }
 
+  /**
+   * Locks the arm. 
+   * 
+   * Disables movement by engaging the friction brake.
+   */
   @Override
   public void lock() {
     m_extensionBrake.set(true);
     m_rotationBrake.set(true);
   }
 
+  /**
+   * Unlocks the arm.
+   * 
+   * Enables movement by disengaging the friction brake.
+   */
   @Override
   public void unlock() {
     m_extensionBrake.set(false);
     m_rotationBrake.set(false);
   }
 
+  /**
+   * Locks the arm.
+   * 
+   * Disables movement by engaging the friction brake.
+   */
   @Override
   public void stop() {
     lock();

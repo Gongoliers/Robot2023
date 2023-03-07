@@ -13,9 +13,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.lib.ArmState;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
-import frc.robot.superstructure.ArmState;
 
 public final class Constants {
 
