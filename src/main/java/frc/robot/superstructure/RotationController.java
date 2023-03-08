@@ -25,35 +25,34 @@ import java.util.Map;
 public class RotationController extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
 
-  private WPI_TalonFX m_rotationMotor;
-  private WPI_CANCoder m_rotationCANCoder;
+  private WPI_TalonFX m_motor;
+  private WPI_CANCoder m_cancoder;
 
-  private Solenoid m_rotationBrake;
+  private Solenoid m_brake;
 
   private ArmState m_stowedState;
   private ArmState m_extendedState;
 
   public RotationController() {
-    m_rotationMotor =
-        new WPI_TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    m_motor = new WPI_TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
 
-    m_rotationCANCoder =
+    m_cancoder =
         new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
 
-    m_rotationBrake =
+    m_brake =
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID,
             PneumaticsModuleType.REVPH,
             Constants.Arm.ROTATION_BRAKE_CHANNEL);
+
     lock();
 
-    realignRotationSensor();
-
     m_stowedState = Constants.Arm.States.STOWED;
-    // TODO Select default extended state
     m_extendedState = Constants.Arm.States.STOWED;
+
+    realignRotationSensor();
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
@@ -76,7 +75,7 @@ public class RotationController extends SubsystemBase
   private void setGoal(Rotation2d angle) {
     double setpoint =
         Conversions.degreesToFalcon(angle.getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO);
-    m_rotationMotor.set(ControlMode.Position, setpoint);
+    m_motor.set(ControlMode.Position, setpoint);
   }
 
   /**
@@ -87,20 +86,20 @@ public class RotationController extends SubsystemBase
   private Rotation2d getAngle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
-            m_rotationMotor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
+            m_motor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
   }
 
   private void configRotationMotor() {
-    m_rotationMotor.configFactoryDefault();
-    m_rotationMotor.configAllSettings(Robot.ctreConfigs.armRotationFXConfig);
-    m_rotationMotor.setInverted(Constants.Arm.SHOULD_INVERT_ROTATION_MOTOR);
-    m_rotationMotor.setNeutralMode(Constants.Arm.ROTATION_MOTOR_NEUTRAL_MODE);
+    m_motor.configFactoryDefault();
+    m_motor.configAllSettings(Robot.ctreConfigs.armRotationFXConfig);
+    m_motor.setInverted(Constants.Arm.SHOULD_INVERT_ROTATION_MOTOR);
+    m_motor.setNeutralMode(Constants.Arm.ROTATION_MOTOR_NEUTRAL_MODE);
     // TODO
   }
 
   private void configRotationCANCoder() {
-    m_rotationCANCoder.configFactoryDefault();
-    m_rotationCANCoder.configAllSettings(Robot.ctreConfigs.rotationCanCoderConfig);
+    m_cancoder.configFactoryDefault();
+    m_cancoder.configAllSettings(Robot.ctreConfigs.rotationCanCoderConfig);
   }
 
   /**
@@ -110,7 +109,7 @@ public class RotationController extends SubsystemBase
    * future encoder measurements will align with the angle of the arm.
    */
   private void realignRotationSensor() {
-    m_rotationMotor.setSelectedSensorPosition(
+    m_motor.setSelectedSensorPosition(
         Conversions.degreesToFalcon(
             getCANCoderAngle().getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
   }
@@ -121,7 +120,7 @@ public class RotationController extends SubsystemBase
    * @return the angle measured by the CANCoder.
    */
   private Rotation2d getCANCoderAngle() {
-    double measurement = m_rotationCANCoder.getAbsolutePosition();
+    double measurement = m_cancoder.getAbsolutePosition();
     double angle = measurement - Constants.Arm.CANCODER_OFFSET;
     return Rotation2d.fromDegrees(angle);
   }
@@ -175,7 +174,7 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_rotationBrake.set(true);
+    m_brake.set(true);
   }
 
   /**
@@ -185,7 +184,7 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void unlock() {
-    m_rotationBrake.set(false);
+    m_brake.set(false);
   }
 
   /**
@@ -195,7 +194,7 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void stop() {
-    m_rotationMotor.set(0.0);
+    m_motor.set(0.0);
     lock();
   }
 
@@ -238,7 +237,7 @@ public class RotationController extends SubsystemBase
     var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
     brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
 
-    brakeLayout.addBoolean("Rotation Brake Active?", m_rotationBrake::get).withPosition(0, 0);
+    brakeLayout.addBoolean("Rotation Brake Active?", m_brake::get).withPosition(0, 0);
   }
 
   @Override

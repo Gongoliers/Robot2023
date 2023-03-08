@@ -24,20 +24,19 @@ import java.util.Map;
 public class ExtensionController extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
 
-  private WPI_TalonFX m_extensionMotor;
+  private final WPI_TalonFX m_motor;
 
-  private Solenoid m_extensionBrake;
+  private final Solenoid m_brake;
 
   private ArmState m_stowedState;
   private ArmState m_extendedState;
 
   public ExtensionController() {
 
-    m_extensionMotor =
-        new WPI_TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    m_motor = new WPI_TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
 
-    m_extensionBrake =
+    m_brake =
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID,
             PneumaticsModuleType.REVPH,
@@ -46,7 +45,6 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     m_stowedState = Constants.Arm.States.STOWED;
-    // TODO Select default extended state
     m_extendedState = Constants.Arm.States.STOWED;
 
     // Assumes that the arm begins the match in the stowed state
@@ -71,17 +69,17 @@ public class ExtensionController extends SubsystemBase
    */
   private double getLength() {
     return Conversions.falconToMeters(
-        m_extensionMotor.getSelectedSensorPosition(),
+        m_motor.getSelectedSensorPosition(),
         Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
         Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
   }
 
   private void configExtensionMotor() {
-    m_extensionMotor.configFactoryDefault();
-    m_extensionMotor.configAllSettings(Robot.ctreConfigs.armExtensionFXConfig);
-    m_extensionMotor.setInverted(Constants.Arm.SHOULD_INVERT_EXTENSION_MOTOR);
-    m_extensionMotor.setNeutralMode(Constants.Arm.EXTENSION_MOTOR_NEUTRAL_MODE);
-    m_extensionMotor.setSelectedSensorPosition(0);
+    m_motor.configFactoryDefault();
+    m_motor.configAllSettings(Robot.ctreConfigs.armExtensionFXConfig);
+    m_motor.setInverted(Constants.Arm.SHOULD_INVERT_EXTENSION_MOTOR);
+    m_motor.setNeutralMode(Constants.Arm.EXTENSION_MOTOR_NEUTRAL_MODE);
+    m_motor.setSelectedSensorPosition(0);
     // TODO
   }
 
@@ -93,7 +91,7 @@ public class ExtensionController extends SubsystemBase
    */
   private void zeroExtensionLength() {
     double stowedLength = Constants.Arm.States.STOWED.getLength();
-    m_extensionMotor.setSelectedSensorPosition(
+    m_motor.setSelectedSensorPosition(
         Conversions.metersToFalcon(
             stowedLength,
             Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
@@ -112,7 +110,7 @@ public class ExtensionController extends SubsystemBase
             length,
             Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
             Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
-    m_extensionMotor.set(ControlMode.Position, setpoint);
+    m_motor.set(ControlMode.Position, setpoint);
   }
 
   /**
@@ -166,7 +164,7 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_extensionBrake.set(true);
+    m_brake.set(true);
   }
 
   /**
@@ -176,7 +174,7 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void unlock() {
-    m_extensionBrake.set(false);
+    m_brake.set(false);
   }
 
   /**
@@ -186,7 +184,7 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void stop() {
-    m_extensionMotor.set(0.0);
+    m_motor.set(0.0);
     lock();
   }
 
@@ -226,7 +224,7 @@ public class ExtensionController extends SubsystemBase
     var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
     brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
 
-    brakeLayout.addBoolean("Extension Brake Active?", m_extensionBrake::get).withPosition(0, 1);
+    brakeLayout.addBoolean("Extension Brake Active?", m_brake::get).withPosition(0, 1);
   }
 
   @Override
