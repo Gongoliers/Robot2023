@@ -53,6 +53,10 @@ public class ExtensionController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
+  public void setSpeed(double percent) {
+    m_motor.set(ControlMode.PercentOutput, percent);
+  }
+
   /**
    * Sets what the future (extended) state should be.
    *
