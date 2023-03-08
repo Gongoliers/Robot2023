@@ -16,7 +16,6 @@ public final class CTREConfigs {
   public TalonFXConfiguration armRotationFXConfig;
   public TalonFXConfiguration armExtensionFXConfig;
   public CANCoderConfiguration rotationCanCoderConfig;
-  public CANCoderConfiguration extensionCanCoderConfig;
 
   public CTREConfigs() {
     swerveAngleFXConfig = new TalonFXConfiguration();
@@ -63,7 +62,6 @@ public final class CTREConfigs {
     armRotationFXConfig = new TalonFXConfiguration();
     armExtensionFXConfig = new TalonFXConfiguration();
     rotationCanCoderConfig = new CANCoderConfiguration();
-    extensionCanCoderConfig = new CANCoderConfiguration();
 
     // Arm rotation motor config
     SupplyCurrentLimitConfiguration rotationSupplyLimit =
@@ -99,12 +97,5 @@ public final class CTREConfigs {
     rotationCanCoderConfig.initializationStrategy =
         SensorInitializationStrategy.BootToAbsolutePosition;
     rotationCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-
-    // Arm extension CANCoder config
-    extensionCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    extensionCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_EXTENSION_CANCODER;
-    extensionCanCoderConfig.initializationStrategy =
-        SensorInitializationStrategy.BootToAbsolutePosition;
-    extensionCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
   }
 }

@@ -18,7 +18,9 @@ public class Claw extends SubsystemBase implements Gripper, TelemetrySubsystem {
   private Solenoid m_solenoid;
 
   public Claw() {
-    m_solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.Claw.CHANNEL);
+    m_solenoid =
+        new Solenoid(
+            Constants.PNEUMATICS_HUB_ID, PneumaticsModuleType.REVPH, Constants.Claw.CHANNEL);
 
     addToShuffleboard(Shuffleboard.getTab("Claw"));
   }

@@ -6,7 +6,6 @@ package frc.robot.superstructure;
 
 import com.thegongoliers.commands.output.DeployAndOperateCommand;
 import com.thegongoliers.commands.output.OperateWithLockCommand;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -17,15 +16,17 @@ public class Deploy extends SequentialCommandGroup {
   public Deploy(Arm arm, Claw claw, ArmState state) {
     addRequirements(arm, claw);
     addCommands(
-      new InstantCommand(() -> arm.setExtendedState(state)),
-      // TODO Am I using dependency injection correctly?
-      new OperateWithLockCommand(arm, arm, 
-        new DeployAndOperateCommand(arm, arm, arm, 
-          // new InstantCommand(claw::close)
-          new PrintCommand("done!")
-        ), 
-      1)
-    );
+        new InstantCommand(() -> arm.setExtendedState(state)),
+        // TODO Am I using dependency injection correctly?
+        new OperateWithLockCommand(
+            arm,
+            arm,
+            new DeployAndOperateCommand(
+                arm,
+                arm,
+                arm,
+                // new InstantCommand(claw::close)
+                new PrintCommand("done!")),
+            1));
   }
-
 }

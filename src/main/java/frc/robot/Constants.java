@@ -19,6 +19,8 @@ import frc.lib.swerve.SwerveModuleConfig;
 
 public final class Constants {
 
+  public static final int PNEUMATICS_HUB_ID = 30;
+
   public static final class Driver {
     /** Port in Driver Station for the driver controller. */
     public static final int CONTROLLER_PORT = 0;
@@ -353,17 +355,17 @@ public final class Constants {
      * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
      * button, then copy the ID of the motor to this constant.
      */
-    public static final int ROTATION_MOTOR_CAN_ID = 0; // TODO
+    public static final int ROTATION_MOTOR_CAN_ID = 2;
     /**
      * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
      * button, then copy the ID of the motor to this constant.
      */
-    public static final int EXTENSION_MOTOR_CAN_ID = 0; // TODO
+    public static final int EXTENSION_MOTOR_CAN_ID = 3;
     /**
      * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the Blink
      * button, then copy the ID of the CANcoder to this constant.
      */
-    public static final int ROTATION_CANCODER_CAN_ID = 0; // TODO
+    public static final int ROTATION_CANCODER_CAN_ID = 1;
 
     /** Maximum continuous current for the rotation motor. */
     public static final double ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
@@ -403,8 +405,6 @@ public final class Constants {
 
     public static final boolean SHOULD_INVERT_ROTATION_CANCODER = false;
 
-    public static final boolean SHOULD_INVERT_EXTENSION_CANCODER = false;
-
     /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
     public static final boolean SHOULD_INVERT_ROTATION_MOTOR = false; // TODO
 
@@ -412,7 +412,7 @@ public final class Constants {
      * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
      * behavior.
      */
-    public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
+    public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
     /**
      * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
@@ -424,18 +424,18 @@ public final class Constants {
      * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
      * behavior.
      */
-    public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
+    public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
     /**
      * The difference in arm length caused by one full rotation of the spool, meaured in meters.
      * Essentially, the effective "circumference" of the spool.
      */
-    public static final double EXTENSION_LENGTH_PER_ROTATION = 0;
+    public static final double EXTENSION_LENGTH_PER_ROTATION = Units.inchesToMeters(1) * Math.PI;
     /** The gear ratio between the extension motor and the spool. */
-    public static final double EXTENSION_MOTOR_GEAR_RATIO = 0;
+    public static final double EXTENSION_MOTOR_GEAR_RATIO = 15.34;
 
     /** The gear ratio between the rotation motor and the arm. */
-    public static final double ROTATION_MOTOR_GEAR_RATIO = 0;
+    public static final double ROTATION_MOTOR_GEAR_RATIO = 24.1666;
 
     /** The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. */
     public static final double CANCODER_OFFSET = 0;
@@ -444,17 +444,17 @@ public final class Constants {
      * The minimum angle that the arm can rotate to. This value is measured in degrees, and
      * represents the lower bound that the arm will never cross.
      */
-    public static final double MIN_ANGLE = 0;
+    public static final double MIN_ANGLE = -40; // -47
 
     /**
      * The maximum angle that the arm can rotate to. This value is measured in degrees, and
      * represents the upper bound that the arm will never cross.
      */
-    public static final double MAX_ANGLE = 0;
+    public static final double MAX_ANGLE = 60; // 66
 
-    public static final int ROTATION_BRAKE_CHANNEL = 8; // TODO
+    public static final int ROTATION_BRAKE_CHANNEL = 10;
 
-    public static final int EXTENSION_BRAKE_CHANNEL = 9; // TODO
+    public static final int EXTENSION_BRAKE_CHANNEL = 9;
 
     // TODO Implement as <Rotation2d, Double>
     public static InterpolatingTreeMap<Double, Double> kAngleToMinLength =
@@ -478,20 +478,20 @@ public final class Constants {
 
     public static final class States {
       public static final ArmState STOWED =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(45));
-      public static final ArmState MIDDLE =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(50));
-      public static final ArmState TOP =
           new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(60));
+      public static final ArmState FLOOR =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(-40));
+      public static final ArmState MIDDLE =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState TOP =
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState SUBSTATION =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(75));
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
     }
   }
 
   public static final class Claw {
 
-    public static final int CHANNEL = 0; // TODO
+    public static final int CHANNEL = 8;
   }
 }

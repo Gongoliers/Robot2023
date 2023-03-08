@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
-import frc.robot.superstructure.Arm;
 import frc.robot.superstructure.Claw;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
@@ -23,7 +22,7 @@ public class RobotContainer {
   // Subsystems
   private final Swerve m_swerve = new Swerve();
   private final Claw m_claw = new Claw();
-  private final Arm m_arm = new Arm();
+  // private final Arm m_arm = new Arm();
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -70,18 +69,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .onTrue(new InstantCommand(() -> m_arm.setExtendedState(Constants.Arm.States.FLOOR)));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
-        .onTrue(new InstantCommand(() -> m_arm.setExtendedState(Constants.Arm.States.MIDDLE)));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .onTrue(new InstantCommand(() -> m_arm.setExtendedState(Constants.Arm.States.TOP)));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .onTrue(new InstantCommand(() -> m_arm.setExtendedState(Constants.Arm.States.SUBSTATION)));
-
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.INTAKE_AXIS.value)

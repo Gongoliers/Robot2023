@@ -22,7 +22,6 @@ import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
-
 import java.util.Map;
 
 public class Arm extends SubsystemBase
@@ -61,9 +60,15 @@ public class Arm extends SubsystemBase
     configRotationCANCoder();
 
     m_rotationBrake =
-        new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.ROTATION_BRAKE_CHANNEL);
+        new Solenoid(
+            Constants.PNEUMATICS_HUB_ID,
+            PneumaticsModuleType.REVPH,
+            Constants.Arm.ROTATION_BRAKE_CHANNEL);
     m_extensionBrake =
-        new Solenoid(PneumaticsModuleType.REVPH, Constants.Arm.EXTENSION_BRAKE_CHANNEL);
+        new Solenoid(
+            Constants.PNEUMATICS_HUB_ID,
+            PneumaticsModuleType.REVPH,
+            Constants.Arm.EXTENSION_BRAKE_CHANNEL);
     lock();
 
     realignRotationSensor();
@@ -213,8 +218,9 @@ public class Arm extends SubsystemBase
 
   /**
    * Realigns the rotation motor encoder to the CANCoder angle.
-   * 
-   * Resets the rotation motor's internal encoder to the CANCoder angle value. This ensures that future encoder measurements will align with the angle of the arm.
+   *
+   * <p>Resets the rotation motor's internal encoder to the CANCoder angle value. This ensures that
+   * future encoder measurements will align with the angle of the arm.
    */
   private void realignRotationSensor() {
     m_rotationMotor.setSelectedSensorPosition(
@@ -224,8 +230,9 @@ public class Arm extends SubsystemBase
 
   /**
    * Zeroes the extension motor encoder.
-   * 
-   * Resets the extension motor's internal encoder to zero. This ensures that future encoder measurements correspond to the length of the arm. 
+   *
+   * <p>Resets the extension motor's internal encoder to zero. This ensures that future encoder
+   * measurements correspond to the length of the arm.
    */
   private void zeroExtensionLength() {
     double stowedLength = Constants.Arm.States.STOWED.getLength();
@@ -238,6 +245,7 @@ public class Arm extends SubsystemBase
 
   /**
    * Gets the angle of the CANCoder.
+   *
    * @return the angle measured by the CANCoder.
    */
   private Rotation2d getCANCoderAngle() {
@@ -254,8 +262,9 @@ public class Arm extends SubsystemBase
 
   /**
    * Retracts the arm to the stowed position.
-   * 
-   * Note that this does not block functions of the subsystem; the PID controllers of each motor runs.
+   *
+   * <p>Note that this does not block functions of the subsystem; the PID controllers of each motor
+   * runs.
    */
   @Override
   public void retract() {
@@ -265,6 +274,7 @@ public class Arm extends SubsystemBase
 
   /**
    * Gets whether the arm is fully retracted ("stowed position").
+   *
    * @return whether the arm is fully retracted ("stowed position").
    */
   @Override
@@ -274,8 +284,9 @@ public class Arm extends SubsystemBase
 
   /**
    * Extends the arm to the selected position.
-   * 
-   * Note that this does not block functions of the subsystem; the PID controllers of each motor runs.
+   *
+   * <p>Note that this does not block functions of the subsystem; the PID controllers of each motor
+   * runs.
    */
   @Override
   public void extend() {
@@ -285,6 +296,7 @@ public class Arm extends SubsystemBase
 
   /**
    * Gets whether the arm is fully extended.
+   *
    * @return whether the arm is fully extended.
    */
   @Override
@@ -293,9 +305,9 @@ public class Arm extends SubsystemBase
   }
 
   /**
-   * Locks the arm. 
-   * 
-   * Disables movement by engaging the friction brake.
+   * Locks the arm.
+   *
+   * <p>Disables movement by engaging the friction brake.
    */
   @Override
   public void lock() {
@@ -305,8 +317,8 @@ public class Arm extends SubsystemBase
 
   /**
    * Unlocks the arm.
-   * 
-   * Enables movement by disengaging the friction brake.
+   *
+   * <p>Enables movement by disengaging the friction brake.
    */
   @Override
   public void unlock() {
@@ -316,8 +328,8 @@ public class Arm extends SubsystemBase
 
   /**
    * Locks the arm.
-   * 
-   * Disables movement by engaging the friction brake.
+   *
+   * <p>Disables movement by engaging the friction brake.
    */
   @Override
   public void stop() {
