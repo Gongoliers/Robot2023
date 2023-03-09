@@ -387,6 +387,9 @@ public final class Constants {
     public static final double ROTATION_MOTOR_KD = 0; // TODO
     /** Rotation motor KF. */
     public static final double ROTATION_MOTOR_KF = 0; // TODO
+    /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
+    public static final TrapezoidProfile.Constraints ROTATION_CONTRAINTS =
+        new TrapezoidProfile.Constraints(1, 1);
 
     /** Maximum continuous current for the extension motor. */
     public static final double EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
@@ -405,6 +408,9 @@ public final class Constants {
     public static final double EXTENSION_MOTOR_KD = 0; // TODO
     /** Extension motor KF. */
     public static final double EXTENSION_MOTOR_KF = 0; // TODO
+    /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
+    public static final TrapezoidProfile.Constraints EXTENSION_CONSTRAINTS =
+        new TrapezoidProfile.Constraints(1, 1);
 
     public static final boolean SHOULD_INVERT_ROTATION_CANCODER = false;
 
@@ -481,6 +487,16 @@ public final class Constants {
     public static final double MANUAL_RAISE_SPEED = 0.1;
 
     public static final double MANUAL_LOWER_SPEED = -0.1;
+
+    public static final double EXTENSION_KS = 0;
+    public static final double EXTENSION_KG = 0;
+    public static final double EXTENSION_KV = 0;
+    public static final double EXTENSION_KA = 0;
+
+    public static final double ROTATION_KS = 0;
+    public static final double ROTATION_KG = 0;
+    public static final double ROTATION_KV = 0;
+    public static final double ROTATION_KA = 0;
   }
 
   public static final class Claw {

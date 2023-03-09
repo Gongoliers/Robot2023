@@ -2,36 +2,33 @@ package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.thegongoliers.math.GMath;
-import com.thegongoliers.output.interfaces.Extendable;
-import com.thegongoliers.output.interfaces.Lockable;
-import com.thegongoliers.output.interfaces.Retractable;
-import com.thegongoliers.output.interfaces.Stoppable;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.ArmState;
-import frc.lib.TelemetrySubsystem;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import java.util.Map;
 
-public class ExtensionController extends SubsystemBase
-    implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
+public class ExtensionController extends ProfiledPIDSubsystem {
 
   private final WPI_TalonFX m_motor;
-
   private final Solenoid m_brake;
-
-  private ArmState m_stowedState;
-  private ArmState m_extendedState;
+  private final ArmFeedforward m_feedforward =
+      new ArmFeedforward(
+          Constants.Arm.EXTENSION_KS,
+          Constants.Arm.EXTENSION_KG,
+          Constants.Arm.EXTENSION_KV,
+          Constants.Arm.EXTENSION_KA);
 
   public ExtensionController() {
+
+    super(
+        new ProfiledPIDController(
+            Constants.Arm.EXTENSION_MOTOR_KP, 0, 0, Constants.Arm.EXTENSION_CONSTRAINTS),
+        0);
 
     m_motor = new WPI_TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
@@ -44,13 +41,8 @@ public class ExtensionController extends SubsystemBase
 
     lock();
 
-    m_stowedState = Constants.Arm.States.STOWED;
-    m_extendedState = Constants.Arm.States.STOWED;
-
-    // Assumes that the arm begins the match in the stowed state
-    zeroExtensionLength();
-
-    addToShuffleboard(Shuffleboard.getTab("Arm"));
+    // Assumes that the arm begins in the stowed state
+    setPosition(0);
   }
 
   /**
@@ -59,16 +51,14 @@ public class ExtensionController extends SubsystemBase
    * @param percent the speed to drive the motor at.
    */
   public void drive(double percent) {
+    this.disable();
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
-  /**
-   * Sets what the future (extended) state should be.
-   *
-   * @param extendedState the state to approach.
-   */
-  public void setExtendedState(ArmState extendedState) {
-    m_extendedState = extendedState;
+  @Override
+  public void useOutput(double output, TrapezoidProfile.State setpoint) {
+    double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
+    m_motor.setVoltage(output + feedforward);
   }
 
   /**
@@ -76,11 +66,43 @@ public class ExtensionController extends SubsystemBase
    *
    * @return the current extension in meters.
    */
-  public double getLength() {
+  @Override
+  public double getMeasurement() {
     return Conversions.falconToMeters(
         m_motor.getSelectedSensorPosition(),
         Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
         Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
+  }
+
+  /**
+   * Locks the arm.
+   *
+   * <p>Disables movement by engaging the friction brake.
+   */
+  public void lock() {
+    this.disable();
+    m_brake.set(false);
+  }
+
+  /**
+   * Unlocks the arm.
+   *
+   * <p>Enables movement by disengaging the friction brake.
+   */
+  public void unlock() {
+    this.disable();
+    m_brake.set(true);
+  }
+
+  /**
+   * Locks the arm.
+   *
+   * <p>Disables movement by engaging the friction brake.
+   */
+  public void stop() {
+    this.disable();
+    m_motor.stopMotor();
+    lock();
   }
 
   private void configExtensionMotor() {
@@ -98,147 +120,11 @@ public class ExtensionController extends SubsystemBase
    * <p>Resets the extension motor's internal encoder to zero. This ensures that future encoder
    * measurements correspond to the length of the arm.
    */
-  private void zeroExtensionLength() {
-    double stowedLength = Constants.Arm.States.STOWED.getLength();
+  private void setPosition(double meters) {
     m_motor.setSelectedSensorPosition(
         Conversions.metersToFalcon(
-            stowedLength,
+            meters,
             Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
             Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO));
-  }
-
-  /**
-   * Approaches the extension desired length. Commands the extension motor's PID controller to
-   * approach the extension length.
-   *
-   * @param length the extension length (in meters) to approach.
-   */
-  private void setGoal(double length) {
-    double setpoint =
-        Conversions.metersToFalcon(
-            length,
-            Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
-            Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
-    m_motor.set(ControlMode.Position, setpoint);
-  }
-
-  /**
-   * Retracts the arm to the stowed position.
-   *
-   * <p>Note that this does not block functions of the subsystem; the PID controllers of each motor
-   * runs.
-   */
-  @Override
-  public void retract() {
-    double retractedLength = m_stowedState.getLength();
-    setGoal(retractedLength);
-  }
-
-  /**
-   * Gets whether the arm is fully retracted ("stowed position").
-   *
-   * @return whether the arm is fully retracted ("stowed position").
-   */
-  @Override
-  public boolean isRetracted() {
-    return GMath.approximately(getLength(), m_stowedState.getLength());
-  }
-
-  /**
-   * Extends the arm to the selected position.
-   *
-   * <p>Note that this does not block functions of the subsystem; the PID controllers of each motor
-   * runs.
-   */
-  @Override
-  public void extend() {
-    double extendedLength = m_extendedState.getLength();
-    setGoal(extendedLength);
-  }
-
-  /**
-   * Gets whether the arm is fully extended.
-   *
-   * @return whether the arm is fully extended.
-   */
-  @Override
-  public boolean isExtended() {
-    return GMath.approximately(getLength(), m_extendedState.getLength());
-  }
-
-  /**
-   * Locks the arm.
-   *
-   * <p>Disables movement by engaging the friction brake.
-   */
-  @Override
-  public void lock() {
-    m_brake.set(false);
-  }
-
-  /**
-   * Unlocks the arm.
-   *
-   * <p>Enables movement by disengaging the friction brake.
-   */
-  @Override
-  public void unlock() {
-    m_brake.set(true);
-  }
-
-  /**
-   * Locks the arm.
-   *
-   * <p>Disables movement by engaging the friction brake.
-   */
-  @Override
-  public void stop() {
-    m_motor.stopMotor();
-    lock();
-  }
-
-  @Override
-  public void addToShuffleboard(ShuffleboardContainer container) {
-    var extendedLayout = container.getLayout("Extended State", BuiltInLayouts.kList);
-    extendedLayout
-        .withProperties(Map.of("Label position", "TOP"))
-        .withSize(2, 4)
-        .withPosition(0, 0);
-
-    extendedLayout
-        .addNumber("Extended Length (m)", m_extendedState::getLength)
-        .withPosition(0, 1)
-        .withWidget(BuiltInWidgets.kNumberBar);
-
-    extendedLayout.addBoolean("Is Extended?", this::isExtended).withPosition(0, 2);
-
-    var stowedLayout = container.getLayout("Stowed State", BuiltInLayouts.kList);
-    stowedLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(2, 0);
-
-    stowedLayout
-        .addNumber("Stowed Length (m)", m_stowedState::getLength)
-        .withPosition(0, 1)
-        .withWidget(BuiltInWidgets.kNumberBar);
-
-    stowedLayout.addBoolean("Is Stowed?", this::isRetracted).withPosition(0, 3);
-
-    var actualLayout = container.getLayout("Actual State", BuiltInLayouts.kList);
-    actualLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(4, 0);
-
-    actualLayout
-        .addNumber("Actual Length (m)", this::getLength)
-        .withPosition(0, 1)
-        .withWidget(BuiltInWidgets.kNumberBar);
-
-    var brakeLayout = container.getLayout("Brakes", BuiltInLayouts.kList);
-    brakeLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(6, 0);
-
-    brakeLayout.addBoolean("Extension Brake Active?", m_brake::get).withPosition(0, 1);
-  }
-
-  @Override
-  public void outputTelemetry() {
-    // TODO Auto-generated method stub
-
   }
 }
