@@ -1,11 +1,16 @@
 package frc.robot;
 
+import com.thegongoliers.commands.DoNothingCommand;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.autos.exampleAuto;
+import frc.robot.auto.FollowTrajectory;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -73,6 +78,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(m_swerve);
+    // FIXME
+    // https://docs.wpilib.org/en/stable/docs/software/pathplanning/pathweaver/integrating-robot-program.html
+    return new DoNothingCommand();
   }
 }
