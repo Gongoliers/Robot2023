@@ -21,36 +21,26 @@ public class RotationController extends ProfiledPIDSubsystem {
   private final WPI_CANCoder m_cancoder;
   private final Solenoid m_brake;
   private final ArmFeedforward m_feedforward =
-      new ArmFeedforward(
-          Rotation.KS,
-          Rotation.KG,
-          Rotation.KV,
-          Rotation.KA);
+      new ArmFeedforward(Rotation.KS, Rotation.KG, Rotation.KV, Rotation.KA);
 
   public RotationController() {
 
-    // FIXME Match initialPosition to CANCoder
-    super(
-        new ProfiledPIDController(
-            Rotation.KP, 0, 0, Rotation.CONSTRAINTS),
-        0);
+    // initialPosition is the initial goal 
+    super(new ProfiledPIDController(Rotation.KP, 0, 0, Rotation.CONSTRAINTS), Constants.Arm.States.STOWED.getAngle().getDegrees());
 
     m_motor = new WPI_TalonFX(Rotation.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
 
-    m_cancoder =
-        new WPI_CANCoder(Rotation.CANCODER_ID, Constants.Arm.CANBUS_NAME);
+    m_cancoder = new WPI_CANCoder(Rotation.CANCODER_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
 
     m_brake =
         new Solenoid(
-            Constants.PNEUMATICS_HUB_ID,
-            PneumaticsModuleType.REVPH,
-            Rotation.BRAKE_CHANNEL);
+            Constants.PNEUMATICS_HUB_ID, PneumaticsModuleType.REVPH, Rotation.BRAKE_CHANNEL);
 
     lock();
 
-    setPosition(getCANCoderAngle());
+    setMeasurement(getCANCoderAngle().getDegrees());
   }
 
   /**
@@ -62,16 +52,25 @@ public class RotationController extends ProfiledPIDSubsystem {
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
+  /**
+   * Uses the output from the PIDController to drive the motor.
+   * @param output volts calculated by the PIDController.
+   * @param setpoint the setpoint for the PIDController. Used for calculating feedforward.
+   */
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     m_motor.setVoltage(output + feedforward);
   }
 
+  /**
+   * Gets the current rotation of the arm in degrees.
+   *
+   * @return the current rotation of the arm in degrees.
+   */
   @Override
   public double getMeasurement() {
-    return Conversions.falconToDegrees(
-        m_motor.getSelectedSensorPosition(), Rotation.GEAR_RATIO);
+    return Conversions.falconToDegrees(m_motor.getSelectedSensorPosition(), Rotation.GEAR_RATIO);
   }
 
   /**
@@ -121,10 +120,9 @@ public class RotationController extends ProfiledPIDSubsystem {
    * <p>Resets the rotation motor's internal encoder to the CANCoder angle value. This ensures that
    * future encoder measurements will align with the angle of the arm.
    */
-  private void setPosition(Rotation2d rotation) {
+  private void setMeasurement(double degrees) {
     m_motor.setSelectedSensorPosition(
-        Conversions.degreesToFalcon(
-            rotation.getDegrees(), Rotation.GEAR_RATIO));
+        Conversions.degreesToFalcon(degrees, Rotation.GEAR_RATIO));
   }
 
   /**

@@ -9,41 +9,33 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
-import frc.robot.Robot;
-import frc.robot.Constants.Arm.Extension;
 import frc.robot.Constants;
+import frc.robot.Constants.Arm.Extension;
+import frc.robot.Robot;
 
 public class ExtensionController extends ProfiledPIDSubsystem {
 
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
   private final ArmFeedforward m_feedforward =
-      new ArmFeedforward(
-          Extension.KS,
-          Extension.KG,
-          Extension.KV,
-          Extension.KA);
+      new ArmFeedforward(Extension.KS, Extension.KG, Extension.KV, Extension.KA);
 
   public ExtensionController() {
 
-    super(
-        new ProfiledPIDController(
-            Extension.KP, 0, 0, Extension.CONSTRAINTS),
-        0);
+    // initialPosition is the initial goal
+    super(new ProfiledPIDController(Extension.KP, 0, 0, Extension.CONSTRAINTS), Constants.Arm.States.STOWED.getLength());
 
     m_motor = new WPI_TalonFX(Extension.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
 
     m_brake =
         new Solenoid(
-            Constants.PNEUMATICS_HUB_ID,
-            PneumaticsModuleType.REVPH,
-            Extension.BRAKE_CHANNEL);
+            Constants.PNEUMATICS_HUB_ID, PneumaticsModuleType.REVPH, Extension.BRAKE_CHANNEL);
 
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setPosition(0);
+    setMeasurement(Constants.Arm.States.STOWED.getLength());
   }
 
   /**
@@ -56,6 +48,11 @@ public class ExtensionController extends ProfiledPIDSubsystem {
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
+  /**
+   * Uses the output from the PIDController to drive the motor.
+   * @param output volts calculated by the PIDController.
+   * @param setpoint the setpoint for the PIDController. Used for calculating feedforward.
+   */
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
@@ -63,16 +60,14 @@ public class ExtensionController extends ProfiledPIDSubsystem {
   }
 
   /**
-   * Get the current extension in meters.
+   * Gets the current extension of the arm in meters.
    *
-   * @return the current extension in meters.
+   * @return the current extension of the arm in meters.
    */
   @Override
   public double getMeasurement() {
     return Conversions.falconToMeters(
-        m_motor.getSelectedSensorPosition(),
-        Extension.LENGTH_PER_ROTATION,
-        Extension.GEAR_RATIO);
+        m_motor.getSelectedSensorPosition(), Extension.LENGTH_PER_ROTATION, Extension.GEAR_RATIO);
   }
 
   /**
@@ -121,11 +116,8 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * <p>Resets the extension motor's internal encoder to zero. This ensures that future encoder
    * measurements correspond to the length of the arm.
    */
-  private void setPosition(double meters) {
+  private void setMeasurement(double meters) {
     m_motor.setSelectedSensorPosition(
-        Conversions.metersToFalcon(
-            meters,
-            Extension.LENGTH_PER_ROTATION,
-            Extension.GEAR_RATIO));
+        Conversions.metersToFalcon(meters, Extension.LENGTH_PER_ROTATION, Extension.GEAR_RATIO));
   }
 }

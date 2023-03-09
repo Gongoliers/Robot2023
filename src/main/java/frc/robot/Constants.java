@@ -362,57 +362,98 @@ public final class Constants {
        */
       public static final int MOTOR_ID = 3;
 
-      /** Maximum continuous current for the extension motor. */
+      /**
+       * Maximum continuous current for the extension motor. This is the current that the motor will
+       * be held at if the current limit is exceeded.
+       */
       public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
-      /** Maximum peak current for the extension motor. */
+      /**
+       * Maximum peak current for the extension motor. If this current is exceeded for the specified
+       * duration, current will be reduced.
+       */
       public static final double PEAK_CURRENT_MAX = 0; // TODO
-      /** Maximum peak current duration for the extension motor. */
+      /**
+       * Maximum peak current duration for the extension motor. If the specified current is exceeded
+       * for this duration, current will be reduced.
+       */
       public static final double PEAK_CURRENT_DURATION = 0; // TODO
-      /** Toggle for limiting the current for the extension motor. */
+      /**
+       * Toggle for limiting the current for the extension motor. If true, current will be limited
+       * using the specified parameters.
+       */
       public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
-      /** Extension motor KP. */
+      /** Extension motor KP. Applies this many volts per meter of error. */
       public static final double KP = 0; // TODO
       /** Extension motor KI. */
       public static final double KI = 0; // TODO
       /** Extension motor KD. */
       public static final double KD = 0; // TODO
-      /** Extension motor KF. */
-      public static final double KF = 0; // TODO
       /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
       public static final TrapezoidProfile.Constraints CONSTRAINTS =
           new TrapezoidProfile.Constraints(1, 1);
 
-      public static final double KS = 0;
-      public static final double KG = 0;
-      public static final double KV = 0;
-      public static final double KA = 0;
-
       /**
-       * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
-       * arm to extend and that negative values cause the arm to retract.
+       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
+       * output.
        */
-      public static final boolean SHOULD_INVERT_MOTOR = false; // TODO
+      public static final double KG = 0; // TODO
+      /**
+       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KS = 0; // TODO
+      /**
+       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
+       * to the PID output.
+       */
+      public static final double KV = 0; // TODO
+      /**
+       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KA = 0; // TODO
 
       /**
-       * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-       * behavior.
+       * Toggle for if the extension motor should be inverted. Ensures that positive values cause
+       * the arm to extend and that negative values cause the arm to retract.
+       */
+      public static final boolean SHOULD_INVERT_MOTOR = false;
+
+      /**
+       * Mode that the motor enters when no effort is applied. Brake mode makes it more difficult to
+       * turn the shaft, while neutral mode allows the shaft the turn freely.
        */
       public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
       /**
        * The difference in arm length caused by one full rotation of the spool, meaured in meters.
-       * Essentially, the effective "circumference" of the spool.
+       * Essentially, the effective "circumference" of the spool. Used for calculating the
+       * displacement per encoder tick.
        */
       public static final double LENGTH_PER_ROTATION = Units.inchesToMeters(1) * Math.PI;
-      /** The gear ratio between the extension motor and the spool. */
-      public static final double GEAR_RATIO = 15.34;
+      /**
+       * The gear ratio between the extension motor and the spool. Used for calculating the
+       * displacement per encoder tick.
+       */
+      public static final double GEAR_RATIO = 15.34; // TODO
 
+      /**
+       * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
+       * engage and disengage the brake on the gearbox.
+       */
       public static final int BRAKE_CHANNEL = 9;
 
-      /** The speed for manually extending / retracting that portion of the arm. */
+      /**
+       * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
+       * for the PID control.
+       */
       public static final double MANUAL_EXTEND_SPEED = 0.4;
 
+      /**
+       * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
+       * for the PID control.
+       */
       public static final double MANUAL_RETRACT_SPEED = -0.4;
     }
 
@@ -429,72 +470,117 @@ public final class Constants {
        */
       public static final int CANCODER_ID = 1;
 
-      /** Maximum continuous current for the rotation motor. */
+      /**
+       * Maximum continuous current for the extension motor. This is the current that the motor will
+       * be held at if the current limit is exceeded.
+       */
       public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
-      /** Maximum peak current for the rotation motor. */
+      /**
+       * Maximum peak current for the extension motor. If this current is exceeded for the specified
+       * duration, current will be reduced.
+       */
       public static final double PEAK_CURRENT_MAX = 0; // TODO
-      /** Maximum peak current duration for the rotation motor. */
+      /**
+       * Maximum peak current duration for the extension motor. If the specified current is exceeded
+       * for this duration, current will be reduced.
+       */
       public static final double PEAK_CURRENT_DURATION = 0; // TODO
-      /** Toggle for limiting the current for the rotation motor. */
+      /**
+       * Toggle for limiting the current for the extension motor. If true, current will be limited
+       * using the specified parameters.
+       */
       public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
-      /** Rotation motor KP. */
+      /** Rotation motor KP. Applies this many volts per degree of error. */
       public static final double KP = 0; // TODO
       /** Rotation motor KI. */
       public static final double KI = 0; // TODO
       /** Rotation motor KD. */
       public static final double KD = 0; // TODO
-      /** Rotation motor KF. */
-      public static final double KF = 0; // TODO
       /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
       public static final TrapezoidProfile.Constraints CONSTRAINTS =
           new TrapezoidProfile.Constraints(1, 1);
 
-      public static final double KS = 0;
-      public static final double KG = 0;
-      public static final double KV = 0;
-      public static final double KA = 0;
+      /**
+       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
+       * output.
+       */
+      public static final double KG = 0; // TODO
+      /**
+       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KS = 0; // TODO
+      /**
+       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
+       * to the PID output.
+       */
+      public static final double KV = 0; // TODO
+      /**
+       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KA = 0; // TODO
 
+      /**
+       * Toggle for if the CANCoder should be inverted. Ensures that positive angles are
+       * counter-clockwise and negative angles are clockwise.
+       */
       public static final boolean SHOULD_INVERT_CANCODER = false;
 
-      /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
+      /**
+       * Toggle for if the rotation motor should be inverted. Ensures that positive motor values
+       * cause upwards movement and negative motor values cause downwards movement.
+       */
       public static final boolean SHOULD_INVERT_MOTOR = true;
 
       /**
-       * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-       * behavior.
+       * Mode that the motor enters when no effort is applied. Brake mode makes it more difficult to
+       * spin the shaft, while neutral mode allows the shaft the spin freely.
        */
       public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
-      /** The gear ratio between the rotation motor and the arm. */
-      public static final double GEAR_RATIO = 24.1666;
+      /**
+       * The gear ratio between the rotation motor and the arm. Used for calculating the
+       * displacement per encoder tick.
+       */
+      public static final double GEAR_RATIO = 24.1666; // TODO
 
-      /** The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. */
-      public static final double CANCODER_OFFSET = 0;
+      /**
+       * The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. Used for
+       * keeping a constant frame of reference for all calculations, where 0 degrees is parallel
+       * with the ground and perpendicular with the superstructure.
+       */
+      public static final double CANCODER_OFFSET = 0; // TODO
 
       /**
        * The minimum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the lower bound that the arm will never cross.
        */
-      public static final double MIN_ANGLE = -40; // -47
+      public static final double MIN_ANGLE = -40; // TODO Recalibrate, -47?
 
       /**
        * The maximum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the upper bound that the arm will never cross.
        */
-      public static final double MAX_ANGLE = 60; // 66
+      public static final double MAX_ANGLE = 60; // TODO Recalibrate, 66?
 
+      /**
+       * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
+       * engage and disengage the brake on the gearbox.
+       */
       public static final int BRAKE_CHANNEL = 10;
 
-      /** The speed for manually raising / lowering that portion of the arm. */
+      /** The speed for manually raising the arm. */
       public static final double MANUAL_RAISE_SPEED = 0.1;
 
+      /** The speed for manually lowering the arm. */
       public static final double MANUAL_LOWER_SPEED = -0.1;
     }
 
     public static final class States {
       public static final ArmState STOWED =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(60));
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState FLOOR =
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState MIDDLE =

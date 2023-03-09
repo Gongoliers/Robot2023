@@ -74,7 +74,6 @@ public final class CTREConfigs {
     armRotationFXConfig.slot0.kP = Constants.Arm.Rotation.KP;
     armRotationFXConfig.slot0.kI = Constants.Arm.Rotation.KI;
     armRotationFXConfig.slot0.kD = Constants.Arm.Rotation.KD;
-    armRotationFXConfig.slot0.kF = Constants.Arm.Rotation.KF;
     armRotationFXConfig.supplyCurrLimit = rotationSupplyLimit;
 
     // Arm extension motor config
@@ -88,7 +87,6 @@ public final class CTREConfigs {
     armExtensionFXConfig.slot0.kP = Constants.Arm.Extension.KP;
     armExtensionFXConfig.slot0.kI = Constants.Arm.Extension.KI;
     armExtensionFXConfig.slot0.kD = Constants.Arm.Extension.KD;
-    armExtensionFXConfig.slot0.kF = Constants.Arm.Extension.KF;
     armExtensionFXConfig.supplyCurrLimit = extensionSupplyLimit;
 
     // Arm rotation CANCoder config
