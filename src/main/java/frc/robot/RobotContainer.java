@@ -1,16 +1,11 @@
 package frc.robot;
 
 import com.thegongoliers.commands.DoNothingCommand;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.auto.FollowTrajectory;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
