@@ -92,7 +92,7 @@ public class RobotContainer {
                 < -Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> {
             m_extensionController.unlock();
-            m_extensionController.set(Constants.Arm.MANUAL_EXTEND_RETRACT_SPEED);
+            m_extensionController.set(Constants.Arm.MANUAL_EXTEND_SPEED);
         }))
         .onFalse(new InstantCommand(() -> {
             m_extensionController.lock();
@@ -104,7 +104,7 @@ public class RobotContainer {
                 > Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> {
             m_extensionController.unlock();
-            m_extensionController.set(-Constants.Arm.MANUAL_EXTEND_RETRACT_SPEED);
+            m_extensionController.set(Constants.Arm.MANUAL_RETRACT_SPEED);
         }))
         .onFalse(new InstantCommand(() -> {
             m_extensionController.lock();
@@ -112,11 +112,11 @@ public class RobotContainer {
 
     new Trigger(
             () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.UP_DOWN_AXIS.value)
+                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
             .onTrue(new InstantCommand(() -> {
                 m_rotationController.unlock();
-                m_rotationController.set(Constants.Arm.MANUAL_RAISE_LOWER_SPEED);
+                m_rotationController.set(Constants.Arm.MANUAL_RAISE_SPEED);
             }))
             .onFalse(new InstantCommand(() -> {
                 m_rotationController.lock();
@@ -124,11 +124,11 @@ public class RobotContainer {
         
     new Trigger(
             () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.UP_DOWN_AXIS.value)
+                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
             .onTrue(new InstantCommand(() -> {
                 m_rotationController.unlock();
-                m_rotationController.set(-Constants.Arm.MANUAL_RAISE_LOWER_SPEED);
+                m_rotationController.set(Constants.Arm.MANUAL_LOWER_SPEED);
             }))
             .onFalse(new InstantCommand(() -> {
                 m_rotationController.lock();

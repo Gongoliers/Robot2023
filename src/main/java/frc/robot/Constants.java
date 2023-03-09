@@ -61,7 +61,7 @@ public final class Constants {
     /** Button for outtaking. */
     public static final XboxController.Axis OPEN_AXIS = XboxController.Axis.kRightTrigger;
     /** Axis for rotating the arm up and down. */
-    public static final XboxController.Axis UP_DOWN_AXIS = XboxController.Axis.kLeftY;
+    public static final XboxController.Axis RAISE_LOWER_AXIS = XboxController.Axis.kLeftY;
     /** Axis for extending and retracting the arm. */
     public static final XboxController.Axis EXTEND_RETRACT_AXIS = XboxController.Axis.kRightY;
   }
@@ -475,12 +475,16 @@ public final class Constants {
     /**
      * The speed for manually extending / retracting that portion of the arm.
      */
-    public static final double MANUAL_EXTEND_RETRACT_SPEED = 0.4;
+    public static final double MANUAL_EXTEND_SPEED = 0.4;
+
+    public static final double MANUAL_RETRACT_SPEED = -0.4;
 
     /**
      * The speed for manually raising / lowering that portion of the arm.
      */
-    public static final double MANUAL_RAISE_LOWER_SPEED = 0.1;
+    public static final double MANUAL_RAISE_SPEED = 0.1;
+
+    public static final double MANUAL_LOWER_SPEED = -0.1;
   }
 
   public static final class Claw {
