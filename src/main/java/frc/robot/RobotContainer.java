@@ -95,7 +95,7 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   m_extensionController.unlock();
-                  m_extensionController.drive(Constants.Arm.MANUAL_EXTEND_SPEED);
+                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
                 }))
         .onFalse(
             new InstantCommand(
@@ -111,7 +111,7 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   m_extensionController.unlock();
-                  m_extensionController.drive(Constants.Arm.MANUAL_RETRACT_SPEED);
+                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
                 }))
         .onFalse(
             new InstantCommand(
@@ -127,7 +127,7 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   m_rotationController.unlock();
-                  m_rotationController.drive(Constants.Arm.MANUAL_RAISE_SPEED);
+                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
                 }))
         .onFalse(
             new InstantCommand(
@@ -143,7 +143,7 @@ public class RobotContainer {
             new InstantCommand(
                 () -> {
                   m_rotationController.unlock();
-                  m_rotationController.drive(Constants.Arm.MANUAL_LOWER_SPEED);
+                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
                 }))
         .onFalse(
             new InstantCommand(

@@ -9,8 +9,9 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
-import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.Arm.Extension;
+import frc.robot.Constants;
 
 public class ExtensionController extends ProfiledPIDSubsystem {
 
@@ -18,26 +19,26 @@ public class ExtensionController extends ProfiledPIDSubsystem {
   private final Solenoid m_brake;
   private final ArmFeedforward m_feedforward =
       new ArmFeedforward(
-          Constants.Arm.EXTENSION_KS,
-          Constants.Arm.EXTENSION_KG,
-          Constants.Arm.EXTENSION_KV,
-          Constants.Arm.EXTENSION_KA);
+          Extension.KS,
+          Extension.KG,
+          Extension.KV,
+          Extension.KA);
 
   public ExtensionController() {
 
     super(
         new ProfiledPIDController(
-            Constants.Arm.EXTENSION_MOTOR_KP, 0, 0, Constants.Arm.EXTENSION_CONSTRAINTS),
+            Extension.KP, 0, 0, Extension.CONSTRAINTS),
         0);
 
-    m_motor = new WPI_TalonFX(Constants.Arm.EXTENSION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    m_motor = new WPI_TalonFX(Extension.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
 
     m_brake =
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID,
             PneumaticsModuleType.REVPH,
-            Constants.Arm.EXTENSION_BRAKE_CHANNEL);
+            Extension.BRAKE_CHANNEL);
 
     lock();
 
@@ -70,8 +71,8 @@ public class ExtensionController extends ProfiledPIDSubsystem {
   public double getMeasurement() {
     return Conversions.falconToMeters(
         m_motor.getSelectedSensorPosition(),
-        Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
-        Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO);
+        Extension.LENGTH_PER_ROTATION,
+        Extension.GEAR_RATIO);
   }
 
   /**
@@ -108,8 +109,8 @@ public class ExtensionController extends ProfiledPIDSubsystem {
   private void configExtensionMotor() {
     m_motor.configFactoryDefault();
     m_motor.configAllSettings(Robot.ctreConfigs.armExtensionFXConfig);
-    m_motor.setInverted(Constants.Arm.SHOULD_INVERT_EXTENSION_MOTOR);
-    m_motor.setNeutralMode(Constants.Arm.EXTENSION_MOTOR_NEUTRAL_MODE);
+    m_motor.setInverted(Extension.SHOULD_INVERT_MOTOR);
+    m_motor.setNeutralMode(Extension.MOTOR_NEUTRAL_MODE);
     m_motor.setSelectedSensorPosition(0);
     // TODO
   }
@@ -124,7 +125,7 @@ public class ExtensionController extends ProfiledPIDSubsystem {
     m_motor.setSelectedSensorPosition(
         Conversions.metersToFalcon(
             meters,
-            Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
-            Constants.Arm.EXTENSION_MOTOR_GEAR_RATIO));
+            Extension.LENGTH_PER_ROTATION,
+            Extension.GEAR_RATIO));
   }
 }

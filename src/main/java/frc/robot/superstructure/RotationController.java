@@ -3,7 +3,6 @@ package frc.robot.superstructure;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
+import frc.robot.Constants.Arm.Rotation;
 import frc.robot.Robot;
 
 public class RotationController extends ProfiledPIDSubsystem {
@@ -20,33 +20,33 @@ public class RotationController extends ProfiledPIDSubsystem {
   private final WPI_TalonFX m_motor;
   private final WPI_CANCoder m_cancoder;
   private final Solenoid m_brake;
-  private final ArmFeedforward m_feedforward = new ArmFeedforward(
-    Constants.Arm.ROTATION_KS,
-    Constants.Arm.ROTATION_KG,
-    Constants.Arm.ROTATION_KV,
-    Constants.Arm.ROTATION_KA
-  );
+  private final ArmFeedforward m_feedforward =
+      new ArmFeedforward(
+          Rotation.KS,
+          Rotation.KG,
+          Rotation.KV,
+          Rotation.KA);
 
   public RotationController() {
 
     // FIXME Match initialPosition to CANCoder
     super(
-      new ProfiledPIDController(Constants.Arm.ROTATION_MOTOR_KP, 0, 0, Constants.Arm.ROTATION_CONTRAINTS),
-      0
-    );
+        new ProfiledPIDController(
+            Rotation.KP, 0, 0, Rotation.CONSTRAINTS),
+        0);
 
-    m_motor = new WPI_TalonFX(Constants.Arm.ROTATION_MOTOR_CAN_ID, Constants.Arm.CANBUS_NAME);
+    m_motor = new WPI_TalonFX(Rotation.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
 
     m_cancoder =
-        new WPI_CANCoder(Constants.Arm.ROTATION_CANCODER_CAN_ID, Constants.Arm.CANBUS_NAME);
+        new WPI_CANCoder(Rotation.CANCODER_ID, Constants.Arm.CANBUS_NAME);
     configRotationCANCoder();
 
     m_brake =
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID,
             PneumaticsModuleType.REVPH,
-            Constants.Arm.ROTATION_BRAKE_CHANNEL);
+            Rotation.BRAKE_CHANNEL);
 
     lock();
 
@@ -71,7 +71,7 @@ public class RotationController extends ProfiledPIDSubsystem {
   @Override
   public double getMeasurement() {
     return Conversions.falconToDegrees(
-            m_motor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO);
+        m_motor.getSelectedSensorPosition(), Rotation.GEAR_RATIO);
   }
 
   /**
@@ -105,8 +105,8 @@ public class RotationController extends ProfiledPIDSubsystem {
   private void configRotationMotor() {
     m_motor.configFactoryDefault();
     m_motor.configAllSettings(Robot.ctreConfigs.armRotationFXConfig);
-    m_motor.setInverted(Constants.Arm.SHOULD_INVERT_ROTATION_MOTOR);
-    m_motor.setNeutralMode(Constants.Arm.ROTATION_MOTOR_NEUTRAL_MODE);
+    m_motor.setInverted(Rotation.SHOULD_INVERT_MOTOR);
+    m_motor.setNeutralMode(Rotation.MOTOR_NEUTRAL_MODE);
     // TODO
   }
 
@@ -124,7 +124,7 @@ public class RotationController extends ProfiledPIDSubsystem {
   private void setPosition(Rotation2d rotation) {
     m_motor.setSelectedSensorPosition(
         Conversions.degreesToFalcon(
-            rotation.getDegrees(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
+            rotation.getDegrees(), Rotation.GEAR_RATIO));
   }
 
   /**
@@ -134,8 +134,7 @@ public class RotationController extends ProfiledPIDSubsystem {
    */
   private Rotation2d getCANCoderAngle() {
     double measurement = m_cancoder.getAbsolutePosition();
-    double angle = measurement - Constants.Arm.CANCODER_OFFSET;
+    double angle = measurement - Rotation.CANCODER_OFFSET;
     return Rotation2d.fromDegrees(angle);
   }
-
 }

@@ -347,6 +347,7 @@ public final class Constants {
   }
 
   public static final class Arm {
+
     /**
      * Name of the CAN bus for all arm devices. By default, "rio" or "" selects the CAN bus
      * beginning at the RoboRio. If connecting using a CANivore, use Phoenix Tuner to view the CAN
@@ -354,116 +355,142 @@ public final class Constants {
      */
     public static final String CANBUS_NAME = "rio";
 
-    /**
-     * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
-     * button, then copy the ID of the motor to this constant.
-     */
-    public static final int ROTATION_MOTOR_CAN_ID = 2;
-    /**
-     * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
-     * button, then copy the ID of the motor to this constant.
-     */
-    public static final int EXTENSION_MOTOR_CAN_ID = 3;
-    /**
-     * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the Blink
-     * button, then copy the ID of the CANcoder to this constant.
-     */
-    public static final int ROTATION_CANCODER_CAN_ID = 1;
+    public static final class Extension {
+      /**
+       * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
+       * button, then copy the ID of the motor to this constant.
+       */
+      public static final int MOTOR_ID = 3;
 
-    /** Maximum continuous current for the rotation motor. */
-    public static final double ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current for the rotation motor. */
-    public static final double ROTATION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current duration for the rotation motor. */
-    public static final double ROTATION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
-    /** Toggle for limiting the current for the rotation motor. */
-    public static final boolean SHOULD_CURRENT_LIMIT_ROTATION_MOTOR = false; // TODO
+      /** Maximum continuous current for the extension motor. */
+      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      /** Maximum peak current for the extension motor. */
+      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      /** Maximum peak current duration for the extension motor. */
+      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      /** Toggle for limiting the current for the extension motor. */
+      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
-    /** Rotation motor KP. */
-    public static final double ROTATION_MOTOR_KP = 0; // TODO
-    /** Rotation motor KI. */
-    public static final double ROTATION_MOTOR_KI = 0; // TODO
-    /** Rotation motor KD. */
-    public static final double ROTATION_MOTOR_KD = 0; // TODO
-    /** Rotation motor KF. */
-    public static final double ROTATION_MOTOR_KF = 0; // TODO
-    /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
-    public static final TrapezoidProfile.Constraints ROTATION_CONTRAINTS =
-        new TrapezoidProfile.Constraints(1, 1);
+      /** Extension motor KP. */
+      public static final double KP = 0; // TODO
+      /** Extension motor KI. */
+      public static final double KI = 0; // TODO
+      /** Extension motor KD. */
+      public static final double KD = 0; // TODO
+      /** Extension motor KF. */
+      public static final double KF = 0; // TODO
+      /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
+      public static final TrapezoidProfile.Constraints CONSTRAINTS =
+          new TrapezoidProfile.Constraints(1, 1);
 
-    /** Maximum continuous current for the extension motor. */
-    public static final double EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current for the extension motor. */
-    public static final double EXTENSION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current duration for the extension motor. */
-    public static final double EXTENSION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
-    /** Toggle for limiting the current for the extension motor. */
-    public static final boolean SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR = false; // TODO
+      public static final double KS = 0;
+      public static final double KG = 0;
+      public static final double KV = 0;
+      public static final double KA = 0;
 
-    /** Extension motor KP. */
-    public static final double EXTENSION_MOTOR_KP = 0; // TODO
-    /** Extension motor KI. */
-    public static final double EXTENSION_MOTOR_KI = 0; // TODO
-    /** Extension motor KD. */
-    public static final double EXTENSION_MOTOR_KD = 0; // TODO
-    /** Extension motor KF. */
-    public static final double EXTENSION_MOTOR_KF = 0; // TODO
-    /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
-    public static final TrapezoidProfile.Constraints EXTENSION_CONSTRAINTS =
-        new TrapezoidProfile.Constraints(1, 1);
+      /**
+       * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
+       * arm to extend and that negative values cause the arm to retract.
+       */
+      public static final boolean SHOULD_INVERT_MOTOR = false; // TODO
 
-    public static final boolean SHOULD_INVERT_ROTATION_CANCODER = false;
+      /**
+       * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+       * behavior.
+       */
+      public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
-    /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
-    public static final boolean SHOULD_INVERT_ROTATION_MOTOR = true;
+      /**
+       * The difference in arm length caused by one full rotation of the spool, meaured in meters.
+       * Essentially, the effective "circumference" of the spool.
+       */
+      public static final double LENGTH_PER_ROTATION = Units.inchesToMeters(1) * Math.PI;
+      /** The gear ratio between the extension motor and the spool. */
+      public static final double GEAR_RATIO = 15.34;
 
-    /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-     * behavior.
-     */
-    public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
+      public static final int BRAKE_CHANNEL = 9;
 
-    /**
-     * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
-     * arm to extend and that negative values cause the arm to retract.
-     */
-    public static final boolean SHOULD_INVERT_EXTENSION_MOTOR = false; // TODO
+      /** The speed for manually extending / retracting that portion of the arm. */
+      public static final double MANUAL_EXTEND_SPEED = 0.4;
 
-    /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-     * behavior.
-     */
-    public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
+      public static final double MANUAL_RETRACT_SPEED = -0.4;
+    }
 
-    /**
-     * The difference in arm length caused by one full rotation of the spool, meaured in meters.
-     * Essentially, the effective "circumference" of the spool.
-     */
-    public static final double EXTENSION_LENGTH_PER_ROTATION = Units.inchesToMeters(1) * Math.PI;
-    /** The gear ratio between the extension motor and the spool. */
-    public static final double EXTENSION_MOTOR_GEAR_RATIO = 15.34;
+    public static final class Rotation {
 
-    /** The gear ratio between the rotation motor and the arm. */
-    public static final double ROTATION_MOTOR_GEAR_RATIO = 24.1666;
+      /**
+       * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
+       * button, then copy the ID of the motor to this constant.
+       */
+      public static final int MOTOR_ID = 2;
+      /**
+       * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the
+       * Blink button, then copy the ID of the CANcoder to this constant.
+       */
+      public static final int CANCODER_ID = 1;
 
-    /** The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. */
-    public static final double CANCODER_OFFSET = 0;
+      /** Maximum continuous current for the rotation motor. */
+      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      /** Maximum peak current for the rotation motor. */
+      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      /** Maximum peak current duration for the rotation motor. */
+      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      /** Toggle for limiting the current for the rotation motor. */
+      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
-    /**
-     * The minimum angle that the arm can rotate to. This value is measured in degrees, and
-     * represents the lower bound that the arm will never cross.
-     */
-    public static final double MIN_ANGLE = -40; // -47
+      /** Rotation motor KP. */
+      public static final double KP = 0; // TODO
+      /** Rotation motor KI. */
+      public static final double KI = 0; // TODO
+      /** Rotation motor KD. */
+      public static final double KD = 0; // TODO
+      /** Rotation motor KF. */
+      public static final double KF = 0; // TODO
+      /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
+      public static final TrapezoidProfile.Constraints CONSTRAINTS =
+          new TrapezoidProfile.Constraints(1, 1);
 
-    /**
-     * The maximum angle that the arm can rotate to. This value is measured in degrees, and
-     * represents the upper bound that the arm will never cross.
-     */
-    public static final double MAX_ANGLE = 60; // 66
+      public static final double KS = 0;
+      public static final double KG = 0;
+      public static final double KV = 0;
+      public static final double KA = 0;
 
-    public static final int ROTATION_BRAKE_CHANNEL = 10;
+      public static final boolean SHOULD_INVERT_CANCODER = false;
 
-    public static final int EXTENSION_BRAKE_CHANNEL = 9;
+      /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
+      public static final boolean SHOULD_INVERT_MOTOR = true;
+
+      /**
+       * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
+       * behavior.
+       */
+      public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
+
+      /** The gear ratio between the rotation motor and the arm. */
+      public static final double GEAR_RATIO = 24.1666;
+
+      /** The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. */
+      public static final double CANCODER_OFFSET = 0;
+
+      /**
+       * The minimum angle that the arm can rotate to. This value is measured in degrees, and
+       * represents the lower bound that the arm will never cross.
+       */
+      public static final double MIN_ANGLE = -40; // -47
+
+      /**
+       * The maximum angle that the arm can rotate to. This value is measured in degrees, and
+       * represents the upper bound that the arm will never cross.
+       */
+      public static final double MAX_ANGLE = 60; // 66
+
+      public static final int BRAKE_CHANNEL = 10;
+
+      /** The speed for manually raising / lowering that portion of the arm. */
+      public static final double MANUAL_RAISE_SPEED = 0.1;
+
+      public static final double MANUAL_LOWER_SPEED = -0.1;
+    }
 
     public static final class States {
       public static final ArmState STOWED =
@@ -477,30 +504,9 @@ public final class Constants {
       public static final ArmState SUBSTATION =
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
     }
-
-    /** The speed for manually extending / retracting that portion of the arm. */
-    public static final double MANUAL_EXTEND_SPEED = 0.4;
-
-    public static final double MANUAL_RETRACT_SPEED = -0.4;
-
-    /** The speed for manually raising / lowering that portion of the arm. */
-    public static final double MANUAL_RAISE_SPEED = 0.1;
-
-    public static final double MANUAL_LOWER_SPEED = -0.1;
-
-    public static final double EXTENSION_KS = 0;
-    public static final double EXTENSION_KG = 0;
-    public static final double EXTENSION_KV = 0;
-    public static final double EXTENSION_KA = 0;
-
-    public static final double ROTATION_KS = 0;
-    public static final double ROTATION_KG = 0;
-    public static final double ROTATION_KV = 0;
-    public static final double ROTATION_KA = 0;
   }
 
   public static final class Claw {
-
     public static final int CHANNEL = 8;
   }
 }
