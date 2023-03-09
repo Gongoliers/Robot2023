@@ -66,34 +66,32 @@ public final class CTREConfigs {
     // Arm rotation motor config
     SupplyCurrentLimitConfiguration rotationSupplyLimit =
         new SupplyCurrentLimitConfiguration(
-            Constants.Arm.SHOULD_CURRENT_LIMIT_ROTATION_MOTOR,
-            Constants.Arm.ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX,
-            Constants.Arm.ROTATION_MOTOR_PEAK_CURRENT_MAX,
-            Constants.Arm.ROTATION_MOTOR_PEAK_CURRENT_DURATION);
+            Constants.Arm.Rotation.SHOULD_CURRENT_LIMIT,
+            Constants.Arm.Rotation.CONTINUOUS_CURRENT_MAX,
+            Constants.Arm.Rotation.PEAK_CURRENT_MAX,
+            Constants.Arm.Rotation.PEAK_CURRENT_DURATION);
 
-    armRotationFXConfig.slot0.kP = Constants.Arm.ROTATION_MOTOR_KP;
-    armRotationFXConfig.slot0.kI = Constants.Arm.ROTATION_MOTOR_KI;
-    armRotationFXConfig.slot0.kD = Constants.Arm.ROTATION_MOTOR_KD;
-    armRotationFXConfig.slot0.kF = Constants.Arm.ROTATION_MOTOR_KF;
+    armRotationFXConfig.slot0.kP = Constants.Arm.Rotation.KP;
+    armRotationFXConfig.slot0.kI = Constants.Arm.Rotation.KI;
+    armRotationFXConfig.slot0.kD = Constants.Arm.Rotation.KD;
     armRotationFXConfig.supplyCurrLimit = rotationSupplyLimit;
 
     // Arm extension motor config
     SupplyCurrentLimitConfiguration extensionSupplyLimit =
         new SupplyCurrentLimitConfiguration(
-            Constants.Arm.SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR,
-            Constants.Arm.EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX,
-            Constants.Arm.EXTENSION_MOTOR_PEAK_CURRENT_MAX,
-            Constants.Arm.EXTENSION_MOTOR_PEAK_CURRENT_DURATION);
+            Constants.Arm.Extension.SHOULD_CURRENT_LIMIT,
+            Constants.Arm.Extension.CONTINUOUS_CURRENT_MAX,
+            Constants.Arm.Extension.PEAK_CURRENT_MAX,
+            Constants.Arm.Extension.PEAK_CURRENT_DURATION);
 
-    armExtensionFXConfig.slot0.kP = Constants.Arm.EXTENSION_MOTOR_KP;
-    armExtensionFXConfig.slot0.kI = Constants.Arm.EXTENSION_MOTOR_KI;
-    armExtensionFXConfig.slot0.kD = Constants.Arm.EXTENSION_MOTOR_KD;
-    armExtensionFXConfig.slot0.kF = Constants.Arm.EXTENSION_MOTOR_KF;
+    armExtensionFXConfig.slot0.kP = Constants.Arm.Extension.KP;
+    armExtensionFXConfig.slot0.kI = Constants.Arm.Extension.KI;
+    armExtensionFXConfig.slot0.kD = Constants.Arm.Extension.KD;
     armExtensionFXConfig.supplyCurrLimit = extensionSupplyLimit;
 
     // Arm rotation CANCoder config
     rotationCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    rotationCanCoderConfig.sensorDirection = Constants.Arm.SHOULD_INVERT_ROTATION_CANCODER;
+    rotationCanCoderConfig.sensorDirection = Constants.Arm.Rotation.SHOULD_INVERT_CANCODER;
     rotationCanCoderConfig.initializationStrategy =
         SensorInitializationStrategy.BootToAbsolutePosition;
     rotationCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;

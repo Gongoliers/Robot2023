@@ -22,24 +22,24 @@ public class Arm extends SubsystemBase implements Stoppable, Lockable, Extendabl
 
   @Override
   public void retract() {
-    m_extensionController.retract();
-    m_rotationController.retract();
+    // FIXME
   }
 
   @Override
   public boolean isRetracted() {
-    return m_extensionController.isRetracted() && m_rotationController.isRetracted();
+    // FIXME
+    return true;
   }
 
   @Override
   public void extend() {
-    m_extensionController.extend();
-    m_rotationController.extend();
+    // FIXME
   }
 
   @Override
   public boolean isExtended() {
-    return m_extensionController.isExtended() && m_rotationController.isExtended();
+    // FIXME
+    return true;
   }
 
   @Override
