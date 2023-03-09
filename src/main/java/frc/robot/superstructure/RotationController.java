@@ -57,10 +57,6 @@ public class RotationController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
-  public void setSpeed(double percent) {
-    m_motor.set(ControlMode.PercentOutput, percent);
-  }
-
   /**
    * Approach the desired state.
    *
@@ -87,7 +83,7 @@ public class RotationController extends SubsystemBase
    *
    * @return the current angle.
    */
-  private Rotation2d getAngle() {
+  public Rotation2d getAngle() {
     return Rotation2d.fromDegrees(
         Conversions.falconToDegrees(
             m_motor.getSelectedSensorPosition(), Constants.Arm.ROTATION_MOTOR_GEAR_RATIO));
@@ -137,7 +133,8 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void retract() {
-    setGoal(m_stowedState.getAngle());
+    //setGoal(m_stowedState.getAngle());
+    m_motor.set(ControlMode.PercentOutput, 0.1);
   }
 
   /**
@@ -158,7 +155,8 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void extend() {
-    setGoal(m_extendedState.getAngle());
+    //setGoal(m_extendedState.getAngle());
+    m_motor.set(ControlMode.PercentOutput, -0.1);
   }
 
   /**
@@ -178,7 +176,8 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_brake.set(true);
+    m_motor.set(ControlMode.PercentOutput, 0.0);
+    m_brake.set(false);
   }
 
   /**
@@ -188,7 +187,7 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void unlock() {
-    m_brake.set(false);
+    m_brake.set(true);
   }
 
   /**
@@ -198,7 +197,7 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void stop() {
-    m_motor.set(0.0);
+    m_motor.stopMotor();
     lock();
   }
 
@@ -216,7 +215,7 @@ public class RotationController extends SubsystemBase
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
-    extendedLayout.addBoolean("Is Extended?", this::isExtended).withPosition(0, 2);
+    extendedLayout.addBoolean("Is Extended (rotation)?", this::isExtended).withPosition(0, 2);
 
     var stowedLayout = container.getLayout("Stowed State", BuiltInLayouts.kList);
     stowedLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(2, 0);
@@ -227,7 +226,7 @@ public class RotationController extends SubsystemBase
         .withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", Constants.Arm.MIN_ANGLE, "max", Constants.Arm.MAX_ANGLE));
 
-    stowedLayout.addBoolean("Is Stowed?", this::isRetracted).withPosition(0, 3);
+    stowedLayout.addBoolean("Is Stowed (rotation)?", this::isRetracted).withPosition(0, 3);
 
     var actualLayout = container.getLayout("Actual State", BuiltInLayouts.kList);
     actualLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(4, 0);

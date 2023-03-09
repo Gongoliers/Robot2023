@@ -20,6 +20,8 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import java.util.Map;
+import java.util.ResourceBundle.Control;
+import java.util.function.DoubleSupplier;
 
 public class ExtensionController extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
@@ -53,10 +55,6 @@ public class ExtensionController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
-  public void setSpeed(double percent) {
-    m_motor.set(ControlMode.PercentOutput, percent);
-  }
-
   /**
    * Sets what the future (extended) state should be.
    *
@@ -71,7 +69,7 @@ public class ExtensionController extends SubsystemBase
    *
    * @return the current extension in meters.
    */
-  private double getLength() {
+  public double getLength() {
     return Conversions.falconToMeters(
         m_motor.getSelectedSensorPosition(),
         Constants.Arm.EXTENSION_LENGTH_PER_ROTATION,
@@ -125,8 +123,9 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void retract() {
-    double retractedLength = m_stowedState.getLength();
-    setGoal(retractedLength);
+    //double retractedLength = m_stowedState.getLength();
+    //setGoal(retractedLength);
+    m_motor.set(ControlMode.PercentOutput, -0.4);
   }
 
   /**
@@ -147,8 +146,9 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void extend() {
-    double extendedLength = m_extendedState.getLength();
-    setGoal(extendedLength);
+    //double extendedLength = m_extendedState.getLength();
+    //setGoal(extendedLength);
+    m_motor.set(ControlMode.PercentOutput, 0.4);
   }
 
   /**
@@ -168,7 +168,8 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_brake.set(true);
+    m_motor.set(ControlMode.PercentOutput, 0.0);
+    m_brake.set(false);
   }
 
   /**
@@ -178,7 +179,7 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void unlock() {
-    m_brake.set(false);
+    m_brake.set(true);
   }
 
   /**
@@ -188,7 +189,7 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void stop() {
-    m_motor.set(0.0);
+    m_motor.stopMotor();
     lock();
   }
 
@@ -201,7 +202,7 @@ public class ExtensionController extends SubsystemBase
         .withPosition(0, 0);
 
     extendedLayout
-        .addNumber("Extended Length", m_extendedState::getLength)
+        .addNumber("Extended Length (m)", m_extendedState::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar);
 
@@ -211,7 +212,7 @@ public class ExtensionController extends SubsystemBase
     stowedLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(2, 0);
 
     stowedLayout
-        .addNumber("Stowed Length", m_stowedState::getLength)
+        .addNumber("Stowed Length (m)", m_stowedState::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar);
 
@@ -221,7 +222,7 @@ public class ExtensionController extends SubsystemBase
     actualLayout.withProperties(Map.of("Label position", "TOP")).withSize(2, 4).withPosition(4, 0);
 
     actualLayout
-        .addNumber("Actual Length", this::getLength)
+        .addNumber("Actual Length (m)", this::getLength)
         .withPosition(0, 1)
         .withWidget(BuiltInWidgets.kNumberBar);
 

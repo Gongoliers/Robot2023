@@ -50,17 +50,21 @@ public final class Constants {
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.8;
     /** Button for extending to the floor state. */
-    public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
+    //public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
-    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    //public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
-    public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
+    //public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
     /** Button for extending to the substation pickup state. */
-    public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
+    //public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
     /** Button for intaking. */
-    public static final XboxController.Axis INTAKE_AXIS = XboxController.Axis.kLeftTrigger;
+    public static final XboxController.Axis CLOSE_AXIS = XboxController.Axis.kLeftTrigger;
     /** Button for outtaking. */
-    public static final XboxController.Axis OUTTAKE_AXIS = XboxController.Axis.kLeftTrigger;
+    public static final XboxController.Axis OPEN_AXIS = XboxController.Axis.kRightTrigger;
+    /** Axis for rotating the arm up and down. */
+    public static final XboxController.Axis UP_DOWN_AXIS = XboxController.Axis.kLeftY;
+    /** Axis for extending and retracting the arm. */
+    public static final XboxController.Axis EXTEND_RETRACT_AXIS = XboxController.Axis.kRightY;
   }
 
   public static final class Swerve {
@@ -456,37 +460,17 @@ public final class Constants {
 
     public static final int EXTENSION_BRAKE_CHANNEL = 9;
 
-    // TODO Implement as <Rotation2d, Double>
-    public static InterpolatingTreeMap<Double, Double> kAngleToMinLength =
-        new InterpolatingTreeMap<>();
-
-    static {
-      kAngleToMinLength.put(MIN_ANGLE, 0.0);
-      kAngleToMinLength.put(0.0, 0.0);
-      kAngleToMinLength.put(MAX_ANGLE, 0.0);
-    }
-
-    // TODO Implement as <Rotation2d, Double>
-    public static InterpolatingTreeMap<Double, Double> kAngleToMaxLength =
-        new InterpolatingTreeMap<>();
-
-    static {
-      kAngleToMaxLength.put(MIN_ANGLE, 0.0);
-      kAngleToMaxLength.put(0.0, 0.0);
-      kAngleToMaxLength.put(MAX_ANGLE, 0.0);
-    }
-
     public static final class States {
       public static final ArmState STOWED =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(60));
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(60));
       public static final ArmState FLOOR =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(-40));
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0));
       public static final ArmState MIDDLE =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState TOP =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState SUBSTATION =
-          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
     }
   }
 

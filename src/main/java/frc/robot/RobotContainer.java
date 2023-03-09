@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.thegongoliers.commands.output.OperateWithLockCommand;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -8,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.superstructure.Claw;
+import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -22,7 +26,8 @@ public class RobotContainer {
   // Subsystems
   private final Swerve m_swerve = new Swerve();
   private final Claw m_claw = new Claw();
-  // private final Arm m_arm = new Arm();
+  private final ExtensionController m_extensionController = new ExtensionController();
+  private final RotationController m_rotationController = new RotationController();
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -69,17 +74,67 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value)).onTrue(new InstantCommand(m_swerve::setYawZero));
+
     new Trigger(
             () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.INTAKE_AXIS.value)
+                m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> m_claw.close()));
 
     new Trigger(
             () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.OUTTAKE_AXIS.value)
+                m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> m_claw.open()));
+
+    new Trigger(
+        () ->
+            m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                < -Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(new InstantCommand(() -> {
+            m_extensionController.unlock();
+            m_extensionController.extend();
+        }))
+        .onFalse(new InstantCommand(() -> {
+            m_extensionController.lock();
+        }));
+    
+    new Trigger(
+        () ->
+            m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(new InstantCommand(() -> {
+            m_extensionController.unlock();
+            m_extensionController.retract();
+        }))
+        .onFalse(new InstantCommand(() -> {
+            m_extensionController.lock();
+        }));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.UP_DOWN_AXIS.value)
+                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+            .onTrue(new InstantCommand(() -> {
+                m_rotationController.unlock();
+                m_rotationController.extend();
+            }))
+            .onFalse(new InstantCommand(() -> {
+                m_rotationController.lock();
+            }));
+        
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.UP_DOWN_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+            .onTrue(new InstantCommand(() -> {
+                m_rotationController.unlock();
+                m_rotationController.retract();
+            }))
+            .onFalse(new InstantCommand(() -> {
+                m_rotationController.lock();
+            }));
   }
 
   private void configureTriggers() {}
