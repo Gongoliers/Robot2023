@@ -72,7 +72,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value)).onTrue(new InstantCommand(m_swerve::setYawZero));
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
+        .onTrue(new InstantCommand(m_swerve::setYawZero));
 
     new Trigger(
             () ->
@@ -87,52 +88,68 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> m_claw.open()));
 
     new Trigger(
-        () ->
-            m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(() -> {
-            m_extensionController.unlock();
-            m_extensionController.set(Constants.Arm.MANUAL_EXTEND_SPEED);
-        }))
-        .onFalse(new InstantCommand(() -> {
-            m_extensionController.lock();
-        }));
-    
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.unlock();
+                  m_extensionController.drive(Constants.Arm.MANUAL_EXTEND_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.lock();
+                }));
+
     new Trigger(
-        () ->
-            m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(() -> {
-            m_extensionController.unlock();
-            m_extensionController.set(Constants.Arm.MANUAL_RETRACT_SPEED);
-        }))
-        .onFalse(new InstantCommand(() -> {
-            m_extensionController.lock();
-        }));
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.unlock();
+                  m_extensionController.drive(Constants.Arm.MANUAL_RETRACT_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.lock();
+                }));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-            .onTrue(new InstantCommand(() -> {
-                m_rotationController.unlock();
-                m_rotationController.set(Constants.Arm.MANUAL_RAISE_SPEED);
-            }))
-            .onFalse(new InstantCommand(() -> {
-                m_rotationController.lock();
-            }));
-        
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.unlock();
+                  m_rotationController.drive(Constants.Arm.MANUAL_RAISE_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.lock();
+                }));
+
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-            .onTrue(new InstantCommand(() -> {
-                m_rotationController.unlock();
-                m_rotationController.set(Constants.Arm.MANUAL_LOWER_SPEED);
-            }))
-            .onFalse(new InstantCommand(() -> {
-                m_rotationController.lock();
-            }));
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.unlock();
+                  m_rotationController.drive(Constants.Arm.MANUAL_LOWER_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.lock();
+                }));
   }
 
   private void configureTriggers() {}

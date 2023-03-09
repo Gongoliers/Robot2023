@@ -49,13 +49,13 @@ public final class Constants {
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.8;
     /** Button for extending to the floor state. */
-    //public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
+    // public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
-    //public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    // public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
-    //public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
+    // public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
     /** Button for extending to the substation pickup state. */
-    //public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
+    // public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
     /** Button for intaking. */
     public static final XboxController.Axis CLOSE_AXIS = XboxController.Axis.kLeftTrigger;
     /** Button for outtaking. */
@@ -472,16 +472,12 @@ public final class Constants {
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
     }
 
-    /**
-     * The speed for manually extending / retracting that portion of the arm.
-     */
+    /** The speed for manually extending / retracting that portion of the arm. */
     public static final double MANUAL_EXTEND_SPEED = 0.4;
 
     public static final double MANUAL_RETRACT_SPEED = -0.4;
 
-    /**
-     * The speed for manually raising / lowering that portion of the arm.
-     */
+    /** The speed for manually raising / lowering that portion of the arm. */
     public static final double MANUAL_RAISE_SPEED = 0.1;
 
     public static final double MANUAL_LOWER_SPEED = -0.1;

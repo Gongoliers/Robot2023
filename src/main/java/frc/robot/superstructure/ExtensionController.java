@@ -53,7 +53,12 @@ public class ExtensionController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
-  public void set(double percent) {
+  /**
+   * Manually drive the motor at the desired speed.
+   *
+   * @param percent the speed to drive the motor at.
+   */
+  public void drive(double percent) {
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
@@ -125,9 +130,8 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void retract() {
-    //double retractedLength = m_stowedState.getLength();
-    //setGoal(retractedLength);
-    m_motor.set(ControlMode.PercentOutput, -0.4);
+    double retractedLength = m_stowedState.getLength();
+    setGoal(retractedLength);
   }
 
   /**
@@ -148,9 +152,8 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void extend() {
-    //double extendedLength = m_extendedState.getLength();
-    //setGoal(extendedLength);
-    m_motor.set(ControlMode.PercentOutput, 0.4);
+    double extendedLength = m_extendedState.getLength();
+    setGoal(extendedLength);
   }
 
   /**
@@ -170,7 +173,6 @@ public class ExtensionController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_motor.set(ControlMode.PercentOutput, 0.0);
     m_brake.set(false);
   }
 

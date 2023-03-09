@@ -8,7 +8,6 @@ import com.thegongoliers.output.interfaces.Extendable;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Retractable;
 import com.thegongoliers.output.interfaces.Stoppable;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase implements Stoppable, Lockable, Extendable, Retractable {

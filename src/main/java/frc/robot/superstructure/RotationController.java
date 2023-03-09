@@ -57,7 +57,12 @@ public class RotationController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
-  public void set(double percent) {
+  /**
+   * Manually drive the motor at the desired speed.
+   *
+   * @param percent the speed to drive the motor at.
+   */
+  public void drive(double percent) {
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
@@ -137,8 +142,8 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void retract() {
-    //setGoal(m_stowedState.getAngle());
-    m_motor.set(ControlMode.PercentOutput, 0.1);
+    Rotation2d stowedAngle = m_stowedState.getAngle();
+    setGoal(stowedAngle);
   }
 
   /**
@@ -159,8 +164,8 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void extend() {
-    //setGoal(m_extendedState.getAngle());
-    m_motor.set(ControlMode.PercentOutput, -0.1);
+    Rotation2d extendedAngle = m_extendedState.getAngle();
+    setGoal(extendedAngle);
   }
 
   /**
@@ -180,7 +185,6 @@ public class RotationController extends SubsystemBase
    */
   @Override
   public void lock() {
-    m_motor.set(ControlMode.PercentOutput, 0.0);
     m_brake.set(false);
   }
 
