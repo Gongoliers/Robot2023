@@ -202,7 +202,7 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
    * Set the gyro's current yaw to be zero. This makes the robot's previous yaw the new zero point
    * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
    */
-  private void setYawZero() {
+  public void setYawZero() {
     if (!Robot.isReal()) {
       m_simYaw = 0;
     }

@@ -2,10 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
+import frc.robot.superstructure.Claw;
+import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 
@@ -19,9 +23,14 @@ public class RobotContainer {
 
   // Subsystems
   private final Swerve m_swerve = new Swerve();
+  private final Claw m_claw = new Claw();
+  private final ExtensionController m_extensionController = new ExtensionController();
+  private final RotationController m_rotationController = new RotationController();
 
   // Controllers
-  private final Joystick m_driverController = new Joystick(Constants.Driver.CONTROLLER_PORT);
+  private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
+  private final XboxController m_manipulator =
+      new XboxController(Constants.Manipulator.CONTROLLER_PORT);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -40,19 +49,19 @@ public class RobotContainer {
             m_swerve,
             () ->
                 MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
+                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
                     Constants.Driver.DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
+                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
                     Constants.Driver.DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
+                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
                     Constants.Driver.DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driverController.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
+                    m_driver.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
                     Constants.Driver.DEADBAND)));
   }
 
@@ -62,7 +71,86 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
+        .onTrue(new InstantCommand(m_swerve::setYawZero));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(new InstantCommand(() -> m_claw.close()));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(new InstantCommand(() -> m_claw.open()));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.unlock();
+                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.lock();
+                }));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.unlock();
+                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_extensionController.lock();
+                }));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
+                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.unlock();
+                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.lock();
+                }));
+
+    new Trigger(
+            () ->
+                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
+                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.unlock();
+                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  m_rotationController.lock();
+                }));
+  }
 
   private void configureTriggers() {}
 
