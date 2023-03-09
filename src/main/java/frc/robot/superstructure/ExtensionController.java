@@ -20,8 +20,6 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import java.util.Map;
-import java.util.ResourceBundle.Control;
-import java.util.function.DoubleSupplier;
 
 public class ExtensionController extends SubsystemBase
     implements Stoppable, Lockable, Extendable, Retractable, TelemetrySubsystem {
@@ -53,6 +51,10 @@ public class ExtensionController extends SubsystemBase
     zeroExtensionLength();
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
+  }
+
+  public void set(double percent) {
+    m_motor.set(ControlMode.PercentOutput, percent);
   }
 
   /**

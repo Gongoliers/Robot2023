@@ -57,6 +57,10 @@ public class RotationController extends SubsystemBase
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
+  public void set(double percent) {
+    m_motor.set(ControlMode.PercentOutput, percent);
+  }
+
   /**
    * Approach the desired state.
    *

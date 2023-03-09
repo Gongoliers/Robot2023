@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.lib.ArmState;
@@ -410,7 +409,7 @@ public final class Constants {
     public static final boolean SHOULD_INVERT_ROTATION_CANCODER = false;
 
     /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
-    public static final boolean SHOULD_INVERT_ROTATION_MOTOR = false; // TODO
+    public static final boolean SHOULD_INVERT_ROTATION_MOTOR = true;
 
     /**
      * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
@@ -464,7 +463,7 @@ public final class Constants {
       public static final ArmState STOWED =
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(60));
       public static final ArmState FLOOR =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0));
+          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState MIDDLE =
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState TOP =
@@ -472,6 +471,16 @@ public final class Constants {
       public static final ArmState SUBSTATION =
           new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
     }
+
+    /**
+     * The speed for manually extending / retracting that portion of the arm.
+     */
+    public static final double MANUAL_EXTEND_RETRACT_SPEED = 0.4;
+
+    /**
+     * The speed for manually raising / lowering that portion of the arm.
+     */
+    public static final double MANUAL_RAISE_LOWER_SPEED = 0.1;
   }
 
   public static final class Claw {

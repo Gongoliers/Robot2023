@@ -1,7 +1,5 @@
 package frc.robot;
 
-import com.thegongoliers.commands.output.OperateWithLockCommand;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -94,7 +92,7 @@ public class RobotContainer {
                 < -Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> {
             m_extensionController.unlock();
-            m_extensionController.extend();
+            m_extensionController.set(Constants.Arm.MANUAL_EXTEND_RETRACT_SPEED);
         }))
         .onFalse(new InstantCommand(() -> {
             m_extensionController.lock();
@@ -106,7 +104,7 @@ public class RobotContainer {
                 > Constants.Manipulator.TRIGGER_THRESHOLD)
         .onTrue(new InstantCommand(() -> {
             m_extensionController.unlock();
-            m_extensionController.retract();
+            m_extensionController.set(-Constants.Arm.MANUAL_EXTEND_RETRACT_SPEED);
         }))
         .onFalse(new InstantCommand(() -> {
             m_extensionController.lock();
@@ -118,7 +116,7 @@ public class RobotContainer {
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
             .onTrue(new InstantCommand(() -> {
                 m_rotationController.unlock();
-                m_rotationController.extend();
+                m_rotationController.set(Constants.Arm.MANUAL_RAISE_LOWER_SPEED);
             }))
             .onFalse(new InstantCommand(() -> {
                 m_rotationController.lock();
@@ -130,7 +128,7 @@ public class RobotContainer {
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
             .onTrue(new InstantCommand(() -> {
                 m_rotationController.unlock();
-                m_rotationController.retract();
+                m_rotationController.set(-Constants.Arm.MANUAL_RAISE_LOWER_SPEED);
             }))
             .onFalse(new InstantCommand(() -> {
                 m_rotationController.lock();
