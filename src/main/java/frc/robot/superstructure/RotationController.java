@@ -3,6 +3,7 @@ package frc.robot.superstructure;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,8 +26,10 @@ public class RotationController extends ProfiledPIDSubsystem {
 
   public RotationController() {
 
-    // initialPosition is the initial goal 
-    super(new ProfiledPIDController(Rotation.KP, 0, 0, Rotation.CONSTRAINTS), Constants.Arm.States.STOWED.getAngle().getDegrees());
+    // initialPosition is the initial goal
+    super(
+        new ProfiledPIDController(Rotation.KP, 0, 0, Rotation.CONSTRAINTS),
+        Constants.Arm.States.STOWED.getAngle().getDegrees());
 
     m_motor = new WPI_TalonFX(Rotation.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
@@ -54,13 +57,16 @@ public class RotationController extends ProfiledPIDSubsystem {
 
   /**
    * Uses the output from the PIDController to drive the motor.
+   *
    * @param output volts calculated by the PIDController.
    * @param setpoint the setpoint for the PIDController. Used for calculating feedforward.
    */
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    m_motor.setVoltage(output + feedforward);
+    double voltage =
+        MathUtil.clamp(output + feedforward, -Rotation.MAX_VOLTAGE, Rotation.MAX_VOLTAGE);
+    m_motor.setVoltage(voltage);
   }
 
   /**
@@ -121,8 +127,7 @@ public class RotationController extends ProfiledPIDSubsystem {
    * future encoder measurements will align with the angle of the arm.
    */
   private void setMeasurement(double degrees) {
-    m_motor.setSelectedSensorPosition(
-        Conversions.degreesToFalcon(degrees, Rotation.GEAR_RATIO));
+    m_motor.setSelectedSensorPosition(Conversions.degreesToFalcon(degrees, Rotation.GEAR_RATIO));
   }
 
   /**

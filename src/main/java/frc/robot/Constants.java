@@ -414,6 +414,9 @@ public final class Constants {
        */
       public static final double KA = 0; // TODO
 
+      /** The maximum voltage that can be applied to motors. */
+      public static final int MAX_VOLTAGE = 0;
+
       /**
        * Toggle for if the extension motor should be inverted. Ensures that positive values cause
        * the arm to extend and that negative values cause the arm to retract.
@@ -521,6 +524,9 @@ public final class Constants {
        * the PID output.
        */
       public static final double KA = 0; // TODO
+
+      /** The maximum voltage that can be applied to motors. */
+      public static final int MAX_VOLTAGE = 0;
 
       /**
        * Toggle for if the CANCoder should be inverted. Ensures that positive angles are

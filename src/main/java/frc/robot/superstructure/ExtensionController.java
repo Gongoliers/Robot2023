@@ -2,6 +2,7 @@ package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -23,7 +24,9 @@ public class ExtensionController extends ProfiledPIDSubsystem {
   public ExtensionController() {
 
     // initialPosition is the initial goal
-    super(new ProfiledPIDController(Extension.KP, 0, 0, Extension.CONSTRAINTS), Constants.Arm.States.STOWED.getLength());
+    super(
+        new ProfiledPIDController(Extension.KP, 0, 0, Extension.CONSTRAINTS),
+        Constants.Arm.States.STOWED.getLength());
 
     m_motor = new WPI_TalonFX(Extension.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
@@ -50,13 +53,16 @@ public class ExtensionController extends ProfiledPIDSubsystem {
 
   /**
    * Uses the output from the PIDController to drive the motor.
+   *
    * @param output volts calculated by the PIDController.
    * @param setpoint the setpoint for the PIDController. Used for calculating feedforward.
    */
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    m_motor.setVoltage(output + feedforward);
+    double voltage =
+        MathUtil.clamp(output + feedforward, -Extension.MAX_VOLTAGE, Extension.MAX_VOLTAGE);
+    m_motor.setVoltage(voltage);
   }
 
   /**
