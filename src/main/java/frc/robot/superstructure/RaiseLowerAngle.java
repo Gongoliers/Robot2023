@@ -17,7 +17,8 @@ public class RaiseLowerAngle extends CommandBase {
   public RaiseLowerAngle(RotationController rotator, double speed, double setpoint) {
     addRequirements(rotator);
     m_rotator = rotator;
-    m_speed = speed;
+    double delta = setpoint - rotator.getMeasurement();
+    m_speed = Math.copySign(speed, delta);
     m_setpoint = setpoint;
   }
 

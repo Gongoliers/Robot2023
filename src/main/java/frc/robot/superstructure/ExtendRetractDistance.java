@@ -17,7 +17,8 @@ public class ExtendRetractDistance extends CommandBase {
   public ExtendRetractDistance(ExtensionController extender, double speed, double setpoint) {
     addRequirements(extender);
     m_extender = extender;
-    m_speed = speed;
+    double delta = setpoint - extender.getMeasurement();
+    m_speed = Math.copySign(speed, delta);
     m_setpoint = setpoint;
   }
 
