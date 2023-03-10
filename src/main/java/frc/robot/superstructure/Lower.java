@@ -20,7 +20,6 @@ public class Lower extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_rotator.disable();
     m_rotator.unlock();
   }
 
@@ -40,6 +39,6 @@ public class Lower extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_rotator.getMeasurement() < Constants.Arm.Rotation.MIN_ANGLE;
+    return m_rotator.getAngle() < Constants.Arm.Rotation.MIN_ANGLE;
   }
 }

@@ -17,15 +17,13 @@ public class RaiseLowerAngle extends CommandBase {
   public RaiseLowerAngle(RotationController rotator, double speed, double setpoint) {
     addRequirements(rotator);
     m_rotator = rotator;
-    double delta = setpoint - rotator.getMeasurement();
-    m_speed = Math.copySign(speed, delta);
+    m_speed = speed;
     m_setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_rotator.disable();
     m_rotator.unlock();
   }
 
@@ -45,6 +43,6 @@ public class RaiseLowerAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return GMath.approximately(m_rotator.getMeasurement(), m_setpoint);
+    return GMath.approximately(m_rotator.getAngle(), m_setpoint);
   }
 }
