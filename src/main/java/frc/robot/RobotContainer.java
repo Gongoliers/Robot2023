@@ -10,6 +10,7 @@ import frc.robot.auto.Auto;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
+import frc.robot.superstructure.commands.ExtendAndRotateTo;
 import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
@@ -114,6 +115,26 @@ public class RobotContainer {
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
         .whileTrue(new SafeLower(m_rotationController));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
+        .whileTrue(
+            new ExtendAndRotateTo(
+                Constants.Arm.States.FLOOR, m_extensionController, m_rotationController));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
+        .whileTrue(
+            new ExtendAndRotateTo(
+                Constants.Arm.States.MIDDLE, m_extensionController, m_rotationController));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
+        .whileTrue(
+            new ExtendAndRotateTo(
+                Constants.Arm.States.TOP, m_extensionController, m_rotationController));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
+        .whileTrue(
+            new ExtendAndRotateTo(
+                Constants.Arm.States.SUBSTATION, m_extensionController, m_rotationController));
   }
 
   private void configureTriggers() {}
