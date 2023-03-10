@@ -5,7 +5,6 @@
 package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
@@ -18,7 +17,10 @@ public class PIDExtend extends PIDCommand {
         new PIDController(
             Constants.Arm.Extension.KP, Constants.Arm.Extension.KI, Constants.Arm.Extension.KD),
         extender::getLength,
-        GMath.clamp(lengthSetpoint, Constants.Arm.Extension.MIN_EXTENSION_LENGTH, Constants.Arm.Extension.MAX_EXTENSION_LENGTH),
+        GMath.clamp(
+            lengthSetpoint,
+            Constants.Arm.Extension.MIN_EXTENSION_LENGTH,
+            Constants.Arm.Extension.MAX_EXTENSION_LENGTH),
         voltage -> extender.setVoltage(voltage),
         extender);
 

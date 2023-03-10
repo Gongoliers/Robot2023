@@ -5,7 +5,6 @@
 package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
@@ -18,7 +17,8 @@ public class PIDRotate extends PIDCommand {
         new PIDController(
             Constants.Arm.Rotation.KP, Constants.Arm.Rotation.KI, Constants.Arm.Rotation.KD),
         rotator::getAngle,
-        GMath.clamp(angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE),
+        GMath.clamp(
+            angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE),
         voltage -> rotator.setVoltage(voltage),
         rotator);
 

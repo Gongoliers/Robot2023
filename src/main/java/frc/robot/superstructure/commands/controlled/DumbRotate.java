@@ -5,7 +5,6 @@
 package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.superstructure.RotationController;
@@ -18,7 +17,9 @@ public class DumbRotate extends CommandBase {
   public DumbRotate(RotationController rotator, double angleSetpoint) {
     addRequirements(rotator);
     m_rotator = rotator;
-    m_angleSetpoint = GMath.clamp(angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE);
+    m_angleSetpoint =
+        GMath.clamp(
+            angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE);
   }
 
   @Override
@@ -43,6 +44,7 @@ public class DumbRotate extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return GMath.approximately(m_rotator.getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
+    return GMath.approximately(
+        m_rotator.getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
   }
 }

@@ -396,7 +396,8 @@ public final class Constants {
       /** Extension motor KD. */
       public static final double KD = 0; // TODO
       /**
-       * The extension tolerance in meters. Used for stopping the PID control when within this threshold of the setpoint.
+       * The extension tolerance in meters. Used for stopping the PID control when within this
+       * threshold of the setpoint.
        */
       public static final double TOLERANCE = 0; // TODO
 
@@ -492,7 +493,8 @@ public final class Constants {
       public static final double KD = 0; // TODO
 
       /**
-       * The rotation tolerance in degrees. Used for stopping the PID control when within this tolerance.
+       * The rotation tolerance in degrees. Used for stopping the PID control when within this
+       * tolerance.
        */
       public static final double TOLERANCE = 0; // TODO
 

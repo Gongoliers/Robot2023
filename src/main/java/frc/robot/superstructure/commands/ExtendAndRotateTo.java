@@ -8,20 +8,16 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.lib.ArmState;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.controlled.BangBangExtend;
-import frc.robot.superstructure.commands.controlled.BangBangRotate;
-import frc.robot.superstructure.commands.controlled.DumbExtend;
-import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.controlled.PIDExtend;
 import frc.robot.superstructure.commands.controlled.PIDRotate;
 
 public class ExtendAndRotateTo extends ParallelCommandGroup {
-  public ExtendAndRotateTo(ArmState desiredState, ExtensionController extender, RotationController rotator) {
+  public ExtendAndRotateTo(
+      ArmState desiredState, ExtensionController extender, RotationController rotator) {
     // TODO Test PID strategy
     addCommands(
-      new PIDExtend(extender, desiredState.getLength()),
-      new PIDRotate(rotator, desiredState.getAngle().getDegrees())
-    );
+        new PIDExtend(extender, desiredState.getLength()),
+        new PIDRotate(rotator, desiredState.getAngle().getDegrees()));
 
     // TODO Test BangBang strategy
     // addCommands(
@@ -34,7 +30,7 @@ public class ExtendAndRotateTo extends ParallelCommandGroup {
     //   new DumbExtend(extender, desiredState.getLength()),
     //   new DumbRotate(rotator, desiredState.getAngle().getDegrees())
     // );
-    
+
     // TODO Test a career that doesn't involve programming...
   }
 }

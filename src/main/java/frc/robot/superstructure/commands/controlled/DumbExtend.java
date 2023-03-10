@@ -5,7 +5,6 @@
 package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
@@ -18,7 +17,11 @@ public class DumbExtend extends CommandBase {
   public DumbExtend(ExtensionController extender, double lengthSetpoint) {
     addRequirements(extender);
     m_extender = extender;
-    m_lengthSetpoint = GMath.clamp(lengthSetpoint, Constants.Arm.Extension.MIN_EXTENSION_LENGTH, Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
+    m_lengthSetpoint =
+        GMath.clamp(
+            lengthSetpoint,
+            Constants.Arm.Extension.MIN_EXTENSION_LENGTH,
+            Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
   }
 
   @Override
@@ -43,6 +46,7 @@ public class DumbExtend extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return GMath.approximately(m_extender.getLength(), m_lengthSetpoint, Constants.Arm.Extension.TOLERANCE);
+    return GMath.approximately(
+        m_extender.getLength(), m_lengthSetpoint, Constants.Arm.Extension.TOLERANCE);
   }
 }

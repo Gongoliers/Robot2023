@@ -6,7 +6,6 @@ package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.control.BangBangController;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
@@ -21,7 +20,11 @@ public class BangBangExtend extends CommandBase {
     m_extender = extender;
     m_bangbangController = new BangBangController(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
 
-    double setpoint = GMath.clamp(lengthSetpoint, Constants.Arm.Extension.MIN_EXTENSION_LENGTH, Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
+    double setpoint =
+        GMath.clamp(
+            lengthSetpoint,
+            Constants.Arm.Extension.MIN_EXTENSION_LENGTH,
+            Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
 
     m_bangbangController.setSetpoint(setpoint);
     m_bangbangController.setTolerance(Constants.Arm.Extension.TOLERANCE);

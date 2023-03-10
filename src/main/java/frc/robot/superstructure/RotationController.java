@@ -51,10 +51,13 @@ public class RotationController extends SubsystemBase
 
   /**
    * Sets the motor voltage.
+   *
    * @param voltage the voltage to set the motor to.
    */
   public void setVoltage(double voltage) {
-    double clampedVoltage = GMath.clamp(voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
+    double clampedVoltage =
+        GMath.clamp(
+            voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
     m_motor.setVoltage(clampedVoltage);
   }
 
