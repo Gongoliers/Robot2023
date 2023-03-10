@@ -1,13 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.Auto;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
@@ -19,6 +21,7 @@ import frc.robot.superstructure.commands.manual.SafeRaise;
 import frc.robot.superstructure.commands.manual.SafeRetract;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
+import java.io.File;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,7 +32,7 @@ import frc.robot.swerve.TeleopDrive;
 public class RobotContainer {
 
   // Subsystems
-  private final Swerve m_swerve = new Swerve();
+  private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final Claw m_claw = new Claw();
   private final ExtensionController m_extensionController = new ExtensionController();
   private final RotationController m_rotationController = new RotationController();
@@ -53,7 +56,8 @@ public class RobotContainer {
    * require the subsystem.
    */
   private void setDefaultCommands() {
-    m_swerve.setDefaultCommand(
+
+    TeleopDrive teleopDrive =
         new TeleopDrive(
             m_swerve,
             () ->
@@ -68,10 +72,11 @@ public class RobotContainer {
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
                     Constants.Driver.DEADBAND),
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND)));
+            () -> true, // Always drive field-oriented
+            false,
+            false);
+
+    m_swerve.setDefaultCommand(teleopDrive);
   }
 
   /**
@@ -82,7 +87,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::setYawZero));
+        .onTrue(new InstantCommand(m_swerve::zeroGyro));
+
+    // TODO Test
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.LOCK_BUTTON.value))
+        .onTrue(new InstantCommand(m_swerve::lock));
+
+    // TODO Figure our what commands have to go here...
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
+        .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
 
     new Trigger(
             () ->
@@ -142,6 +155,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return Auto.fullAuto(m_swerve, "TestPath", Constants.Auto.CONSTRAINTS);
+    return new DoNothingCommand();
   }
 }
