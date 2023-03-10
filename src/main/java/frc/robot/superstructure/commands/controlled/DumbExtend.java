@@ -44,9 +44,26 @@ public class DumbExtend extends CommandBase {
     m_extender.lock();
   }
 
+  private double getLength() {
+    return m_extender.getLength();
+  }
+
+  private boolean isAtSetpoint() {
+      return GMath.approximately(
+          getLength(), m_lengthSetpoint, Constants.Arm.Extension.TOLERANCE);
+  }
+
+  private boolean isTooShort() {
+    return getLength() < Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+  }
+
+  private boolean isTooLong() {
+    double angle = 0.0; // TODO
+    return getLength() > Constants.Arm.Lengths.kMaxExtensionLength.get(angle);
+  }
+
   @Override
   public boolean isFinished() {
-    return GMath.approximately(
-        m_extender.getLength(), m_lengthSetpoint, Constants.Arm.Extension.TOLERANCE);
+      return isAtSetpoint() || isTooShort() || isTooLong();
   }
 }

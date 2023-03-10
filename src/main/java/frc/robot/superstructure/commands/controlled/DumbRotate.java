@@ -42,9 +42,25 @@ public class DumbRotate extends CommandBase {
     m_rotator.lock();
   }
 
+  private double getAngle() {
+    return m_rotator.getAngle();
+  }
+
+  private boolean isAtSetpoint() {
+    return GMath.approximately(
+        getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
+  }
+
   @Override
   public boolean isFinished() {
-    return GMath.approximately(
-        m_rotator.getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
+    return isAtSetpoint() || isTooLow() || isTooHigh();
+  }
+
+  private boolean isTooHigh() {
+    return getAngle() > Constants.Arm.Rotation.MAX_ANGLE;
+  }
+
+  private boolean isTooLow() {
+    return getAngle() > Constants.Arm.Rotation.MIN_ANGLE;
   }
 }

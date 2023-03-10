@@ -35,7 +35,7 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setLength(Constants.Arm.Lengths.kLengths.get(Constants.Arm.Angles.STOWED));
+    setLength(Constants.Arm.Lengths.kMaxExtensionLength.get(Constants.Arm.Angles.STOWED));
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
