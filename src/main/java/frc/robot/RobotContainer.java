@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.Extend;
@@ -87,6 +88,17 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
         .onTrue(new InstantCommand(m_swerve::zeroGyro));
+
+    // TODO Test
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.LOCK_BUTTON.value))
+        .onTrue(new InstantCommand(m_swerve::lock));
+
+    // TODO Figure our what commands have to go here...
+    new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
+        .onTrue(new SequentialCommandGroup(
+          new InstantCommand(),
+          new InstantCommand()
+        ));
 
     new Trigger(
             () ->

@@ -54,7 +54,9 @@ public final class Constants {
     /** Button for zeroing the gyro. */
     public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
     /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
-    public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
+    public static final XboxController.Button LOCK_BUTTON = XboxController.Button.kX;
+    /** Button for running a "panic mode" command. */
+    public static final XboxController.Button PANIC_BUTTON = XboxController.Button.kA;
   }
 
   public static final class Manipulator {
