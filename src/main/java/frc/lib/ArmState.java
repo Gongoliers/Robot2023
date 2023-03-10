@@ -17,11 +17,11 @@ public class ArmState extends Translation2d {
   /**
    * Constructs an ArmState with the provided extension length and angle.
    *
-   * @param extensionLength the extension of the arm in meters.
-   * @param angle the rotation of the arm.
+   * @param meters the extension of the arm in meters.
+   * @param degrees the rotation of the arm.
    */
-  public ArmState(double extensionLength, Rotation2d angle) {
-    super(extensionLength, angle);
+  public ArmState(double meters, Rotation2d degrees) {
+    super(meters, degrees);
   }
 
   /**
