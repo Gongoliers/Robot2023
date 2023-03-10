@@ -1,4 +1,4 @@
-package frc.robot.arm;
+package frc.lib;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,11 +17,11 @@ public class ArmState extends Translation2d {
   /**
    * Constructs an ArmState with the provided extension length and angle.
    *
-   * @param extensionLength the extension of the arm in meters.
-   * @param angle the rotation of the arm.
+   * @param meters the extension of the arm in meters.
+   * @param degrees the rotation of the arm.
    */
-  public ArmState(double extensionLength, Rotation2d angle) {
-    super(extensionLength, angle);
+  public ArmState(double meters, Rotation2d degrees) {
+    super(meters, degrees);
   }
 
   /**
@@ -29,16 +29,7 @@ public class ArmState extends Translation2d {
    *
    * @return the extension length of the arm.
    */
-  public double extensionLength() {
+  public double getLength() {
     return this.getNorm();
-  }
-
-  /**
-   * Returns the angle of the arm.
-   *
-   * @return the angle of the arm.
-   */
-  public Rotation2d angle() {
-    return this.getAngle();
   }
 }

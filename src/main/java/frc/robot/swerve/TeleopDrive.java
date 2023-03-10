@@ -35,25 +35,15 @@ public class TeleopDrive extends CommandBase {
   }
 
   @Override
-  public void initialize() {
-    m_thetaController =
-        new PIDController(
-            Constants.Swerve.THETA_CONTROLLER_KP,
-            Constants.Swerve.THETA_CONTROLLER_KI,
-            Constants.Swerve.THETA_CONTROLLER_KD);
-
-    m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    m_thetaController.setTolerance(Constants.Swerve.THETA_CONTROLLER_TOLERANCE);
-
-    m_previousHeading = m_swerve.getYaw();
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
     m_velocity = velocityFromJoystick(m_vX, m_vY);
-    m_heading =
-        thresholdHeading(headingFromJoystick(m_headingX, m_headingY), Constants.Driver.DEADBAND);
-    m_omega = calculateOmega(m_swerve.getYaw(), m_heading);
+    // m_heading =
+    // thresholdHeading(headingFromJoystick(m_headingX, m_headingY), Constants.Driver.DEADBAND);
+    // m_omega = calculateOmega(m_swerve.getYaw(), m_heading);
+    m_omega = Rotation2d.fromRadians(m_headingX.getAsDouble() * Constants.Swerve.MAX_ANGULAR_SPEED);
 
     m_swerve.drive(m_velocity, m_omega, Constants.Swerve.SHOULD_OPEN_LOOP_IN_TELEOP);
 

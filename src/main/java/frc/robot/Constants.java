@@ -5,22 +5,30 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.thegongoliers.commands.DoNothingCommand;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.ArmState;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Constants {
 
+  public static final int PNEUMATICS_HUB_ID = 30;
+
   public static final class Driver {
     /** Port in Driver Station for the driver controller. */
-    public static final int CONTROLLER_PORT = 1;
+    public static final int CONTROLLER_PORT = 0;
     /** Minimum axis displacement to register movement. */
     public static final double DEADBAND = 0.2;
     /** Minimum trigger displacement to register a press. */
@@ -39,6 +47,29 @@ public final class Constants {
     public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
     /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
     public static final XboxController.Button CROSS_BUTTON = XboxController.Button.kX;
+  }
+
+  public static final class Manipulator {
+    /** Port in Driver Station for the driver controller. */
+    public static final int CONTROLLER_PORT = 1;
+    /** Minimum trigger displacement to register a press. */
+    public static final double TRIGGER_THRESHOLD = 0.8;
+    /** Button for extending to the floor state. */
+    public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
+    /** Button for extending to the middle row state. */
+    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    /** Button for extending to the top row state. */
+    public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
+    /** Button for extending to the substation pickup state. */
+    public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
+    /** Button for intaking. */
+    public static final XboxController.Axis CLOSE_AXIS = XboxController.Axis.kLeftTrigger;
+    /** Button for outtaking. */
+    public static final XboxController.Axis OPEN_AXIS = XboxController.Axis.kRightTrigger;
+    /** Axis for rotating the arm up and down. */
+    public static final XboxController.Axis RAISE_LOWER_AXIS = XboxController.Axis.kLeftY;
+    /** Axis for extending and retracting the arm. */
+    public static final XboxController.Axis EXTEND_RETRACT_AXIS = XboxController.Axis.kRightY;
   }
 
   public static final class Swerve {
@@ -84,7 +115,7 @@ public final class Constants {
     public static final double WHEEL_CIRCUMFERENCE = COTS_MODULE_TYPE.wheelCircumference;
 
     /** Inverse kinematics helper class. Calculated from the center-center distances. */
-    public static final SwerveDriveKinematics SWERVE_KINEMATICS =
+    public static final SwerveDriveKinematics KINEMATICS =
         new SwerveDriveKinematics(
             new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
             new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
@@ -283,25 +314,26 @@ public final class Constants {
   }
 
   public static final class Auto {
-    /** Maximum linear speed during auto, in meters per second. */
-    public static final double LINEAR_SPEED_MAX = 3;
-    /** Maximum linear acceleration during auto, in meters per second squared. */
-    public static final double LINEAR_ACCELERATION_MAX = 3;
-    /** Maximum angular speed during auto, in radians per second. */
-    public static final double ANGULAR_SPEED_MAX = Math.PI;
-    /** Maximum angular acceleration during auto, in radians per second squared. */
-    public static final double ANGULAR_ACCELERATION_MAX = Math.PI;
+    /**
+     * List of commands to run whenever a marker is reached. See
+     * https://github.com/mjansen4857/pathplanner/wiki/Editor-Modes#marker-card for usage.
+     */
+    public static final Map<String, Command> EVENT_MAP = new HashMap<>();
 
-    /** X position (translation) controller KP. */
-    public static final double X_CONTROLLER_KP = 1;
-    /** Y position (translation) controller KP. */
-    public static final double Y_CONTROLLER_KP = 1;
-    /** Theta (rotation) controller KP. */
-    public static final double THETA_CONTROLLER_KP = 1;
+    static {
+      EVENT_MAP.put("DoNothing", new DoNothingCommand());
+    }
 
-    /** Constraints for the theta (rotation) controller. */
-    public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
-        new TrapezoidProfile.Constraints(ANGULAR_SPEED_MAX, ANGULAR_ACCELERATION_MAX);
+    /** PID constants for translation controller. */
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.0, 0.0, 0.0);
+    /** PID constants for rotation (theta) controller. */
+    public static final PIDConstants ROTATION_PID = new PIDConstants(1.0, 0.0, 0.0);
+
+    /**
+     * Constrains generated paths with maximum velocity of 3.0 meters per second and maximum
+     * acceleration of 3.0 meters per second per second.
+     */
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(3.0, 3.0);
   }
 
   public static final class Lighting {
@@ -322,6 +354,7 @@ public final class Constants {
   }
 
   public static final class Arm {
+
     /**
      * Name of the CAN bus for all arm devices. By default, "rio" or "" selects the CAN bus
      * beginning at the RoboRio. If connecting using a CANivore, use Phoenix Tuner to view the CAN
@@ -329,142 +362,249 @@ public final class Constants {
      */
     public static final String CANBUS_NAME = "rio";
 
-    /**
-     * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
-     * button, then copy the ID of the motor to this constant.
-     */
-    public static final int ROTATION_MOTOR_CAN_ID = 0; // TODO
-    /**
-     * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
-     * button, then copy the ID of the motor to this constant.
-     */
-    public static final int EXTENSION_MOTOR_CAN_ID = 0; // TODO
-    /**
-     * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the Blink
-     * button, then copy the ID of the CANcoder to this constant.
-     */
-    public static final int ROTATION_CANCODER_CAN_ID = 0; // TODO
+    public static final class Extension {
+      /**
+       * CAN ID of the extension motor. Locate the correct motor in Phoenix Tuner using the Blink
+       * button, then copy the ID of the motor to this constant.
+       */
+      public static final int MOTOR_ID = 3;
 
-    /** Maximum continuous current for the rotation motor. */
-    public static final double ROTATION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current for the rotation motor. */
-    public static final double ROTATION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current duration for the rotation motor. */
-    public static final double ROTATION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
-    /** Toggle for limiting the current for the rotation motor. */
-    public static final boolean SHOULD_CURRENT_LIMIT_ROTATION_MOTOR = false; // TODO
+      /**
+       * Maximum continuous current for the extension motor. This is the current that the motor will
+       * be held at if the current limit is exceeded.
+       */
+      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      /**
+       * Maximum peak current for the extension motor. If this current is exceeded for the specified
+       * duration, current will be reduced.
+       */
+      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      /**
+       * Maximum peak current duration for the extension motor. If the specified current is exceeded
+       * for this duration, current will be reduced.
+       */
+      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      /**
+       * Toggle for limiting the current for the extension motor. If true, current will be limited
+       * using the specified parameters.
+       */
+      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
-    /** Rotation motor KP. */
-    public static final double ROTATION_MOTOR_KP = 0; // TODO
-    /** Rotation motor KI. */
-    public static final double ROTATION_MOTOR_KI = 0; // TODO
-    /** Rotation motor KD. */
-    public static final double ROTATION_MOTOR_KD = 0; // TODO
-    /** Rotation motor KF. */
-    public static final double ROTATION_MOTOR_KF = 0; // TODO
+      /** Extension motor KP. Applies this many volts per meter of error. */
+      public static final double KP = 0; // TODO
+      /** Extension motor KI. */
+      public static final double KI = 0; // TODO
+      /** Extension motor KD. */
+      public static final double KD = 0; // TODO
+      /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
+      public static final TrapezoidProfile.Constraints CONSTRAINTS =
+          new TrapezoidProfile.Constraints(1, 1);
 
-    /** Maximum continuous current for the extension motor. */
-    public static final double EXTENSION_MOTOR_CONTINUOUS_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current for the extension motor. */
-    public static final double EXTENSION_MOTOR_PEAK_CURRENT_MAX = 0; // TODO
-    /** Maximum peak current duration for the extension motor. */
-    public static final double EXTENSION_MOTOR_PEAK_CURRENT_DURATION = 0; // TODO
-    /** Toggle for limiting the current for the extension motor. */
-    public static final boolean SHOULD_CURRENT_LIMIT_EXTENSION_MOTOR = false; // TODO
+      /**
+       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
+       * output.
+       */
+      public static final double KG = 0; // TODO
+      /**
+       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KS = 0; // TODO
+      /**
+       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
+       * to the PID output.
+       */
+      public static final double KV = 0; // TODO
+      /**
+       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KA = 0; // TODO
 
-    /** Extension motor KP. */
-    public static final double EXTENSION_MOTOR_KP = 0; // TODO
-    /** Extension motor KI. */
-    public static final double EXTENSION_MOTOR_KI = 0; // TODO
-    /** Extension motor KD. */
-    public static final double EXTENSION_MOTOR_KD = 0; // TODO
-    /** Extension motor KF. */
-    public static final double EXTENSION_MOTOR_KF = 0; // TODO
+      /** The maximum voltage that can be applied to motors. */
+      public static final int MAX_VOLTAGE = 0;
 
-    /** Toggle for if the CANCoder should be inverted. Ensure that CCW+ CW-. */
-    public static final boolean SHOULD_INVERT_CANCODER = false; // TODO
+      /**
+       * Toggle for if the extension motor should be inverted. Ensures that positive values cause
+       * the arm to extend and that negative values cause the arm to retract.
+       */
+      public static final boolean SHOULD_INVERT_MOTOR = false;
 
-    /** Toggle for if the rotation motor should be inverted. Ensure that CCW+ CW-. */
-    public static final boolean SHOULD_INVERT_ROTATION_MOTOR = false; // TODO
+      /**
+       * Mode that the motor enters when no effort is applied. Brake mode makes it more difficult to
+       * turn the shaft, while neutral mode allows the shaft the turn freely.
+       */
+      public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
 
-    /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-     * behavior.
-     */
-    public static final NeutralMode ROTATION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
+      /**
+       * The difference in arm length caused by one full rotation of the spool, meaured in meters.
+       * Essentially, the effective "circumference" of the spool. Used for calculating the
+       * displacement per encoder tick.
+       */
+      public static final double LENGTH_PER_ROTATION = Units.inchesToMeters(1) * Math.PI;
+      /**
+       * The gear ratio between the extension motor and the spool. Used for calculating the
+       * displacement per encoder tick.
+       */
+      public static final double GEAR_RATIO = 15.34; // TODO
 
-    /**
-     * Toggle for if the extension motor should be inverted. Ensure that positive values cause the
-     * arm to extend and that negative values cause the arm to retract.
-     */
-    public static final boolean SHOULD_INVERT_EXTENSION_MOTOR = false; // TODO
+      /**
+       * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
+       * engage and disengage the brake on the gearbox.
+       */
+      public static final int BRAKE_CHANNEL = 9;
 
-    /**
-     * Mode to enter when the motor is "neutral." Check with the Lead Mentors to decide this
-     * behavior.
-     */
-    public static final NeutralMode EXTENSION_MOTOR_NEUTRAL_MODE = NeutralMode.Brake; // TODO
+      /**
+       * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
+       * for the PID control.
+       */
+      public static final double MANUAL_EXTEND_SPEED = 0.8;
 
-    /**
-     * The difference in arm length caused by one full rotation of the spool, meaured in meters.
-     * Essentially, the effective "circumference" of the spool.
-     */
-    public static final double EXTENSION_LENGTH_PER_ROTATION = 0;
-    /** The gear ratio between the extension motor and the spool. */
-    public static final double EXTENSION_MOTOR_GEAR_RATIO = 0;
+      /**
+       * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
+       * for the PID control.
+       */
+      public static final double MANUAL_RETRACT_SPEED = -0.8;
 
-    /** The gear ratio between the rotation motor and the arm. */
-    public static final double ROTATION_MOTOR_GEAR_RATIO = 0;
+      public static final double MAX_EXTENSION_LENGTH = 1.3;
 
-    /**
-     * The minimum angle that the arm can rotate to. This value is measured in degrees, and
-     * represents the lower bound that the arm will never cross.
-     */
-    public static final double MIN_ANGLE = 0;
-
-    /**
-     * The maximum anglet hat the arm can rotate to. This value is measured in degrees, and
-     * represents the upper bound that the arm will never cross.
-     */
-    public static final double MAX_ANGLE = 0;
-
-    // TODO Implement as <Rotation2d, Double>
-    public static InterpolatingTreeMap<Double, Double> kAngleToMinLength =
-        new InterpolatingTreeMap<>();
-
-    static {
-      kAngleToMinLength.put(MIN_ANGLE, 0.0);
-      kAngleToMinLength.put(0.0, 0.0);
-      kAngleToMinLength.put(MAX_ANGLE, 0.0);
+      public static final double MIN_EXTENSION_LENGTH = 0.0;
     }
 
-    // TODO Implement as <Rotation2d, Double>
-    public static InterpolatingTreeMap<Double, Double> kAngleToMaxLength =
-        new InterpolatingTreeMap<>();
+    public static final class Rotation {
 
-    static {
-      kAngleToMaxLength.put(MIN_ANGLE, 0.0);
-      kAngleToMaxLength.put(0.0, 0.0);
-      kAngleToMaxLength.put(MAX_ANGLE, 0.0);
+      /**
+       * CAN ID of the rotation motor. Locate the correct motor in Phoenix Tuner using the Blink
+       * button, then copy the ID of the motor to this constant.
+       */
+      public static final int MOTOR_ID = 2;
+      /**
+       * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the
+       * Blink button, then copy the ID of the CANcoder to this constant.
+       */
+      public static final int CANCODER_ID = 1;
+
+      /**
+       * Maximum continuous current for the extension motor. This is the current that the motor will
+       * be held at if the current limit is exceeded.
+       */
+      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      /**
+       * Maximum peak current for the extension motor. If this current is exceeded for the specified
+       * duration, current will be reduced.
+       */
+      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      /**
+       * Maximum peak current duration for the extension motor. If the specified current is exceeded
+       * for this duration, current will be reduced.
+       */
+      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      /**
+       * Toggle for limiting the current for the extension motor. If true, current will be limited
+       * using the specified parameters.
+       */
+      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
+
+      /** Rotation motor KP. Applies this many volts per degree of error. */
+      public static final double KP = 0.2; // TODO
+      /** Rotation motor KI. */
+      public static final double KI = 0; // TODO
+      /** Rotation motor KD. */
+      public static final double KD = 0; // TODO
+      /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
+      public static final TrapezoidProfile.Constraints CONSTRAINTS =
+          new TrapezoidProfile.Constraints(80, 10);
+
+      /**
+       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
+       * output.
+       */
+      public static final double KG = 0; // TODO
+      /**
+       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KS = 0.25; // TODO
+      /**
+       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
+       * to the PID output.
+       */
+      public static final double KV = 0; // TODO
+      /**
+       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
+       * the PID output.
+       */
+      public static final double KA = 0; // TODO
+
+      /** The maximum voltage that can be applied to motors. */
+      public static final int MAX_VOLTAGE = 6;
+
+      /**
+       * Toggle for if the CANCoder should be inverted. Ensures that positive angles are
+       * counter-clockwise and negative angles are clockwise.
+       */
+      public static final boolean SHOULD_INVERT_CANCODER = false;
+
+      /**
+       * Toggle for if the rotation motor should be inverted. Ensures that positive motor values
+       * cause upwards movement and negative motor values cause downwards movement.
+       */
+      public static final boolean SHOULD_INVERT_MOTOR = true;
+
+      /**
+       * Mode that the motor enters when no effort is applied. Brake mode makes it more difficult to
+       * spin the shaft, while neutral mode allows the shaft the spin freely.
+       */
+      public static final NeutralMode MOTOR_NEUTRAL_MODE = NeutralMode.Brake;
+
+      /**
+       * The gear ratio between the rotation motor and the arm. Used for calculating the
+       * displacement per encoder tick.
+       */
+      public static final double GEAR_RATIO = 24.1666; // TODO
+
+      /**
+       * The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. Used for
+       * keeping a constant frame of reference for all calculations, where 0 degrees is parallel
+       * with the ground and perpendicular with the superstructure.
+       */
+      public static final double CANCODER_OFFSET = 0; // TODO
+
+      /**
+       * The minimum angle that the arm can rotate to. This value is measured in degrees, and
+       * represents the lower bound that the arm will never cross.
+       */
+      public static final double MIN_ANGLE = -300;
+
+      /**
+       * The maximum angle that the arm can rotate to. This value is measured in degrees, and
+       * represents the upper bound that the arm will never cross.
+       */
+      public static final double MAX_ANGLE = 0;
+
+      /**
+       * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
+       * engage and disengage the brake on the gearbox.
+       */
+      public static final int BRAKE_CHANNEL = 10;
+
+      /** The speed for manually raising the arm. */
+      public static final double MANUAL_RAISE_SPEED = 0.1;
+
+      /** The speed for manually lowering the arm. */
+      public static final double MANUAL_LOWER_SPEED = -0.1;
+    }
+
+    public static final class States {
+      public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
+      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300)); // TODO
+      public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
     }
   }
 
-  public static final class Compressor {
-    /** TODO: revise all of these values */
-    /** The pressure that the compressor must reach (in PSI) before it is considered full */
-    public static final int compressorThreshold = 110;
-    /**
-     * The minimum pressure in PSI. The compressor will turn on when the pressure drops below this
-     * value.
-     */
-    public static final int minPressure = 75;
-    /**
-     * The maximum pressure in PSI. The compressor will turn off when the pressure reaches this
-     * value.
-     */
-    public static final int maxPressure = 120;
-    /** The module ID to use. */
-    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/Compressor.html#%3Cinit%3E(int,edu.wpi.first.wpilibj.PneumaticsModuleType)
-    public static final int module = 0;
+  public static final class Claw {
+    public static final int CHANNEL = 8;
   }
 }

@@ -58,10 +58,10 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
     realignEncodersToCANCoder();
 
     m_swerveOdometry =
-        new SwerveDriveOdometry(Constants.Swerve.SWERVE_KINEMATICS, getYaw(), getPositions());
+        new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getPositions());
 
     m_swerveModuleStates = getStates();
-    m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
+    m_chassisSpeeds = Constants.Swerve.KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
 
     addToShuffleboard(Shuffleboard.getTab("Swerve"));
   }
@@ -91,8 +91,7 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
     speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw());
 
     // Convert the desired velocities to module states
-    SwerveModuleState[] desiredStates =
-        Constants.Swerve.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
+    SwerveModuleState[] desiredStates = Constants.Swerve.KINEMATICS.toSwerveModuleStates(speeds);
 
     // Renormalize the wheel speeds to avoid exceeding the maximum chassis speed
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_SPEED);
@@ -202,7 +201,7 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
    * Set the gyro's current yaw to be zero. This makes the robot's previous yaw the new zero point
    * of the robot. Driving will now be relative to the yaw the robot was prior to this call.
    */
-  private void setYawZero() {
+  public void setYawZero() {
     if (!Robot.isReal()) {
       m_simYaw = 0;
     }
@@ -239,7 +238,7 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
   @Override
   public void periodic() {
     if (!Robot.isReal()) {
-      ChassisSpeeds speeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(getStates());
+      ChassisSpeeds speeds = Constants.Swerve.KINEMATICS.toChassisSpeeds(getStates());
       double deltaTime = m_simTimer.get() - m_simPreviousTimestamp;
       m_simYaw += speeds.omegaRadiansPerSecond * deltaTime;
       m_simPreviousTimestamp = m_simTimer.get();
@@ -250,6 +249,6 @@ public class Swerve extends SubsystemBase implements TelemetrySubsystem {
 
     // Update the current module states and chassis speeds
     m_swerveModuleStates = getStates();
-    m_chassisSpeeds = Constants.Swerve.SWERVE_KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
+    m_chassisSpeeds = Constants.Swerve.KINEMATICS.toChassisSpeeds(m_swerveModuleStates);
   }
 }
