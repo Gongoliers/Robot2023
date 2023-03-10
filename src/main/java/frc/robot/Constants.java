@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.lib.ArmState;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +91,10 @@ public final class Constants {
     public static final Map<String, Command> EVENT_MAP = new HashMap<>();
 
     static {
-      EVENT_MAP.put("DoNothing", new DoNothingCommand());
+      EVENT_MAP.put("ToTop", new PrintCommand("ToTop"));
+      EVENT_MAP.put("ToFloor", new PrintCommand("ToFloor"));
+      EVENT_MAP.put("OpenClaw", new PrintCommand("OpenClaw"));
+      EVENT_MAP.put("CloseClaw", new PrintCommand("CloseClaw"));
     }
 
     /** PID constants for translation controller. */
