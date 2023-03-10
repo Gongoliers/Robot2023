@@ -15,12 +15,12 @@ public class BangBangRotate extends CommandBase {
   private final BangBangController m_bangbangController;
   private final RotationController m_rotator;
 
-  public BangBangRotate(RotationController extender, double lengthSetpoint) {
+  public BangBangRotate(RotationController extender, double angleSetpoint) {
     addRequirements(extender);
     m_rotator = extender;
     m_bangbangController = new BangBangController(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
 
-    m_bangbangController.setSetpoint(lengthSetpoint);
+    m_bangbangController.setSetpoint(angleSetpoint);
     m_bangbangController.setTolerance(Constants.Arm.Rotation.TOLERANCE);
   }
 
