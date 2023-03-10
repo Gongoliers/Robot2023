@@ -4,7 +4,7 @@
   "angleMotorFreeSpeedRPM": 6800,
   "gearRatio": {
     "drive": 6.12,
-    "angle": 21.43
+    "angle": 21.42
   },
   "currentLimit": {
     "drive": 40,

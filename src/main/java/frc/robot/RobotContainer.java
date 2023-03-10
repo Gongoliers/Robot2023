@@ -21,6 +21,7 @@ import frc.robot.superstructure.Retract;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
+import frc.robot.swerve.TeleopDrive;
 import java.io.File;
 
 /**
@@ -55,7 +56,26 @@ public class RobotContainer {
    */
   private void setDefaultCommands() {
 
-    AbsoluteDrive closedDrive =
+    TeleopDrive teleopDrive =
+        new TeleopDrive(
+            m_swerve,
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () -> false,
+            false,
+            false);
+
+    AbsoluteDrive absoluteDrive =
         new AbsoluteDrive(
             m_swerve,
             () ->
@@ -76,7 +96,7 @@ public class RobotContainer {
                     Constants.Driver.DEADBAND),
             false);
 
-    m_swerve.setDefaultCommand(closedDrive);
+    m_swerve.setDefaultCommand(teleopDrive);
   }
 
   /**
@@ -95,10 +115,7 @@ public class RobotContainer {
 
     // TODO Figure our what commands have to go here...
     new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
-        .onTrue(new SequentialCommandGroup(
-          new InstantCommand(),
-          new InstantCommand()
-        ));
+        .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
 
     new Trigger(
             () ->
