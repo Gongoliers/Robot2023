@@ -2,48 +2,48 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.superstructure.commands;
+package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.control.BangBangController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RotationController;
 
-public class BangBangExtend extends CommandBase {
+public class BangBangRotate extends CommandBase {
 
   private final BangBangController m_bangbangController;
-  private final ExtensionController m_extender;
+  private final RotationController m_rotator;
 
-  public BangBangExtend(ExtensionController extender, double lengthSetpoint) {
+  public BangBangRotate(RotationController extender, double angleSetpoint) {
     addRequirements(extender);
-    m_extender = extender;
-    m_bangbangController = new BangBangController(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+    m_rotator = extender;
+    m_bangbangController = new BangBangController(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
 
-    double setpoint = GMath.clamp(lengthSetpoint, Constants.Arm.Extension.MIN_EXTENSION_LENGTH, Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
+    double setpoint = GMath.clamp(angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE);
 
     m_bangbangController.setSetpoint(setpoint);
-    m_bangbangController.setTolerance(Constants.Arm.Extension.TOLERANCE);
+    m_bangbangController.setTolerance(Constants.Arm.Rotation.TOLERANCE);
   }
 
   @Override
   public void initialize() {
-    m_extender.unlock();
+    m_rotator.unlock();
   }
 
   @Override
   public void execute() {
-    double measurement = m_extender.getLength();
+    double measurement = m_rotator.getAngle();
     // deltaTime is ignored with this implementation of BangBangController
     double speed = m_bangbangController.calculate(measurement, 0.0);
-    m_extender.drive(speed);
+    m_rotator.drive(speed);
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_extender.stop();
-    m_extender.lock();
+    m_rotator.stop();
+    m_rotator.lock();
   }
 
   @Override
