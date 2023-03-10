@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -222,7 +223,7 @@ public final class Constants {
        */
       public static final double MANUAL_RETRACT_SPEED = -0.8;
 
-      public static final double MAX_EXTENSION_LENGTH = 1.3;
+      public static final double MAX_EXTENSION_LENGTH = 0.8; // 1.3 max hypot, 0.95 max horiz leg, ~0.9 max vertical leg
 
       public static final double MIN_EXTENSION_LENGTH = 0.0;
     }
@@ -333,12 +334,23 @@ public final class Constants {
       public static final double MANUAL_LOWER_SPEED = -0.1;
     }
 
-    public static final class States {
-      public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300));
-      public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(-115));
+    public static final class Angles {
+      public static final double STOWED = 0;
+      public static final double FLOOR = -300;
+      public static final double MIDDLE = 0; // TODO
+      public static final double TOP = 0; // TODO
+      public static final double SUBSTATION = -115;
+      public static final double LEVEL = 0; // TODO measurement when parallel
+    }
+
+    public static final class Lengths {
+      public static InterpolatingTreeMap<Double, Double> kLengths = new InterpolatingTreeMap<Double, Double>();
+
+      static {
+        kLengths.put(Angles.STOWED, 0.0); // TODO near-vertical upwards limit
+        kLengths.put(Angles.LEVEL, 0.95);
+        kLengths.put(Angles.FLOOR, 0.0); // TODO near-vertical downwards limit
+      }
     }
   }
 

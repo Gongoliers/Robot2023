@@ -35,7 +35,7 @@ public class RotationController extends SubsystemBase
 
     lock();
 
-    setAngle(Constants.Arm.States.STOWED.getAngle().getDegrees());
+    setAngle(Constants.Arm.Angles.STOWED);
 
     addToShuffleboard(Shuffleboard.getTab("Arm"));
   }

@@ -8,6 +8,7 @@ import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
@@ -34,7 +35,9 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setLength(Constants.Arm.States.STOWED.getLength());
+    setLength(Constants.Arm.Lengths.kLengths.get(Constants.Arm.Angles.STOWED));
+
+    addToShuffleboard(Shuffleboard.getTab("Arm"));
   }
 
   /**
