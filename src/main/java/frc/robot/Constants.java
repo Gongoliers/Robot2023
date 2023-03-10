@@ -5,6 +5,9 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.thegongoliers.commands.DoNothingCommand;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -12,9 +15,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.ArmState;
 import frc.lib.swerve.COTSFalconSwerveConstants;
 import frc.lib.swerve.SwerveModuleConfig;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Constants {
 
@@ -109,7 +115,7 @@ public final class Constants {
     public static final double WHEEL_CIRCUMFERENCE = COTS_MODULE_TYPE.wheelCircumference;
 
     /** Inverse kinematics helper class. Calculated from the center-center distances. */
-    public static final SwerveDriveKinematics SWERVE_KINEMATICS =
+    public static final SwerveDriveKinematics KINEMATICS =
         new SwerveDriveKinematics(
             new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
             new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
@@ -308,25 +314,26 @@ public final class Constants {
   }
 
   public static final class Auto {
-    /** Maximum linear speed during auto, in meters per second. */
-    public static final double LINEAR_SPEED_MAX = 3;
-    /** Maximum linear acceleration during auto, in meters per second squared. */
-    public static final double LINEAR_ACCELERATION_MAX = 3;
-    /** Maximum angular speed during auto, in radians per second. */
-    public static final double ANGULAR_SPEED_MAX = Math.PI;
-    /** Maximum angular acceleration during auto, in radians per second squared. */
-    public static final double ANGULAR_ACCELERATION_MAX = Math.PI;
+    /**
+     * List of commands to run whenever a marker is reached. See
+     * https://github.com/mjansen4857/pathplanner/wiki/Editor-Modes#marker-card for usage.
+     */
+    public static final Map<String, Command> EVENT_MAP = new HashMap<>();
 
-    /** X position (translation) controller KP. */
-    public static final double X_CONTROLLER_KP = 1;
-    /** Y position (translation) controller KP. */
-    public static final double Y_CONTROLLER_KP = 1;
-    /** Theta (rotation) controller KP. */
-    public static final double THETA_CONTROLLER_KP = 1;
+    static {
+      EVENT_MAP.put("DoNothing", new DoNothingCommand());
+    }
 
-    /** Constraints for the theta (rotation) controller. */
-    public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
-        new TrapezoidProfile.Constraints(ANGULAR_SPEED_MAX, ANGULAR_ACCELERATION_MAX);
+    /** PID constants for translation controller. */
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(1.0, 0.0, 0.0);
+    /** PID constants for rotation (theta) controller. */
+    public static final PIDConstants ROTATION_PID = new PIDConstants(1.0, 0.0, 0.0);
+
+    /**
+     * Constrains generated paths with maximum velocity of 3.0 meters per second and maximum
+     * acceleration of 3.0 meters per second per second.
+     */
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(3.0, 3.0);
   }
 
   public static final class Lighting {
@@ -589,16 +596,11 @@ public final class Constants {
     }
 
     public static final class States {
-      public static final ArmState STOWED =
-          new ArmState(0, Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR =
-          new ArmState(0, Rotation2d.fromDegrees(-300)); // TODO
-      public static final ArmState MIDDLE =
-          new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState TOP =
-          new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState SUBSTATION =
-          new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
+      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300)); // TODO
+      public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
     }
   }
 
