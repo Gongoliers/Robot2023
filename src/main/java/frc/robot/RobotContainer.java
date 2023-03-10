@@ -31,8 +31,7 @@ import java.io.File;
 public class RobotContainer {
 
   // Subsystems
-  private final Swerve m_swerve =
-      new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final Claw m_claw = new Claw();
   private final ExtensionController m_extensionController = new ExtensionController();
   private final RotationController m_rotationController = new RotationController();
