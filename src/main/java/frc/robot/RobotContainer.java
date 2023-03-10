@@ -1,9 +1,6 @@
 package frc.robot;
 
-import java.io.File;
-
 import com.thegongoliers.commands.DoNothingCommand;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -23,6 +20,7 @@ import frc.robot.superstructure.Retract;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
+import java.io.File;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,7 +31,8 @@ import frc.robot.swerve.Swerve;
 public class RobotContainer {
 
   // Subsystems
-  private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve/falcon"));
+  private final Swerve m_swerve =
+      new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final Claw m_claw = new Claw();
   private final ExtensionController m_extensionController = new ExtensionController();
   private final RotationController m_rotationController = new RotationController();
@@ -74,8 +73,9 @@ public class RobotContainer {
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND), false);
-    
+                    Constants.Driver.DEADBAND),
+            false);
+
     m_swerve.setDefaultCommand(closedDrive);
   }
 
