@@ -5,6 +5,7 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.thegongoliers.output.interfaces.Lockable;
+import com.thegongoliers.output.interfaces.Stoppable;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -18,7 +19,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Arm.Rotation;
 import frc.robot.Robot;
 
-public class RotationController extends SubsystemBase implements Lockable, TelemetrySubsystem {
+public class RotationController extends SubsystemBase implements Lockable, Stoppable, TelemetrySubsystem {
 
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;

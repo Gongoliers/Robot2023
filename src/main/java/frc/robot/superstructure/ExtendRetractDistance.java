@@ -17,15 +17,13 @@ public class ExtendRetractDistance extends CommandBase {
   public ExtendRetractDistance(ExtensionController extender, double speed, double setpoint) {
     addRequirements(extender);
     m_extender = extender;
-    double delta = setpoint - extender.getMeasurement();
-    m_speed = Math.copySign(speed, delta);
+    m_speed = speed;
     m_setpoint = setpoint;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_extender.disable();
     m_extender.unlock();
   }
 
@@ -45,6 +43,6 @@ public class ExtendRetractDistance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return GMath.approximately(m_extender.getMeasurement(), m_setpoint);
+    return GMath.approximately(m_extender.getLength(), m_setpoint);
   }
 }

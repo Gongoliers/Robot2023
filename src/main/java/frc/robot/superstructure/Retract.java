@@ -20,7 +20,6 @@ public class Retract extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_extender.disable();
     m_extender.unlock();
   }
 
@@ -40,6 +39,6 @@ public class Retract extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_extender.getMeasurement() < Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+    return m_extender.getLength() < Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
   }
 }
