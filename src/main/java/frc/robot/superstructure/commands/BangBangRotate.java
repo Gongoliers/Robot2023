@@ -4,6 +4,7 @@
 
 package frc.robot.superstructure.commands;
 
+import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.control.BangBangController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -20,7 +21,9 @@ public class BangBangRotate extends CommandBase {
     m_rotator = extender;
     m_bangbangController = new BangBangController(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
 
-    m_bangbangController.setSetpoint(angleSetpoint);
+    double setpoint = GMath.clamp(angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE);
+
+    m_bangbangController.setSetpoint(setpoint);
     m_bangbangController.setTolerance(Constants.Arm.Rotation.TOLERANCE);
   }
 

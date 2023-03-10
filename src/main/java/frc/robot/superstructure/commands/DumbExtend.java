@@ -18,7 +18,7 @@ public class DumbExtend extends CommandBase {
   public DumbExtend(ExtensionController extender, double lengthSetpoint) {
     addRequirements(extender);
     m_extender = extender;
-    m_lengthSetpoint = lengthSetpoint;
+    m_lengthSetpoint = GMath.clamp(lengthSetpoint, Constants.Arm.Extension.MIN_EXTENSION_LENGTH, Constants.Arm.Extension.MAX_EXTENSION_LENGTH);
   }
 
   @Override

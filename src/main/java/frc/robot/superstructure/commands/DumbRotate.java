@@ -18,7 +18,7 @@ public class DumbRotate extends CommandBase {
   public DumbRotate(RotationController rotator, double angleSetpoint) {
     addRequirements(rotator);
     m_rotator = rotator;
-    m_angleSetpoint = angleSetpoint;
+    m_angleSetpoint = GMath.clamp(angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE);
   }
 
   @Override
