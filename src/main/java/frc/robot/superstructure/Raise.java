@@ -7,12 +7,12 @@ package frc.robot.superstructure;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
-public class ManualRaise extends CommandBase {
+public class Raise extends CommandBase {
 
   private RotationController m_rotator;
 
   /** Creates a new ManualExtend. */
-  public ManualRaise(RotationController rotator) {
+  public Raise(RotationController rotator) {
     addRequirements(rotator);
     m_rotator = rotator;
   }

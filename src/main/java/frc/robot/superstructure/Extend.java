@@ -7,12 +7,12 @@ package frc.robot.superstructure;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
-public class ManualExtend extends CommandBase {
+public class Extend extends CommandBase {
 
   private ExtensionController m_extender;
 
   /** Creates a new ManualExtend. */
-  public ManualExtend(ExtensionController extender) {
+  public Extend(ExtensionController extender) {
     addRequirements(extender);
     m_extender = extender;
   }

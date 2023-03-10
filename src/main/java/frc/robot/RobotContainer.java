@@ -1,18 +1,23 @@
 package frc.robot;
 
+import com.thegongoliers.commands.output.RetractCommand;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
-import frc.robot.superstructure.ManualExtend;
-import frc.robot.superstructure.ManualLower;
-import frc.robot.superstructure.ManualRaise;
-import frc.robot.superstructure.ManualRetract;
+import frc.robot.superstructure.Extend;
+import frc.robot.superstructure.ExtendRetractDistance;
+import frc.robot.superstructure.Lower;
+import frc.robot.superstructure.Raise;
+import frc.robot.superstructure.RaiseLowerAngle;
+import frc.robot.superstructure.Retract;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
@@ -95,25 +100,43 @@ public class RobotContainer {
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new ManualExtend(m_extensionController));
+        .whileTrue(new Extend(m_extensionController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new ManualRetract(m_extensionController));
+        .whileTrue(new Retract(m_extensionController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new ManualRaise(m_rotationController));
+        .whileTrue(new Raise(m_rotationController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new ManualLower(m_rotationController));
+        .whileTrue(new Lower(m_rotationController));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
+        .whileTrue(new ParallelCommandGroup(
+            new ExtendRetractDistance(m_extensionController, 0.1, Constants.Arm.States.FLOOR.getLength()),
+            new RaiseLowerAngle(m_rotationController, 0.1, Constants.Arm.States.FLOOR.getAngle().getDegrees())
+        ));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
+        .whileTrue(new ParallelCommandGroup(
+            new ExtendRetractDistance(m_extensionController, 0.1, Constants.Arm.States.MIDDLE.getLength()),
+            new RaiseLowerAngle(m_rotationController, 0.1, Constants.Arm.States.MIDDLE.getAngle().getDegrees())
+        ));
+
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
+        .whileTrue(new ParallelCommandGroup(
+            new ExtendRetractDistance(m_extensionController, 0.1, Constants.Arm.States.TOP.getLength()),
+            new RaiseLowerAngle(m_rotationController, 0.1, Constants.Arm.States.TOP.getAngle().getDegrees())
+        ));
   }
 
   private void configureTriggers() {}

@@ -51,11 +51,11 @@ public final class Constants {
     /** Button for extending to the floor state. */
     public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
-    // public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
-    // public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
+    public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
     /** Button for extending to the substation pickup state. */
-    // public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
+    public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
     /** Button for intaking. */
     public static final XboxController.Axis CLOSE_AXIS = XboxController.Axis.kLeftTrigger;
     /** Button for outtaking. */

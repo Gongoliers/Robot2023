@@ -7,39 +7,39 @@ package frc.robot.superstructure;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
-public class ManualRetract extends CommandBase {
+public class Lower extends CommandBase {
 
-  private ExtensionController m_extender;
+  private RotationController m_rotator;
 
   /** Creates a new ManualExtend. */
-  public ManualRetract(ExtensionController extender) {
-    addRequirements(extender);
-    m_extender = extender;
+  public Lower(RotationController rotator) {
+    addRequirements(rotator);
+    m_rotator = rotator;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_extender.disable();
-    m_extender.unlock();
+    m_rotator.disable();
+    m_rotator.unlock();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_extender.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
+    m_rotator.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_extender.stop();
-    m_extender.lock();
+    m_rotator.stop();
+    m_rotator.lock();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_extender.getMeasurement() < Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+    return m_rotator.getMeasurement() < Constants.Arm.Rotation.MIN_ANGLE;
   }
 }
