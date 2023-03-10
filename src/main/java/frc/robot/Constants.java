@@ -49,7 +49,7 @@ public final class Constants {
     /** Minimum trigger displacement to register a press. */
     public static final double TRIGGER_THRESHOLD = 0.8;
     /** Button for extending to the floor state. */
-    // public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
+    public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
     // public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
@@ -451,13 +451,17 @@ public final class Constants {
        * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_EXTEND_SPEED = 0.4;
+      public static final double MANUAL_EXTEND_SPEED = 0.8;
 
       /**
        * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_RETRACT_SPEED = -0.4;
+      public static final double MANUAL_RETRACT_SPEED = -0.8;
+
+      public static final double MAX_EXTENSION_LENGTH = 1.3;
+
+      public static final double MIN_EXTENSION_LENGTH = 0.0;
     }
 
     public static final class Rotation {
@@ -495,14 +499,14 @@ public final class Constants {
       public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
       /** Rotation motor KP. Applies this many volts per degree of error. */
-      public static final double KP = 0; // TODO
+      public static final double KP = 0.2; // TODO
       /** Rotation motor KI. */
       public static final double KI = 0; // TODO
       /** Rotation motor KD. */
       public static final double KD = 0; // TODO
       /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
       public static final TrapezoidProfile.Constraints CONSTRAINTS =
-          new TrapezoidProfile.Constraints(1, 1);
+          new TrapezoidProfile.Constraints(80, 10);
 
       /**
        * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
@@ -513,7 +517,7 @@ public final class Constants {
        * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
        * the PID output.
        */
-      public static final double KS = 0; // TODO
+      public static final double KS = 0.25; // TODO
       /**
        * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
        * to the PID output.
@@ -526,7 +530,7 @@ public final class Constants {
       public static final double KA = 0; // TODO
 
       /** The maximum voltage that can be applied to motors. */
-      public static final int MAX_VOLTAGE = 0;
+      public static final int MAX_VOLTAGE = 6;
 
       /**
        * Toggle for if the CANCoder should be inverted. Ensures that positive angles are
@@ -563,13 +567,13 @@ public final class Constants {
        * The minimum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the lower bound that the arm will never cross.
        */
-      public static final double MIN_ANGLE = -40; // TODO Recalibrate, -47?
+      public static final double MIN_ANGLE = -280; // TODO Recalibrate, -47?
 
       /**
        * The maximum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the upper bound that the arm will never cross.
        */
-      public static final double MAX_ANGLE = 60; // TODO Recalibrate, 66?
+      public static final double MAX_ANGLE = 0; // TODO
 
       /**
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
@@ -586,15 +590,15 @@ public final class Constants {
 
     public static final class States {
       public static final ArmState STOWED =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState FLOOR =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(-300)); // TODO
       public static final ArmState MIDDLE =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState TOP =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState SUBSTATION =
-          new ArmState(Units.inchesToMeters(17.125), Rotation2d.fromDegrees(0)); // TODO
+          new ArmState(Units.inchesToMeters(0), Rotation2d.fromDegrees(0)); // TODO
     }
   }
 

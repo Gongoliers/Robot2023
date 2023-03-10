@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -39,6 +40,8 @@ public class ExtensionController extends ProfiledPIDSubsystem {
 
     // Assumes that the arm begins in the stowed state
     setMeasurement(Constants.Arm.States.STOWED.getLength());
+
+    Shuffleboard.getTab("b").addDouble("Extension Length ('m')", () -> getMeasurement());
   }
 
   /**
@@ -102,7 +105,6 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * <p>Disables movement by engaging the friction brake.
    */
   public void stop() {
-    this.disable();
     m_motor.stopMotor();
     lock();
   }

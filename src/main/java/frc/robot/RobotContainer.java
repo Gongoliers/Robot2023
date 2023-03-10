@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.autos.exampleAuto;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.ManualExtend;
+import frc.robot.superstructure.ManualLower;
+import frc.robot.superstructure.ManualRaise;
+import frc.robot.superstructure.ManualRetract;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
@@ -79,77 +83,37 @@ public class RobotContainer {
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(() -> m_claw.close()));
+        .onTrue(new InstantCommand(m_claw::close));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(() -> m_claw.open()));
+        .onTrue(new InstantCommand(m_claw::open));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_extensionController.unlock();
-                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_extensionController.lock();
-                }));
+        .whileTrue(new ManualExtend(m_extensionController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_extensionController.unlock();
-                  m_extensionController.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_extensionController.lock();
-                }));
+        .whileTrue(new ManualRetract(m_extensionController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_rotationController.unlock();
-                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_rotationController.lock();
-                }));
+        .whileTrue(new ManualRaise(m_rotationController));
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  m_rotationController.unlock();
-                  m_rotationController.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  m_rotationController.lock();
-                }));
+        .whileTrue(new ManualLower(m_rotationController));
   }
 
   private void configureTriggers() {}

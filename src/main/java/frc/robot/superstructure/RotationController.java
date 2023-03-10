@@ -2,14 +2,14 @@ package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -19,7 +19,6 @@ import frc.robot.Robot;
 public class RotationController extends ProfiledPIDSubsystem {
 
   private final WPI_TalonFX m_motor;
-  private final WPI_CANCoder m_cancoder;
   private final Solenoid m_brake;
   private final ArmFeedforward m_feedforward =
       new ArmFeedforward(Rotation.KS, Rotation.KG, Rotation.KV, Rotation.KA);
@@ -34,16 +33,17 @@ public class RotationController extends ProfiledPIDSubsystem {
     m_motor = new WPI_TalonFX(Rotation.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configRotationMotor();
 
-    m_cancoder = new WPI_CANCoder(Rotation.CANCODER_ID, Constants.Arm.CANBUS_NAME);
-    configRotationCANCoder();
-
     m_brake =
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID, PneumaticsModuleType.REVPH, Rotation.BRAKE_CHANNEL);
 
     lock();
 
-    setMeasurement(getCANCoderAngle().getDegrees());
+    setMeasurement(Constants.Arm.States.STOWED.getAngle().getDegrees());
+
+    Shuffleboard.getTab("a").addDouble("Degrees", () -> getMeasurement());
+    Shuffleboard.getTab("a").addDouble("Mystery", () -> m_motor.getSelectedSensorPosition());
+    Shuffleboard.getTab("a").addBoolean("Enabled?", () -> super.m_enabled);
   }
 
   /**
@@ -63,6 +63,7 @@ public class RotationController extends ProfiledPIDSubsystem {
    */
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
+    SmartDashboard.putNumber("out", output);
     double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
     double voltage =
         MathUtil.clamp(output + feedforward, -Rotation.MAX_VOLTAGE, Rotation.MAX_VOLTAGE);
@@ -115,11 +116,6 @@ public class RotationController extends ProfiledPIDSubsystem {
     // TODO
   }
 
-  private void configRotationCANCoder() {
-    m_cancoder.configFactoryDefault();
-    m_cancoder.configAllSettings(Robot.ctreConfigs.rotationCanCoderConfig);
-  }
-
   /**
    * Realigns the rotation motor encoder to the CANCoder angle.
    *
@@ -128,16 +124,5 @@ public class RotationController extends ProfiledPIDSubsystem {
    */
   private void setMeasurement(double degrees) {
     m_motor.setSelectedSensorPosition(Conversions.degreesToFalcon(degrees, Rotation.GEAR_RATIO));
-  }
-
-  /**
-   * Gets the angle of the CANCoder.
-   *
-   * @return the angle measured by the CANCoder.
-   */
-  private Rotation2d getCANCoderAngle() {
-    double measurement = m_cancoder.getAbsolutePosition();
-    double angle = measurement - Rotation.CANCODER_OFFSET;
-    return Rotation2d.fromDegrees(angle);
   }
 }
