@@ -1,12 +1,10 @@
 package frc.robot.superstructure;
 
-import java.util.Map;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
-
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -18,8 +16,10 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Rotation;
 import frc.robot.Robot;
+import java.util.Map;
 
-public class RotationController extends SubsystemBase implements Lockable, Stoppable, TelemetrySubsystem {
+public class RotationController extends SubsystemBase
+    implements Lockable, Stoppable, TelemetrySubsystem {
 
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
@@ -49,6 +49,15 @@ public class RotationController extends SubsystemBase implements Lockable, Stopp
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
+  /**
+   * Sets the motor voltage.
+   * @param voltage the voltage to set the motor to.
+   */
+  public void setVoltage(double voltage) {
+    double clampedVoltage = GMath.clamp(voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
+    m_motor.setVoltage(clampedVoltage);
+  }
+
   public double getAngle() {
     return Conversions.falconToDegrees(m_motor.getSelectedSensorPosition(), Rotation.GEAR_RATIO);
   }
@@ -71,9 +80,7 @@ public class RotationController extends SubsystemBase implements Lockable, Stopp
     m_brake.set(true);
   }
 
-  /**
-   * Stops the motor.
-   */
+  /** Stops the motor. */
   public void stop() {
     m_motor.stopMotor();
   }
@@ -98,13 +105,16 @@ public class RotationController extends SubsystemBase implements Lockable, Stopp
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Angle (deg)", this::getAngle);
-    container.addDouble("Speed (%)", m_motor::get).withWidget(BuiltInWidgets.kNumberBar).withProperties(Map.of("min", -1.0, "max", 1.0));
+    container
+        .addDouble("Speed (%)", m_motor::get)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(Map.of("min", -1.0, "max", 1.0));
     container.addBoolean("Unlocked?", m_brake::get);
   }
 
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
-    
+
   }
 }

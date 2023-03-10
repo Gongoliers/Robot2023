@@ -5,14 +5,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.Auto;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.ExtendRetractDistance;
-import frc.robot.superstructure.commands.RaiseLowerAngle;
 import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
@@ -117,34 +114,6 @@ public class RobotContainer {
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
         .whileTrue(new SafeLower(m_rotationController));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(
-            new ParallelCommandGroup(
-                new ExtendRetractDistance(
-                    m_extensionController, 0.1, Constants.Arm.States.FLOOR.getLength()),
-                new RaiseLowerAngle(
-                    m_rotationController,
-                    0.1,
-                    Constants.Arm.States.FLOOR.getAngle().getDegrees())));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
-        .whileTrue(
-            new ParallelCommandGroup(
-                new ExtendRetractDistance(
-                    m_extensionController, 0.1, Constants.Arm.States.MIDDLE.getLength()),
-                new RaiseLowerAngle(
-                    m_rotationController,
-                    0.1,
-                    Constants.Arm.States.MIDDLE.getAngle().getDegrees())));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(
-            new ParallelCommandGroup(
-                new ExtendRetractDistance(
-                    m_extensionController, 0.1, Constants.Arm.States.TOP.getLength()),
-                new RaiseLowerAngle(
-                    m_rotationController, 0.1, Constants.Arm.States.TOP.getAngle().getDegrees())));
   }
 
   private void configureTriggers() {}
