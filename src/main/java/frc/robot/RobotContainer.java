@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -11,6 +12,7 @@ import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.ExtendAndRotateTo;
+import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
@@ -42,6 +44,8 @@ public class RobotContainer {
     setDefaultCommands();
     configureButtonBindings();
     configureTriggers();
+
+    SmartDashboard.putData(m_rotationController);
   }
 
   /**
@@ -117,24 +121,16 @@ public class RobotContainer {
         .whileTrue(new SafeLower(m_rotationController));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(
-            new ExtendAndRotateTo(
-                Constants.Arm.States.FLOOR, m_extensionController, m_rotationController));
+        .whileTrue(new DumbRotate(m_rotationController, -300));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
-        .whileTrue(
-            new ExtendAndRotateTo(
-                Constants.Arm.States.MIDDLE, m_extensionController, m_rotationController));
+        .whileTrue(new DumbRotate(m_rotationController, 0));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(
-            new ExtendAndRotateTo(
-                Constants.Arm.States.TOP, m_extensionController, m_rotationController));
+        .whileTrue(new DumbRotate(m_rotationController, 0));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(
-            new ExtendAndRotateTo(
-                Constants.Arm.States.SUBSTATION, m_extensionController, m_rotationController));
+        .whileTrue(new DumbRotate(m_rotationController, -115));
   }
 
   private void configureTriggers() {}

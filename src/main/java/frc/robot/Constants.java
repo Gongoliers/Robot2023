@@ -496,7 +496,7 @@ public final class Constants {
        * The rotation tolerance in degrees. Used for stopping the PID control when within this
        * tolerance.
        */
-      public static final double TOLERANCE = 0; // TODO
+      public static final double TOLERANCE = 2; // TODO
 
       /** The maximum voltage that can be applied to motors. */
       public static final int MAX_VOLTAGE = 0; // TODO
@@ -559,10 +559,10 @@ public final class Constants {
 
     public static final class States {
       public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300)); // TODO
+      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300));
       public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(-115));
     }
   }
 
