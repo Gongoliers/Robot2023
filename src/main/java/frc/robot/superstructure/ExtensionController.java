@@ -2,33 +2,28 @@ package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import com.thegongoliers.math.GMath;
+import com.thegongoliers.output.interfaces.Lockable;
+import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
+import java.util.Map;
 
-public class ExtensionController extends ProfiledPIDSubsystem {
+public class ExtensionController extends SubsystemBase
+    implements Lockable, Stoppable, TelemetrySubsystem {
 
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
-  private final ArmFeedforward m_feedforward =
-      new ArmFeedforward(Extension.KS, Extension.KG, Extension.KV, Extension.KA);
 
   public ExtensionController() {
-
-    // initialPosition is the initial goal
-    super(
-        new ProfiledPIDController(Extension.KP, 0, 0, Extension.CONSTRAINTS),
-        Constants.Arm.States.STOWED.getLength());
-
     m_motor = new WPI_TalonFX(Extension.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
 
@@ -39,9 +34,7 @@ public class ExtensionController extends ProfiledPIDSubsystem {
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setMeasurement(Constants.Arm.States.STOWED.getLength());
-
-    Shuffleboard.getTab("b").addDouble("Extension Length ('m')", () -> getMeasurement());
+    setLength(Constants.Arm.States.STOWED.getLength());
   }
 
   /**
@@ -50,22 +43,19 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * @param percent the speed to drive the motor at.
    */
   public void drive(double percent) {
-    this.disable();
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
   /**
-   * Uses the output from the PIDController to drive the motor.
+   * Sets the motor voltage.
    *
-   * @param output volts calculated by the PIDController.
-   * @param setpoint the setpoint for the PIDController. Used for calculating feedforward.
+   * @param voltage the voltage to set the motor to.
    */
-  @Override
-  public void useOutput(double output, TrapezoidProfile.State setpoint) {
-    double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    double voltage =
-        MathUtil.clamp(output + feedforward, -Extension.MAX_VOLTAGE, Extension.MAX_VOLTAGE);
-    m_motor.setVoltage(voltage);
+  public void setVoltage(double voltage) {
+    double clampedVoltage =
+        GMath.clamp(
+            voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
+    m_motor.setVoltage(clampedVoltage);
   }
 
   /**
@@ -73,8 +63,7 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    *
    * @return the current extension of the arm in meters.
    */
-  @Override
-  public double getMeasurement() {
+  public double getLength() {
     return Conversions.falconToMeters(
         m_motor.getSelectedSensorPosition(), Extension.LENGTH_PER_ROTATION, Extension.GEAR_RATIO);
   }
@@ -85,7 +74,6 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * <p>Disables movement by engaging the friction brake.
    */
   public void lock() {
-    this.disable();
     m_brake.set(false);
   }
 
@@ -95,7 +83,6 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * <p>Enables movement by disengaging the friction brake.
    */
   public void unlock() {
-    this.disable();
     m_brake.set(true);
   }
 
@@ -115,7 +102,6 @@ public class ExtensionController extends ProfiledPIDSubsystem {
     m_motor.setInverted(Extension.SHOULD_INVERT_MOTOR);
     m_motor.setNeutralMode(Extension.MOTOR_NEUTRAL_MODE);
     m_motor.setSelectedSensorPosition(0);
-    // TODO
   }
 
   /**
@@ -124,8 +110,24 @@ public class ExtensionController extends ProfiledPIDSubsystem {
    * <p>Resets the extension motor's internal encoder to zero. This ensures that future encoder
    * measurements correspond to the length of the arm.
    */
-  private void setMeasurement(double meters) {
+  private void setLength(double meters) {
     m_motor.setSelectedSensorPosition(
         Conversions.metersToFalcon(meters, Extension.LENGTH_PER_ROTATION, Extension.GEAR_RATIO));
+  }
+
+  @Override
+  public void addToShuffleboard(ShuffleboardContainer container) {
+    container.addDouble("Length (m)", this::getLength);
+    container
+        .addDouble("Speed (%)", m_motor::get)
+        .withWidget(BuiltInWidgets.kNumberBar)
+        .withProperties(Map.of("min", -1.0, "max", 1.0));
+    container.addBoolean("Unlocked?", m_brake::get);
+  }
+
+  @Override
+  public void outputTelemetry() {
+    // TODO Auto-generated method stub
+
   }
 }

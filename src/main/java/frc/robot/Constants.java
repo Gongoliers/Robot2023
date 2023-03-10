@@ -9,6 +9,8 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.thegongoliers.commands.DoNothingCommand;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -169,33 +171,14 @@ public final class Constants {
       public static final double KI = 0; // TODO
       /** Extension motor KD. */
       public static final double KD = 0; // TODO
-      /** Contrains maximum velocity to 1 m/s and maximum accleration to 1 m/s/s. */
-      public static final TrapezoidProfile.Constraints CONSTRAINTS =
-          new TrapezoidProfile.Constraints(1, 1);
-
       /**
-       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
-       * output.
+       * The extension tolerance in meters. Used for stopping the PID control when within this
+       * threshold of the setpoint.
        */
-      public static final double KG = 0; // TODO
-      /**
-       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
-       * the PID output.
-       */
-      public static final double KS = 0; // TODO
-      /**
-       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
-       * to the PID output.
-       */
-      public static final double KV = 0; // TODO
-      /**
-       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
-       * the PID output.
-       */
-      public static final double KA = 0; // TODO
+      public static final double TOLERANCE = 0; // TODO
 
       /** The maximum voltage that can be applied to motors. */
-      public static final int MAX_VOLTAGE = 0;
+      public static final int MAX_VOLTAGE = 0; // TODO
 
       /**
        * Toggle for if the extension motor should be inverted. Ensures that positive values cause
@@ -279,38 +262,20 @@ public final class Constants {
       public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
       /** Rotation motor KP. Applies this many volts per degree of error. */
-      public static final double KP = 0.2; // TODO
+      public static final double KP = 0.0; // TODO
       /** Rotation motor KI. */
       public static final double KI = 0; // TODO
       /** Rotation motor KD. */
       public static final double KD = 0; // TODO
-      /** Contrains maximum velocity to 1 deg/s and maximum accleration to 1 deg/s/s. */
-      public static final TrapezoidProfile.Constraints CONSTRAINTS =
-          new TrapezoidProfile.Constraints(80, 10);
 
       /**
-       * KG is the voltage needed to overcome gravity. Used to add feedforward voltage to the PID
-       * output.
+       * The rotation tolerance in degrees. Used for stopping the PID control when within this
+       * tolerance.
        */
-      public static final double KG = 0; // TODO
-      /**
-       * KS is the voltage needed to overcome static friction. Used to add feedforward voltage to
-       * the PID output.
-       */
-      public static final double KS = 0.25; // TODO
-      /**
-       * KV is the voltage needed to cruise at a constant velocity. Used to add feedforward voltage
-       * to the PID output.
-       */
-      public static final double KV = 0; // TODO
-      /**
-       * KA is the voltage needed to induce a given acceleration. Used to add feedforward voltage to
-       * the PID output.
-       */
-      public static final double KA = 0; // TODO
+      public static final double TOLERANCE = 2; // TODO
 
       /** The maximum voltage that can be applied to motors. */
-      public static final int MAX_VOLTAGE = 6;
+      public static final int MAX_VOLTAGE = 0; // TODO
 
       /**
        * Toggle for if the CANCoder should be inverted. Ensures that positive angles are
@@ -370,10 +335,10 @@ public final class Constants {
 
     public static final class States {
       public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300)); // TODO
+      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300));
       public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
       public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
+      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(-115));
     }
   }
 
