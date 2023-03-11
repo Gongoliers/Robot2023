@@ -23,6 +23,8 @@ import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
 
+import com.thegongoliers.commands.DoNothingCommand;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -134,16 +136,16 @@ public class RobotContainer {
         .whileTrue(new SafeLower(m_rotationController));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -300));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.FLOOR));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, 0));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.MIDDLE));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, 0));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.TOP));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -115));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.SUBSTATION));
   }
 
   private void configureTriggers() {}

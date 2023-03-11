@@ -30,9 +30,9 @@ public class DumbRotate extends CommandBase {
   @Override
   public void execute() {
     if (m_rotator.getAngle() > m_angleSetpoint) {
-      m_rotator.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
+      m_rotator.drive(Constants.Arm.Rotation.CONTROLLED_LOWER_SPEED);
     } else {
-      m_rotator.drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
+      m_rotator.drive(Constants.Arm.Rotation.CONTROLLED_RAISE_SPEED);
     }
   }
 

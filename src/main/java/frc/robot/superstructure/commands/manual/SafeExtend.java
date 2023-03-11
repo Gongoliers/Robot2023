@@ -24,7 +24,7 @@ public class SafeExtend extends CommandBase {
 
   @Override
   public void execute() {
-    m_extender.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+    m_extender.drive(Constants.Arm.Extension.CONTROLLED_EXTEND_SPEED);
   }
 
   @Override

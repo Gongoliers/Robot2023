@@ -211,17 +211,23 @@ public final class Constants {
        */
       public static final int BRAKE_CHANNEL = 9;
 
+      public static final double MANUAL_SPEED = 0.8;
+
       /**
        * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_EXTEND_SPEED = 0.8;
+      public static final double MANUAL_EXTEND_SPEED = MANUAL_SPEED;
 
       /**
        * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_RETRACT_SPEED = -0.8;
+      public static final double MANUAL_RETRACT_SPEED = -MANUAL_SPEED;
+
+      public static final double CONTROLLED_RETRACT_SPEED = MANUAL_EXTEND_SPEED;
+
+      public static final double CONTROLLED_EXTEND_SPEED = MANUAL_RETRACT_SPEED;
 
       public static final double MAX_EXTENSION_LENGTH = 0.8; // 1.3 max hypot, 0.95 max horiz leg, ~0.9 max vertical leg
 
@@ -327,11 +333,20 @@ public final class Constants {
        */
       public static final int BRAKE_CHANNEL = 10;
 
+      public static final double MANUAL_SPEED = 0.1;
+
       /** The speed for manually raising the arm. */
-      public static final double MANUAL_RAISE_SPEED = 0.1;
+      public static final double MANUAL_RAISE_SPEED = MANUAL_SPEED;
 
       /** The speed for manually lowering the arm. */
-      public static final double MANUAL_LOWER_SPEED = -0.1;
+      public static final double MANUAL_LOWER_SPEED = -MANUAL_SPEED;
+
+      public static final double CONTROLLED_SPEED_MULTIPLE = 1.5;
+
+      public static final double CONTROLLED_RAISE_SPEED = MANUAL_RAISE_SPEED * CONTROLLED_SPEED_MULTIPLE;
+
+      public static final double CONTROLLED_LOWER_SPEED = MANUAL_LOWER_SPEED * CONTROLLED_SPEED_MULTIPLE;
+    
     }
 
     public static final class Angles {
