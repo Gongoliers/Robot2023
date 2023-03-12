@@ -35,6 +35,6 @@ public class SafeRaise extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_rotator.getAngle() > Constants.Arm.Rotation.MAX_ANGLE;
+    return m_rotator.getAngle() > Constants.Arm.Rotation.MAX_ANGLE; // || m_rotator.isLocked();
   }
 }

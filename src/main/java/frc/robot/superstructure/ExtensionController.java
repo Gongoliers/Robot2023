@@ -7,8 +7,11 @@ import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -20,10 +23,15 @@ import java.util.Map;
 public class ExtensionController extends SubsystemBase
     implements Lockable, Stoppable, TelemetrySubsystem {
 
+  private final RotationController m_rotationController;
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
+  private boolean m_isAutoRetracting;
 
-  public ExtensionController() {
+  public ExtensionController(RotationController rotation) {
+
+    m_rotationController = rotation;
+
     m_motor = new WPI_TalonFX(Extension.MOTOR_ID, Constants.Arm.CANBUS_NAME);
     configExtensionMotor();
 
@@ -35,6 +43,10 @@ public class ExtensionController extends SubsystemBase
 
     // Assumes that the arm begins in the stowed state
     setLength(Constants.Arm.States.STOWED.getLength());
+
+    addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Extension", BuiltInLayouts.kList));
+
+    SmartDashboard.putData(this);
   }
 
   /**
@@ -43,7 +55,11 @@ public class ExtensionController extends SubsystemBase
    * @param percent the speed to drive the motor at.
    */
   public void drive(double percent) {
+    // if (m_brake.get()) { // TRUE = UNLOCKED
     m_motor.set(ControlMode.PercentOutput, percent);
+    // } else {
+    // m_motor.set(0.0);
+    // }
   }
 
   /**
@@ -116,6 +132,9 @@ public class ExtensionController extends SubsystemBase
   }
 
   @Override
+  public void periodic() {}
+
+  @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Length (m)", this::getLength);
     container
@@ -123,11 +142,28 @@ public class ExtensionController extends SubsystemBase
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("min", -1.0, "max", 1.0));
     container.addBoolean("Unlocked?", m_brake::get);
+    container.addNumber("Max Length", this::getMaxLength);
   }
 
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
 
+  }
+
+  public double getMaxLength() {
+    double angle = m_rotationController.getAngle();
+
+    if (-90 <= angle && angle < 0) {
+      return 0.8;
+    } else if (-110 < angle && angle <= -80) {
+      return 1.1;
+    } else {
+      return 0.8;
+    }
+  }
+
+  public boolean isLocked() {
+    return !m_brake.get();
   }
 }

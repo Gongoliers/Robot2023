@@ -7,13 +7,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.Autos;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.ExtendAndRotateTo;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
@@ -34,8 +33,9 @@ public class RobotContainer {
   // Subsystems
   private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final Claw m_claw = new Claw();
-  private final ExtensionController m_extensionController = new ExtensionController();
   private final RotationController m_rotationController = new RotationController();
+  private final ExtensionController m_extensionController =
+      new ExtensionController(m_rotationController);
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -140,7 +140,7 @@ public class RobotContainer {
         .whileTrue(new DumbRotate(m_rotationController, 0));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, 0));
+        .whileTrue(new DumbRotate(m_rotationController, -98));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, -115));
@@ -155,6 +155,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new DoNothingCommand();
+    //                                vvvvv this is what we ran in auto
+    return Autos.scoreTop(m_extensionController, m_rotationController, m_claw);
   }
 }

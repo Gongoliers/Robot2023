@@ -5,7 +5,6 @@
 package frc.robot.swerve;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -73,13 +72,13 @@ public class TeleopDrive extends CommandBase {
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
-      // Drive using raw values.
-      swerve.drive(
-          new Translation2d(
-              xVelocity * controller.config.maxSpeed, yVelocity * controller.config.maxSpeed),
-          angVelocity * 0.4 * controller.config.maxAngularVelocity,
-          driveMode.getAsBoolean(),
-          isOpenLoop);
+    // Drive using raw values.
+    swerve.drive(
+        new Translation2d(
+            xVelocity * controller.config.maxSpeed, yVelocity * controller.config.maxSpeed),
+        angVelocity * 0.4 * controller.config.maxAngularVelocity,
+        driveMode.getAsBoolean(),
+        isOpenLoop);
   }
 
   // Called once the command ends or is interrupted.

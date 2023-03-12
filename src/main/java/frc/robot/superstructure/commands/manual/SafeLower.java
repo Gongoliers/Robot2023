@@ -35,6 +35,6 @@ public class SafeLower extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_rotator.getAngle() < Constants.Arm.Rotation.MIN_ANGLE;
+    return m_rotator.getAngle() < Constants.Arm.Rotation.MIN_ANGLE; // || m_rotator.isLocked();
   }
 }
