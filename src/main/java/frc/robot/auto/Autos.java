@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
@@ -19,6 +20,7 @@ import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbExtend;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.swerve.Swerve;
+import frc.robot.swerve.TeleopDrive;
 import java.util.List;
 
 public final class Autos {
@@ -60,13 +62,41 @@ public final class Autos {
   }
 
   public static Command scoreTop(
-      ExtensionController m_extensionController,
-      RotationController m_rotationController,
-      Claw m_claw) {
+      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+
+    var m_extensionController = extensionController;
+    var m_rotationController = rotationController;
+    var m_claw = claw;
 
     return Commands.sequence(
         new DumbRotate(m_rotationController, -100),
         new DumbExtend(m_extensionController, 1.1),
         new InstantCommand(m_claw::open));
+  }
+
+  public static Command retract(
+      ExtensionController extensionController, RotationController rotationController) {
+    var m_extensionController = extensionController;
+    var m_rotationController = rotationController;
+    return Commands.sequence(
+        new DumbExtend(m_extensionController, 0.05), new DumbRotate(m_rotationController, -5));
+  }
+
+  public static Command backup(Swerve swerve) {
+    var m_swerve = swerve;
+    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
+        .withTimeout(3.5);
+  }
+
+  public static Command extendDropAndRetractAndBackup(
+      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreTop(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(1.0))
+        .andThen(new InstantCommand(m_claw::close))
+        .andThen(retract(m_ext, m_rot))
+        .andThen(backup(swerve));
   }
 }

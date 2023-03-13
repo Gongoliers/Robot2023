@@ -6,8 +6,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.Autos;
 import frc.robot.superstructure.Claw;
@@ -21,6 +23,8 @@ import frc.robot.superstructure.commands.manual.SafeRetract;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
+
+import com.thegongoliers.commands.DoNothingCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -136,11 +140,11 @@ public class RobotContainer {
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, -300));
 
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.MIDDLE_BUTTON.value))
+    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, 0));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -98));
+        .whileTrue(new DumbRotate(m_rotationController, -100));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, -115));
@@ -155,7 +159,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    //                                vvvvv this is what we ran in auto
-    return Autos.scoreTop(m_extensionController, m_rotationController, m_claw);
+    return Autos.extendDropAndRetractAndBackup(
+        m_extensionController, m_rotationController, m_claw, m_swerve);
   }
 }

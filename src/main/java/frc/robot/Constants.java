@@ -67,7 +67,7 @@ public final class Constants {
     /** Button for extending to the floor state. */
     public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
-    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    public static final XboxController.Button LEVEL_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
     public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
     /** Button for extending to the substation pickup state. */
