@@ -7,12 +7,8 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
-import com.thegongoliers.commands.DoNothingCommand;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
@@ -33,10 +29,11 @@ public final class Constants {
   public static final double LOOP_TIME = 0.02; // 20 milliseconds
 
   /** The mass of the robot in kilograms. Used to limit the chassis velocity to prevent tipping. */
-  public static final double ROBOT_MASS = 0;
+  public static final double ROBOT_MASS = 0; // TODO
 
   /** The center of matter on the chassis. */
-  public static final Matter CHASSIS = new Matter(new Translation3d(0.0, 0.0, 0.0), ROBOT_MASS);
+  public static final Matter CHASSIS =
+      new Matter(new Translation3d(0.0, 0.0, 0.0), ROBOT_MASS); // TODO
 
   public static final class Driver {
     /** Port in Driver Station for the driver controller. */
@@ -71,7 +68,7 @@ public final class Constants {
     /** Button for extending to the floor state. */
     public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
     /** Button for extending to the middle row state. */
-    public static final XboxController.Button MIDDLE_BUTTON = XboxController.Button.kA;
+    public static final XboxController.Button LEVEL_BUTTON = XboxController.Button.kA;
     /** Button for extending to the top row state. */
     public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
     /** Button for extending to the substation pickup state. */
@@ -176,7 +173,7 @@ public final class Constants {
        * The extension tolerance in meters. Used for stopping the PID control when within this
        * threshold of the setpoint.
        */
-      public static final double TOLERANCE = 0; // TODO
+      public static final double TOLERANCE = 0.1; // TODO
 
       /** The maximum voltage that can be applied to motors. */
       public static final int MAX_VOLTAGE = 0; // TODO

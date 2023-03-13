@@ -4,6 +4,7 @@
 
 package frc.robot.superstructure.commands.manual;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
@@ -24,7 +25,11 @@ public class SafeExtend extends CommandBase {
 
   @Override
   public void execute() {
-    m_extender.drive(Constants.Arm.Extension.CONTROLLED_EXTEND_SPEED);
+    m_extender.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+    SmartDashboard.putNumber("Actual Length", m_extender.getLength());
+    SmartDashboard.putNumber("Threshold", m_extender.getMaxLength());
+    SmartDashboard.putBoolean("Length", m_extender.getLength() > m_extender.getMaxLength());
+    SmartDashboard.putBoolean("Lock", m_extender.isLocked());
   }
 
   @Override
@@ -35,6 +40,6 @@ public class SafeExtend extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_extender.getLength() > Constants.Arm.Extension.MAX_EXTENSION_LENGTH;
+    return m_extender.getLength() > m_extender.getMaxLength(); // || m_extender.isLocked();
   }
 }

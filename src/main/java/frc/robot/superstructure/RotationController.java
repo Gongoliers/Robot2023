@@ -7,6 +7,7 @@ import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
@@ -37,7 +38,7 @@ public class RotationController extends SubsystemBase
 
     setAngle(Constants.Arm.Angles.STOWED);
 
-    addToShuffleboard(Shuffleboard.getTab("Arm"));
+    addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Rotation", BuiltInLayouts.kList));
   }
 
   /**
@@ -119,5 +120,9 @@ public class RotationController extends SubsystemBase
   public void outputTelemetry() {
     // TODO Auto-generated method stub
 
+  }
+
+  public boolean isLocked() {
+    return !m_brake.get();
   }
 }
