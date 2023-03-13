@@ -138,7 +138,7 @@ public class RobotContainer {
         .whileTrue(new SafeLower(m_rotationController));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -300));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.FLOOR));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, 0));
@@ -147,7 +147,7 @@ public class RobotContainer {
         .whileTrue(new DumbRotate(m_rotationController, -100));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -115));
+        .whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.SUBSTATION));
   }
 
   private void configureTriggers() {}

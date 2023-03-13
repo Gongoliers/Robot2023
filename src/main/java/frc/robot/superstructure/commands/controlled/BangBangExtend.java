@@ -18,7 +18,7 @@ public class BangBangExtend extends CommandBase {
   public BangBangExtend(ExtensionController extender, double lengthSetpoint) {
     addRequirements(extender);
     m_extender = extender;
-    m_bangbangController = new BangBangController(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+    m_bangbangController = new BangBangController(Constants.Arm.Extension.CONTROLLED_EXTEND_SPEED);
 
     double setpoint =
         GMath.clamp(

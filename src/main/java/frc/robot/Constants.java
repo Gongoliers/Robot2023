@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -207,19 +208,25 @@ public final class Constants {
        */
       public static final int BRAKE_CHANNEL = 9;
 
+      public static final double MANUAL_SPEED = 0.8;
+
       /**
        * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_EXTEND_SPEED = 0.8;
+      public static final double MANUAL_EXTEND_SPEED = MANUAL_SPEED;
 
       /**
        * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_RETRACT_SPEED = -0.8;
+      public static final double MANUAL_RETRACT_SPEED = -MANUAL_SPEED;
 
-      public static final double MAX_EXTENSION_LENGTH = 1.3;
+      public static final double CONTROLLED_RETRACT_SPEED = MANUAL_EXTEND_SPEED;
+
+      public static final double CONTROLLED_EXTEND_SPEED = MANUAL_RETRACT_SPEED;
+
+      public static final double MAX_EXTENSION_LENGTH = 0.8; // 1.3 max hypot, 0.95 max horiz leg, ~0.9 max vertical leg
 
       public static final double MIN_EXTENSION_LENGTH = 0.0;
     }
@@ -323,19 +330,49 @@ public final class Constants {
        */
       public static final int BRAKE_CHANNEL = 10;
 
+      public static final double MANUAL_SPEED = 0.1;
+
       /** The speed for manually raising the arm. */
-      public static final double MANUAL_RAISE_SPEED = 0.1;
+      public static final double MANUAL_RAISE_SPEED = MANUAL_SPEED;
 
       /** The speed for manually lowering the arm. */
-      public static final double MANUAL_LOWER_SPEED = -0.1;
+      public static final double MANUAL_LOWER_SPEED = -MANUAL_SPEED;
+
+      public static final double CONTROLLED_SPEED_MULTIPLE = 1.5;
+
+      public static final double CONTROLLED_RAISE_SPEED = MANUAL_RAISE_SPEED * CONTROLLED_SPEED_MULTIPLE;
+
+      public static final double CONTROLLED_LOWER_SPEED = MANUAL_LOWER_SPEED * CONTROLLED_SPEED_MULTIPLE;
+    
     }
 
-    public static final class States {
-      public static final ArmState STOWED = new ArmState(0, Rotation2d.fromDegrees(0));
-      public static final ArmState FLOOR = new ArmState(0, Rotation2d.fromDegrees(-300));
-      public static final ArmState MIDDLE = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState TOP = new ArmState(0, Rotation2d.fromDegrees(0)); // TODO
-      public static final ArmState SUBSTATION = new ArmState(0, Rotation2d.fromDegrees(-115));
+    public static final class Angles {
+      public static final double STOWED = 0;
+      public static final double FLOOR = -300;
+      public static final double MIDDLE = 0; // TODO
+      public static final double TOP = 0; // TODO
+      public static final double SUBSTATION = -115;
+      public static final double PARALLEL = 0; // TODO measurement when parallel
+    }
+
+    public static final class Lengths {
+      public static InterpolatingTreeMap<Double, Double> kMaxExtensionLength = new InterpolatingTreeMap<Double, Double>();
+
+      static {
+        kMaxExtensionLength.put(Angles.STOWED, 0.0); // TODO near-vertical upwards limit
+        kMaxExtensionLength.put(Angles.PARALLEL, 0.95);
+        kMaxExtensionLength.put(Angles.FLOOR, 0.0); // TODO near-vertical downwards limit
+      }
+
+      public static InterpolatingTreeMap<Double, Double> kLength = new InterpolatingTreeMap<Double, Double>();
+
+      static {
+        kLength.put(Angles.STOWED, 0.0);
+        kLength.put(Angles.FLOOR, 0.0);
+        kLength.put(Angles.MIDDLE, 0.0);
+        kLength.put(Angles.TOP, 0.0);
+        kLength.put(Angles.SUBSTATION, 0.0);
+      }
     }
   }
 

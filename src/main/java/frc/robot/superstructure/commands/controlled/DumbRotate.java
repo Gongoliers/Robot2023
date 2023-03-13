@@ -32,9 +32,9 @@ public class DumbRotate extends CommandBase {
   @Override
   public void execute() {
     if (m_rotator.getAngle() > m_angleSetpoint) {
-      m_rotator.drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED);
+      m_rotator.drive(Constants.Arm.Rotation.CONTROLLED_LOWER_SPEED);
     } else {
-      m_rotator.drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
+      m_rotator.drive(Constants.Arm.Rotation.CONTROLLED_RAISE_SPEED);
     }
   }
 
@@ -44,9 +44,25 @@ public class DumbRotate extends CommandBase {
     m_rotator.lock();
   }
 
+  private double getAngle() {
+    return m_rotator.getAngle();
+  }
+
+  private boolean isAtSetpoint() {
+    return GMath.approximately(
+        getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
+  }
+
   @Override
   public boolean isFinished() {
-    return GMath.approximately(
-        m_rotator.getAngle(), m_angleSetpoint, Constants.Arm.Rotation.TOLERANCE);
+    return isAtSetpoint() || isTooLow() || isTooHigh();
+  }
+
+  private boolean isTooHigh() {
+    return getAngle() > Constants.Arm.Rotation.MAX_ANGLE;
+  }
+
+  private boolean isTooLow() {
+    return getAngle() > Constants.Arm.Rotation.MIN_ANGLE;
   }
 }

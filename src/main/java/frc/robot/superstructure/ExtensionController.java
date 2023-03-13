@@ -45,8 +45,6 @@ public class ExtensionController extends SubsystemBase
     setLength(Constants.Arm.States.STOWED.getLength());
 
     addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Extension", BuiltInLayouts.kList));
-
-    SmartDashboard.putData(this);
   }
 
   /**
