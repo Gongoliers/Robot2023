@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.auto.Autos;
 import frc.robot.superstructure.Claw;
@@ -39,14 +38,14 @@ public class RobotContainer {
 
   // Controllers
   private final CommandXboxController m_driver = new CommandXboxController(0);
-  private final CommandXboxController m_manipulator =
-      new CommandXboxController(1);
+  private final CommandXboxController m_manipulator = new CommandXboxController(1);
+
+  private final double CONTROLLER_DEADBAND = 0.2;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommands();
     configureButtonBindings();
-    configureTriggers();
 
     SmartDashboard.putData(m_rotationController);
   }
@@ -63,15 +62,15 @@ public class RobotContainer {
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(XboxController.Axis.kLeftY.value),
-                    Constants.Driver.DEADBAND),
+                    CONTROLLER_DEADBAND),
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(XboxController.Axis.kLeftX.value),
-                    Constants.Driver.DEADBAND),
+                    CONTROLLER_DEADBAND),
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(XboxController.Axis.kRightX.value),
-                    Constants.Driver.DEADBAND),
+                    CONTROLLER_DEADBAND),
             () -> true, // Always drive field-oriented
             false,
             false);
@@ -86,25 +85,60 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_driver.y().onTrue(new InstantCommand(m_swerve::zeroGyro));//.onTrue(new PrintCommand("Zero gyro"));
-    m_driver.x().onTrue(new InstantCommand(m_swerve::lock));//.onTrue(new PrintCommand("Lock modules"));
+    m_driver
+        .y()
+        .onTrue(new InstantCommand(m_swerve::zeroGyro)); // .onTrue(new PrintCommand("Zero gyro"));
+    m_driver
+        .x()
+        .onTrue(new InstantCommand(m_swerve::lock)); // .onTrue(new PrintCommand("Lock modules"));
 
-    m_manipulator.leftTrigger().onTrue(new InstantCommand(m_claw::close));//.onTrue(new PrintCommand("Close claw"));
-    m_manipulator.rightTrigger().onTrue(new InstantCommand(m_claw::open));//.onTrue(new PrintCommand("Open claw"));
+    m_manipulator
+        .leftTrigger()
+        .onTrue(new InstantCommand(m_claw::close)); // .onTrue(new PrintCommand("Close claw"));
+    m_manipulator
+        .rightTrigger()
+        .onTrue(new InstantCommand(m_claw::open)); // .onTrue(new PrintCommand("Open claw"));
 
-    m_manipulator.axisLessThan(XboxController.Axis.kRightY.value, -Constants.Driver.DEADBAND).whileTrue(new SafeExtend(m_extensionController));//.onTrue(new PrintCommand("Extending"));
-    m_manipulator.axisGreaterThan(XboxController.Axis.kRightY.value, Constants.Driver.DEADBAND).whileTrue(new SafeRetract(m_extensionController));//.onTrue(new PrintCommand("Retracting"));
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kRightY.value, -CONTROLLER_DEADBAND)
+        .whileTrue(
+            new SafeExtend(m_extensionController)); // .onTrue(new PrintCommand("Extending"));
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kRightY.value, CONTROLLER_DEADBAND)
+        .whileTrue(
+            new SafeRetract(m_extensionController)); // .onTrue(new PrintCommand("Retracting"));
 
-    m_manipulator.axisLessThan(XboxController.Axis.kLeftY.value, -Constants.Driver.DEADBAND).whileTrue(new SafeRaise(m_rotationController));//.onTrue(new PrintCommand("Raising"));
-    m_manipulator.axisGreaterThan(XboxController.Axis.kLeftY.value, Constants.Driver.DEADBAND).whileTrue(new SafeLower(m_rotationController));//.onTrue(new PrintCommand("Lowering"));
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kLeftY.value, -CONTROLLER_DEADBAND)
+        .whileTrue(new SafeRaise(m_rotationController)); // .onTrue(new PrintCommand("Raising"));
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kLeftY.value, CONTROLLER_DEADBAND)
+        .whileTrue(new SafeLower(m_rotationController)); // .onTrue(new PrintCommand("Lowering"));
 
-    m_manipulator.x().whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.FLOOR));//.onTrue(new PrintCommand("Rotating to floor"));
-    m_manipulator.a().whileTrue(new DumbRotate(m_rotationController, 0));//.onTrue(new PrintCommand("Rotating to stowed"));
-    m_manipulator.y().whileTrue(new DumbRotate(m_rotationController, -100));//.onTrue(new PrintCommand("Rotating to top"));
-    m_manipulator.b().whileTrue(new DumbRotate(m_rotationController, Constants.Arm.Angles.SUBSTATION));//.onTrue(new PrintCommand("Rotating to substation"));
+    m_manipulator
+        .x()
+        .whileTrue(
+            new DumbRotate(
+                m_rotationController,
+                Constants.Arm.Angles.FLOOR)); // .onTrue(new PrintCommand("Rotating to floor"));
+    m_manipulator
+        .a()
+        .whileTrue(
+            new DumbRotate(
+                m_rotationController, 0)); // .onTrue(new PrintCommand("Rotating to stowed"));
+    m_manipulator
+        .y()
+        .whileTrue(
+            new DumbRotate(
+                m_rotationController, -100)); // .onTrue(new PrintCommand("Rotating to top"));
+    m_manipulator
+        .b()
+        .whileTrue(
+            new DumbRotate(
+                m_rotationController,
+                Constants.Arm.Angles
+                    .SUBSTATION)); // .onTrue(new PrintCommand("Rotating to substation"));
   }
-
-  private void configureTriggers() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

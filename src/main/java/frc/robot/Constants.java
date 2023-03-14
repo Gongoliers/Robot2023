@@ -35,54 +35,6 @@ public final class Constants {
   public static final Matter CHASSIS =
       new Matter(new Translation3d(0.0, 0.0, 0.0), ROBOT_MASS); // TODO
 
-  public static final class Driver {
-    /** Port in Driver Station for the driver controller. */
-    public static final int CONTROLLER_PORT = 0;
-    /** Minimum axis displacement to register movement. */
-    public static final double DEADBAND = 0.2;
-    /** Minimum trigger displacement to register a press. */
-    public static final double TRIGGER_THRESHOLD = 0.5;
-    /** Minimum number of seconds for an active trigger to be considered active. */
-    public static final double DEBOUNCE_SECONDS = 0.1;
-    /** Axis for forward-backward movement. */
-    public static final XboxController.Axis LEFT_VERTICAL_AXIS = XboxController.Axis.kLeftY;
-    /** Axis for left-right movement. */
-    public static final XboxController.Axis LEFT_HORIZONTAL_AXIS = XboxController.Axis.kLeftX;
-    /** Axis for controlling heading. */
-    public static final XboxController.Axis RIGHT_VERTICAL_AXIS = XboxController.Axis.kRightY;
-    /** Axis for controlling heading. */
-    public static final XboxController.Axis RIGHT_HORIZONTAL_AXIS = XboxController.Axis.kRightX;
-    /** Button for zeroing the gyro. */
-    public static final XboxController.Button ZERO_GYRO_BUTTON = XboxController.Button.kY;
-    /** Button for setting the swerve module into "cross mode" so it cannot be pushed */
-    public static final XboxController.Button LOCK_BUTTON = XboxController.Button.kX;
-    /** Button for running a "panic mode" command. */
-    public static final XboxController.Button PANIC_BUTTON = XboxController.Button.kA;
-  }
-
-  public static final class Manipulator {
-    /** Port in Driver Station for the driver controller. */
-    public static final int CONTROLLER_PORT = 1;
-    /** Minimum trigger displacement to register a press. */
-    public static final double TRIGGER_THRESHOLD = 0.8;
-    /** Button for extending to the floor state. */
-    public static final XboxController.Button FLOOR_BUTTON = XboxController.Button.kX;
-    /** Button for extending to the middle row state. */
-    public static final XboxController.Button LEVEL_BUTTON = XboxController.Button.kA;
-    /** Button for extending to the top row state. */
-    public static final XboxController.Button TOP_BUTTON = XboxController.Button.kY;
-    /** Button for extending to the substation pickup state. */
-    public static final XboxController.Button SUBSTATION_BUTTON = XboxController.Button.kB;
-    /** Button for intaking. */
-    public static final XboxController.Axis CLOSE_AXIS = XboxController.Axis.kLeftTrigger;
-    /** Button for outtaking. */
-    public static final XboxController.Axis OPEN_AXIS = XboxController.Axis.kRightTrigger;
-    /** Axis for rotating the arm up and down. */
-    public static final XboxController.Axis RAISE_LOWER_AXIS = XboxController.Axis.kLeftY;
-    /** Axis for extending and retracting the arm. */
-    public static final XboxController.Axis EXTEND_RETRACT_AXIS = XboxController.Axis.kRightY;
-  }
-
   public static final class Auto {
     /**
      * List of commands to run whenever a marker is reached. See
