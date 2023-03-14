@@ -1,35 +1,40 @@
 package frc.lib;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+public enum ArmState {
 
-/**
- * Represents the state of the arm. Implemented as an abstraction over a Translation2d object
- * contructed with a given distance (extension length) and angle.
- */
-public class ArmState extends Translation2d {
+  STOWED("Stowed", 0, 0),
+  TOP("Top Row", 0, -100),
+  DOUBLE_SUBSTATION("Double Substation", 0, -115),
+  FLOOR("Floor", 0, -300);
 
-  /**
-   * Constructs an ArmState with an extension length of zero meters and a rotation of zero degrees.
-   */
-  public ArmState() {}
+  private final String name;
+  private final double length;
+  private final double angle;
 
   /**
    * Constructs an ArmState with the provided extension length and angle.
    *
-   * @param meters the extension of the arm in meters.
-   * @param degrees the rotation of the arm.
+   * @param name the name of the state.
+   * @param length the extension of the arm in meters.
+   * @param angle the rotation of the arm in degrees.
    */
-  public ArmState(double meters, Rotation2d degrees) {
-    super(meters, degrees);
+  private ArmState(String name, double length, double angle) {
+    this.name = name;
+    this.length = length;
+    this.angle = angle;
   }
 
-  /**
-   * Returns the extension length of the arm.
-   *
-   * @return the extension length of the arm.
-   */
-  public double getLength() {
-    return this.getNorm();
+  @Override
+  public String toString() {
+    return name;
   }
+
+  public double getLength() {
+    return length;
+  }
+
+  public double getAngle() {
+    return angle;
+  }
+
 }
