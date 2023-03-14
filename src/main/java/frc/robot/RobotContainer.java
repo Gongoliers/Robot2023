@@ -4,12 +4,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.Autos;
 import frc.robot.superstructure.Claw;
@@ -23,8 +22,6 @@ import frc.robot.superstructure.commands.manual.SafeRetract;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
-
-import com.thegongoliers.commands.DoNothingCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,11 +43,15 @@ public class RobotContainer {
   private final XboxController m_manipulator =
       new XboxController(Constants.Manipulator.CONTROLLER_PORT);
 
+
+    SendableChooser<Command> m_chooser = new SendableChooser<>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommands();
     configureButtonBindings();
     configureTriggers();
+    configureAutos();
 
     SmartDashboard.putData(m_rotationController);
   }
@@ -152,14 +153,22 @@ public class RobotContainer {
 
   private void configureTriggers() {}
 
+  private void configureAutos() {
+    m_chooser.setDefaultOption("Score Top & Retract", Autos.scoreTopThenRetract(m_extensionController, m_rotationController, m_claw));
+    m_chooser.addOption("Do Nothing", new InstantCommand());
+    m_chooser.addOption("ONLY Score Top", Autos.scoreTop(m_extensionController, m_rotationController, m_claw));
+    m_chooser.addOption("ONLY Mobility", Autos.backup(m_swerve));
+    
+    SmartDashboard.putData(m_chooser);
+  } 
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return Autos.extendDropAndRetractAndBackup(
-        m_extensionController, m_rotationController, m_claw, m_swerve);
+    // TODO Test SendableChooser
+    return m_chooser.getSelected();
   }
 }
