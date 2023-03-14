@@ -88,15 +88,17 @@ public final class Autos {
         .withTimeout(3.5);
   }
 
+  public static Command scoreTopThenRetract(ExtensionController extensionController, RotationController rotationController, Claw claw) {
+    // TODO Test Commands.waitSeconds
+    return scoreTop(extensionController, rotationController, claw).andThen(Commands.waitSeconds(1.0)).andThen(new InstantCommand(claw::close)).andThen(retract(extensionController, rotationController));
+  }
+
   public static Command extendDropAndRetractAndBackup(
       ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
-    return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(1.0))
-        .andThen(new InstantCommand(m_claw::close))
-        .andThen(retract(m_ext, m_rot))
+    return scoreTopThenRetract(m_ext, m_rot, m_claw)
         .andThen(backup(swerve));
   }
 }
