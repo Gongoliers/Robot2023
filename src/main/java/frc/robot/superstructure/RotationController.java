@@ -2,7 +2,6 @@ package frc.robot.superstructure;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -49,18 +48,6 @@ public class RotationController extends SubsystemBase
    */
   public void drive(double percent) {
     m_motor.set(ControlMode.PercentOutput, percent);
-  }
-
-  /**
-   * Sets the motor voltage.
-   *
-   * @param voltage the voltage to set the motor to.
-   */
-  public void setVoltage(double voltage) {
-    double clampedVoltage =
-        GMath.clamp(
-            voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
-    m_motor.setVoltage(clampedVoltage);
   }
 
   public double getAngle() {
@@ -121,9 +108,5 @@ public class RotationController extends SubsystemBase
   public void outputTelemetry() {
     // TODO Auto-generated method stub
 
-  }
-
-  public boolean isLocked() {
-    return !m_brake.get();
   }
 }

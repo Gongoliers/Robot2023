@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ArmState;
 import frc.lib.TelemetrySubsystem;
@@ -27,7 +26,6 @@ public class ExtensionController extends SubsystemBase
   private final RotationController m_rotationController;
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
-  private boolean m_isAutoRetracting;
 
   public ExtensionController(RotationController rotation) {
 
@@ -55,11 +53,7 @@ public class ExtensionController extends SubsystemBase
    */
   public void drive(double percent) {
     percent = GMath.clamp(percent, -1.0, 1.0);
-    // if (m_brake.get()) { // TRUE = UNLOCKED
     m_motor.set(ControlMode.PercentOutput, percent);
-    // } else {
-    // m_motor.set(0.0);
-    // }
   }
 
   /**
@@ -152,11 +146,7 @@ public class ExtensionController extends SubsystemBase
     }
   }
 
-  public boolean isLocked() {
-    return !m_brake.get();
-  }
-
-  private boolean exceedsMaxLength() {
+  public boolean exceedsMaxLength() {
     return getLength() > getMaxLength();
   }
 }

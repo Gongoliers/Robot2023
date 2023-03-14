@@ -58,7 +58,6 @@ public class DumbExtend extends CommandBase {
   }
 
   private boolean isTooLong() {
-    double angle = 0.0; // TODO
     return getLength() > Constants.Arm.Extension.MAX_EXTENSION_LENGTH;
   }
 

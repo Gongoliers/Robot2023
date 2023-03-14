@@ -6,7 +6,6 @@ package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.superstructure.RotationController;
