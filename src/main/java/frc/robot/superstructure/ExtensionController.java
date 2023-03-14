@@ -45,7 +45,7 @@ public class ExtensionController extends SubsystemBase
     // Assumes that the arm begins in the stowed state
     setLength(ArmState.STOWED.getLength());
 
-    addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Extension", BuiltInLayouts.kList));
+    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0));
   }
 
   /**
@@ -124,13 +124,14 @@ public class ExtensionController extends SubsystemBase
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
-    container.addDouble("Length (m)", this::getLength);
+    container.addDouble("Length (m)", this::getLength).withPosition(0, 0);
+    container.addNumber("Max Length (m)", this::getMaxLength).withPosition(0, 1);
+    container.addBoolean("Exceeds Max Length?", this::exceedsMaxLength).withPosition(0, 2);
     container
         .addDouble("Speed (%)", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("min", -1.0, "max", 1.0));
-    container.addBoolean("Unlocked?", m_brake::get);
-    container.addNumber("Max Length", this::getMaxLength);
+        .withProperties(Map.of("min", -1.0, "max", 1.0)).withPosition(0, 3);
+    container.addBoolean("Unlocked?", m_brake::get).withPosition(0, 4);
   }
 
   @Override
@@ -153,5 +154,9 @@ public class ExtensionController extends SubsystemBase
 
   public boolean isLocked() {
     return !m_brake.get();
+  }
+
+  private boolean exceedsMaxLength() {
+    return getLength() > getMaxLength();
   }
 }
