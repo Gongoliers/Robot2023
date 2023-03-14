@@ -345,35 +345,6 @@ public final class Constants {
       public static final double CONTROLLED_LOWER_SPEED = MANUAL_LOWER_SPEED * CONTROLLED_SPEED_MULTIPLE;
     
     }
-
-    public static final class Angles {
-      public static final double STOWED = 0;
-      public static final double FLOOR = -300;
-      public static final double MIDDLE = 0; // TODO
-      public static final double TOP = 0; // TODO
-      public static final double SUBSTATION = -115;
-      public static final double PARALLEL = 0; // TODO measurement when parallel
-    }
-
-    public static final class Lengths {
-      public static InterpolatingTreeMap<Double, Double> kMaxExtensionLength = new InterpolatingTreeMap<Double, Double>();
-
-      static {
-        kMaxExtensionLength.put(Angles.STOWED, 0.0); // TODO near-vertical upwards limit
-        kMaxExtensionLength.put(Angles.PARALLEL, 0.95);
-        kMaxExtensionLength.put(Angles.FLOOR, 0.0); // TODO near-vertical downwards limit
-      }
-
-      public static InterpolatingTreeMap<Double, Double> kLength = new InterpolatingTreeMap<Double, Double>();
-
-      static {
-        kLength.put(Angles.STOWED, 0.0);
-        kLength.put(Angles.FLOOR, 0.0);
-        kLength.put(Angles.MIDDLE, 0.0);
-        kLength.put(Angles.TOP, 0.0);
-        kLength.put(Angles.SUBSTATION, 0.0);
-      }
-    }
   }
 
   public static final class Claw {

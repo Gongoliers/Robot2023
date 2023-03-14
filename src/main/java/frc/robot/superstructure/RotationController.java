@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.ArmState;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -36,7 +37,7 @@ public class RotationController extends SubsystemBase
 
     lock();
 
-    setAngle(Constants.Arm.Angles.STOWED);
+    setAngle(ArmState.STOWED.getAngle());
 
     addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Rotation", BuiltInLayouts.kList));
   }
