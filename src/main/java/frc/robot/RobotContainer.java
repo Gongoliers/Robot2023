@@ -15,6 +15,7 @@ import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
+import frc.robot.superstructure.commands.controlled.PIDRotate;
 import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
@@ -135,16 +136,20 @@ public class RobotContainer {
         .whileTrue(new SafeLower(m_rotationController));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, ArmState.FLOOR.getAngle()));
+        // .whileTrue(new DumbRotate(m_rotationController, ArmState.FLOOR.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.FLOOR.getAngle()));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, ArmState.STOWED.getAngle()));
+        //.whileTrue(new DumbRotate(m_rotationController, ArmState.STOWED.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.STOWED.getAngle()));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, ArmState.TOP.getAngle()));
+        //.whileTrue(new DumbRotate(m_rotationController, ArmState.TOP.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.TOP.getAngle()));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
+        //.whileTrue(new DumbRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
   }
 
   private void configureTriggers() {}
