@@ -6,25 +6,24 @@ package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
 
 public class PIDExtend extends PIDCommand {
 
-  public PIDExtend(ExtensionController extender, double lengthSetpoint) {
+  public PIDExtend(ExtensionController extender, double length) {
     super(
         new PIDController(
             Constants.Arm.Extension.KP, Constants.Arm.Extension.KI, Constants.Arm.Extension.KD),
         extender::getLength,
-        GMath.clamp(
-            lengthSetpoint,
-            Constants.Arm.Extension.MIN_EXTENSION_LENGTH,
-            Constants.Arm.Extension.MAX_EXTENSION_LENGTH),
-        voltage -> extender.setVoltage(voltage),
+        length,
+        speed -> extender.drive(speed),
         extender);
 
     getController().setTolerance(Constants.Arm.Extension.TOLERANCE);
+    SmartDashboard.putData(getController());
   }
 
   @Override

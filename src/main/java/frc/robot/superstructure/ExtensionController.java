@@ -54,23 +54,12 @@ public class ExtensionController extends SubsystemBase
    * @param percent the speed to drive the motor at.
    */
   public void drive(double percent) {
+    percent = GMath.clamp(percent, -1.0, 1.0);
     // if (m_brake.get()) { // TRUE = UNLOCKED
     m_motor.set(ControlMode.PercentOutput, percent);
     // } else {
     // m_motor.set(0.0);
     // }
-  }
-
-  /**
-   * Sets the motor voltage.
-   *
-   * @param voltage the voltage to set the motor to.
-   */
-  public void setVoltage(double voltage) {
-    double clampedVoltage =
-        GMath.clamp(
-            voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
-    m_motor.setVoltage(clampedVoltage);
   }
 
   /**

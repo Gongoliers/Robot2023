@@ -6,23 +6,24 @@ package frc.robot.superstructure.commands.controlled;
 
 import com.thegongoliers.math.GMath;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.superstructure.RotationController;
 
 public class PIDRotate extends PIDCommand {
 
-  public PIDRotate(RotationController rotator, double angleSetpoint) {
+  public PIDRotate(RotationController rotator, double angle) {
     super(
         new PIDController(
             Constants.Arm.Rotation.KP, Constants.Arm.Rotation.KI, Constants.Arm.Rotation.KD),
         rotator::getAngle,
-        GMath.clamp(
-            angleSetpoint, Constants.Arm.Rotation.MIN_ANGLE, Constants.Arm.Rotation.MAX_ANGLE),
-        voltage -> rotator.setVoltage(voltage),
+        angle,
+        speed -> rotator.drive(speed),
         rotator);
 
     getController().setTolerance(Constants.Arm.Rotation.TOLERANCE);
+    SmartDashboard.putData(getController());
   }
 
   @Override
