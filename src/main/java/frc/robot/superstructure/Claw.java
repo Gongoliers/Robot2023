@@ -7,6 +7,7 @@ package frc.robot.superstructure;
 import com.thegongoliers.output.interfaces.Gripper;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,7 +23,7 @@ public class Claw extends SubsystemBase implements Gripper, TelemetrySubsystem {
         new Solenoid(
             Constants.PNEUMATICS_HUB_ID, PneumaticsModuleType.REVPH, Constants.Claw.CHANNEL);
 
-    addToShuffleboard(Shuffleboard.getTab("Claw"));
+    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Claw", BuiltInLayouts.kList).withSize(1, 2).withPosition(4, 0));
   }
 
   @Override
