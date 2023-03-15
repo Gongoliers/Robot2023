@@ -19,6 +19,7 @@ import frc.robot.Constants.GamePiece;
 public class Intake extends SubsystemBase implements Stoppable, TelemetrySubsystem {
 
   private final MotorController m_intake;
+  //private final MotorController m_intake2;
   private final WPI_TalonFX m_deployMotor;
 
   private int m_heldGamePiece = GamePiece.NONE;
@@ -33,6 +34,7 @@ public class Intake extends SubsystemBase implements Stoppable, TelemetrySubsyst
 
   public Intake() {
     m_intake = new WPI_TalonFX(999); // TODO
+    //m_intake2 = new WPI_TalonFX(999); // TODO
     m_deployMotor = new WPI_TalonFX(999); // TODO
     
     configHardware();
@@ -41,12 +43,14 @@ public class Intake extends SubsystemBase implements Stoppable, TelemetrySubsyst
 
   private void configHardware() {
     m_intake.setInverted(false);
+    //m_intake2.setInverted(false);
     
     m_deployMotor.configFactoryDefault();
   }
 
   public void drive(double speed) {
     m_intake.set(speed);
+    //m_intake2.set(-speed);
   }
 
   public void deployTo(double degrees) {
@@ -57,6 +61,7 @@ public class Intake extends SubsystemBase implements Stoppable, TelemetrySubsyst
 
   public void stop() {
     m_intake.stopMotor();
+    //m_intake2.stopMotor();
     m_deployMotor.stopMotor();
   }
 
