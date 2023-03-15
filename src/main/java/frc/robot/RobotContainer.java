@@ -8,10 +8,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.GamePiece;
 import frc.robot.auto.Autos;
+import frc.robot.intake.Hold;
+import frc.robot.intake.Intake;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
@@ -40,6 +44,7 @@ public class RobotContainer {
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
+    private final Intake m_intake = new Intake();
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -81,6 +86,8 @@ public class RobotContainer {
             false);
 
     m_swerve.setDefaultCommand(teleopDrive);
+
+    m_intake.setDefaultCommand(new Hold(m_intake));
   }
 
   /**
@@ -100,6 +107,27 @@ public class RobotContainer {
     // TODO Figure our what commands have to go here...
     new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
         .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
+
+    // TODO TEST ME
+    // ----------------------------------------------------------------------------------
+    new Trigger(() -> m_driver.getLeftBumper())
+        .onTrue(new InstantCommand(() -> m_intake.deployTo(0))); // TODO
+
+    new Trigger(() -> m_driver.getRightBumper())
+        .onTrue(new InstantCommand(() -> m_intake.deployTo(0))); // TODO
+
+    new Trigger(() -> m_driver.getRawAxis(XboxController.Axis.kLeftTrigger.value) > 0.5)
+        .onTrue(new InstantCommand(() -> {
+            m_intake.setHeldGamePiece(GamePiece.CONE);
+        }))
+        .whileTrue(new InstantCommand(() -> m_intake.drive(0)).repeatedly()); 
+
+    new Trigger(() -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5)
+        .onTrue(new InstantCommand(() -> {
+            m_intake.setHeldGamePiece(GamePiece.CUBE);
+        }))
+        .whileTrue(new InstantCommand(() -> m_intake.drive(0)).repeatedly()); 
+    // ----------------------------------------------------------------------------------
 
     new Trigger(
             () ->
