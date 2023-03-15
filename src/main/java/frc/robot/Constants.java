@@ -109,6 +109,12 @@ public final class Constants {
     public static final PathConstraints CONSTRAINTS = new PathConstraints(3.0, 3.0);
   }
 
+  public static final class GamePiece {
+    public static final int NONE = 0;
+    public static final int CUBE = 1;
+    public static final int CONE = 2;
+  }
+
   public static final class Lighting {
     /** CAN ID of the CANdle. */
     public static final int CANDLE_ID = 40; // TODO Configure
