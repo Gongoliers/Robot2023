@@ -91,7 +91,8 @@ public final class Autos {
         new InstantCommand(m_claw::open),
         new WaitCommand(1.0),
         new InstantCommand(m_claw::close),
-        new WaitCommand(1.0));
+        new WaitCommand(1.0),
+        retract(m_extensionController, m_rotationController));
   }
 
   public static Command scoreTop(
@@ -129,7 +130,6 @@ public final class Autos {
     var m_rot = rot;
     var m_claw = claw;
     return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(retract(m_ext, m_rot))
         .andThen(new WaitCommand(1.0))
         .andThen(backup(swerve));
   }
