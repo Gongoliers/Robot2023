@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.Autos;
+import frc.robot.intake.Intake;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
@@ -36,6 +37,7 @@ public class RobotContainer {
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
+    private final Intake m_intake = new Intake();
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -144,6 +146,9 @@ public class RobotContainer {
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, -115));
+
+    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kLeftBumper.value)).onTrue(new InstantCommand(m_intake::intake)).onFalse(new InstantCommand(m_intake::stop));
+    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kRightBumper.value)).onTrue(new InstantCommand(m_intake::outtake)).onFalse(new InstantCommand(m_intake::stop));
   }
 
   private void configureTriggers() {}
