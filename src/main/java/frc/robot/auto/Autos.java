@@ -89,9 +89,8 @@ public final class Autos {
         new DumbRotate(m_rotationController, angle),
         new DumbExtend(m_extensionController, length),
         new InstantCommand(m_claw::open),
-        new WaitCommand(1.0),
+        new WaitCommand(0.5),
         new InstantCommand(m_claw::close),
-        new WaitCommand(1.0),
         retract(m_extensionController, m_rotationController));
   }
 
@@ -135,7 +134,7 @@ public final class Autos {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
-    return scoreTop(m_ext, m_rot, m_claw).andThen(new WaitCommand(1.0)).andThen(backup(swerve));
+    return scoreTop(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
   }
 
   public static Command scoreMiddleBackup(
@@ -143,7 +142,7 @@ public final class Autos {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
-    return scoreMiddle(m_ext, m_rot, m_claw).andThen(new WaitCommand(1.0)).andThen(backup(swerve));
+    return scoreMiddle(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
   }
 
   public static Command scoreBottomBackup(
@@ -151,6 +150,6 @@ public final class Autos {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
-    return scoreBottom(m_ext, m_rot, m_claw).andThen(new WaitCommand(1.0)).andThen(backup(swerve));
+    return scoreBottom(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
   }
 }
