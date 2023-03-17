@@ -61,7 +61,7 @@ public final class Autos {
     return Commands.sequence(autoBuilder.fullAuto(example1));
   }
 
-  public static Command scoreTop(
+  public static Command scoreTop2(
       ExtensionController extensionController, RotationController rotationController, Claw claw) {
 
     var m_extensionController = extensionController;
@@ -72,6 +72,38 @@ public final class Autos {
         new DumbRotate(m_rotationController, -100),
         new DumbExtend(m_extensionController, 1.1),
         new InstantCommand(m_claw::open));
+  }
+
+  public static Command score(
+      ExtensionController extensionController,
+      RotationController rotationController,
+      Claw claw,
+      double angle,
+      double length) {
+
+    var m_extensionController = extensionController;
+    var m_rotationController = rotationController;
+    var m_claw = claw;
+
+    return Commands.sequence(
+        new DumbRotate(m_rotationController, angle),
+        new DumbExtend(m_extensionController, length),
+        new InstantCommand(m_claw::open));
+  }
+
+  public static Command scoreTop(
+      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+    return score(extensionController, rotationController, claw, -100, 1.1);
+  }
+
+  public static Command scoreMiddle(
+      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+    return score(extensionController, rotationController, claw, 0, 0); // TODO
+  }
+
+  public static Command scoreBottom(
+      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+    return score(extensionController, rotationController, claw, 0, 0); // TODO
   }
 
   public static Command retract(
