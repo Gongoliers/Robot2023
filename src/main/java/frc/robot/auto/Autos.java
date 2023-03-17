@@ -125,8 +125,9 @@ public final class Autos {
 
   public static Command backup(Swerve swerve) {
     var m_swerve = swerve;
-    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
-        .withTimeout(3.5);
+    return new TeleopDrive(m_swerve, () -> 0.75, () -> 0, () -> 0, () -> false, false, false)
+        //.withTimeout(3.5);
+        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 4.0); // TODO
   }
 
   public static Command scoreTopBackup(
