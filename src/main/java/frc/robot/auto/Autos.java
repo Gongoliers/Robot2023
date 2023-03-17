@@ -88,7 +88,10 @@ public final class Autos {
     return Commands.sequence(
         new DumbRotate(m_rotationController, angle),
         new DumbExtend(m_extensionController, length),
-        new InstantCommand(m_claw::open));
+        new InstantCommand(m_claw::open),
+        new WaitCommand(1.0),
+        new InstantCommand(m_claw::close),
+        new WaitCommand(1.0));
   }
 
   public static Command scoreTop(
@@ -120,14 +123,12 @@ public final class Autos {
         .withTimeout(3.5);
   }
 
-  public static Command extendDropAndRetractAndBackup(
+  public static Command scoreRetractBackup(
       ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
     return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(1.0))
-        .andThen(new InstantCommand(m_claw::close))
         .andThen(retract(m_ext, m_rot))
         .andThen(backup(swerve));
   }
