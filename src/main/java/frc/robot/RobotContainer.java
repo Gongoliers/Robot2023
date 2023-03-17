@@ -4,7 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -37,20 +37,21 @@ public class RobotContainer {
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
-    private final Intake m_intake = new Intake();
+  private final Intake m_intake = new Intake();
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
   private final XboxController m_manipulator =
       new XboxController(Constants.Manipulator.CONTROLLER_PORT);
 
+  private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setDefaultCommands();
     configureButtonBindings();
     configureTriggers();
-
-    SmartDashboard.putData(m_rotationController);
+    setupAutos();
   }
 
   /**
@@ -147,11 +148,25 @@ public class RobotContainer {
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
         .whileTrue(new DumbRotate(m_rotationController, -115));
 
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kLeftBumper.value)).onTrue(new InstantCommand(m_intake::intake)).onFalse(new InstantCommand(m_intake::stop));
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kRightBumper.value)).onTrue(new InstantCommand(m_intake::outtake)).onFalse(new InstantCommand(m_intake::stop));
+    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kLeftBumper.value))
+        .onTrue(new InstantCommand(m_intake::intake))
+        .onFalse(new InstantCommand(m_intake::stop));
+    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kRightBumper.value))
+        .onTrue(new InstantCommand(m_intake::outtake))
+        .onFalse(new InstantCommand(m_intake::stop));
   }
 
   private void configureTriggers() {}
+
+  private void setupAutos() {
+    m_chooser.setDefaultOption(
+        "Score Top", Autos.scoreTop(m_extensionController, m_rotationController, m_claw));
+    m_chooser.addOption(
+        "Score Middle", Autos.scoreMiddle(m_extensionController, m_rotationController, m_claw));
+    m_chooser.addOption(
+        "Score Bottom", Autos.scoreBottom(m_extensionController, m_rotationController, m_claw));
+    m_chooser.addOption("Do Nothing", new InstantCommand());
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -160,7 +175,14 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return Autos.extendDropAndRetractAndBackup(
-        m_extensionController, m_rotationController, m_claw, m_swerve);
+
+    return m_chooser.getSelected();
+
+    /*     return Autos.scoreTop(
+    m_extensionController, m_rotationController, m_claw); */
+    /*     return Autos.scoreMiddle(
+        m_extensionController, m_rotationController, m_claw);
+    return Autos.scoreBottom(
+        m_extensionController, m_rotationController, m_claw); */
   }
 }

@@ -129,8 +129,6 @@ public final class Autos {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
-    return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(1.0))
-        .andThen(backup(swerve));
+    return scoreTop(m_ext, m_rot, m_claw).andThen(new WaitCommand(1.0)).andThen(backup(swerve));
   }
 }
