@@ -130,6 +130,7 @@ public final class Autos {
     var m_claw = claw;
     return scoreTop(m_ext, m_rot, m_claw)
         .andThen(retract(m_ext, m_rot))
+        .andThen(new WaitCommand(1.0))
         .andThen(backup(swerve));
   }
 }
