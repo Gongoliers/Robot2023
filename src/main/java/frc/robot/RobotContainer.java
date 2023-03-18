@@ -175,6 +175,17 @@ public class RobotContainer {
     m_chooser.addOption(
         "Score Bottom Backup",
         Autos.scoreBottomBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
+    m_chooser.addOption(
+        "Score Top ChargeStation",
+        Autos.scoreTopChargeStation(m_extensionController, m_rotationController, m_claw, m_swerve));
+    m_chooser.addOption(
+        "Score Middle ChargeStation",
+        Autos.scoreMiddleChargeStation(
+            m_extensionController, m_rotationController, m_claw, m_swerve));
+    m_chooser.addOption(
+        "Score Bottom ChargeStation",
+        Autos.scoreBottomChargeStation(
+            m_extensionController, m_rotationController, m_claw, m_swerve));
     m_chooser.addOption("Do Nothing", new InstantCommand());
 
     SmartDashboard.putData(m_chooser);
@@ -186,12 +197,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-
     return m_chooser.getSelected();
-
-    //return Autos.scoreTop(m_extensionController, m_rotationController, m_claw);
-    //return Autos.scoreMiddle(m_extensionController, m_rotationController, m_claw);
-    //return Autos.scoreBottom(m_extensionController, m_rotationController, m_claw);
   }
 }

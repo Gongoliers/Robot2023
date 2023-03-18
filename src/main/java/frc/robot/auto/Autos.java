@@ -125,7 +125,6 @@ public final class Autos {
   public static Command backup(Swerve swerve) {
     var m_swerve = swerve;
     return new TeleopDrive(m_swerve, () -> 0.75, () -> 0, () -> 0, () -> false, false, false)
-        //.withTimeout(3.5);
         .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 4.0); // TODO
   }
 
@@ -151,5 +150,47 @@ public final class Autos {
     var m_rot = rot;
     var m_claw = claw;
     return scoreBottom(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  }
+
+  public static Command chargeStation(Swerve swerve) {
+    var m_swerve = swerve;
+    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
+        .withTimeout(0.25)
+        .andThen(new TeleopDrive(m_swerve, () -> 0, () -> 0, () -> 0.5, () -> false, false, false))
+        .withTimeout(0.375)
+        .andThen(new WaitCommand(1.0))
+        .andThen(new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
+        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 3.0)
+        .andThen(m_swerve::lock, m_swerve); // TODO
+  }
+
+  public static Command scoreTopChargeStation(
+      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreTop(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
+  }
+
+  public static Command scoreMiddleChargeStation(
+      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreMiddle(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
+  }
+
+  public static Command scoreBottomChargeStation(
+      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreBottom(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
   }
 }
