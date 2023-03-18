@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void outtake() {
-    double outtakeSpeed = -0.65;
+    double outtakeSpeed = -0.50;
     m_top.set(outtakeSpeed);
     m_bottom.set(outtakeSpeed);
   }
