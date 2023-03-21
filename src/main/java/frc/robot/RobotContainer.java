@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.auto.Autos;
 import frc.robot.intake.Intake;
 import frc.robot.superstructure.Claw;
@@ -41,11 +40,12 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
 
   // Controllers
-  private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
-  private final XboxController m_manipulator =
-      new XboxController(Constants.Manipulator.CONTROLLER_PORT);
+  private final CommandXboxController m_driver = new CommandXboxController(0);
+  private final CommandXboxController m_manipulator = new CommandXboxController(1);
 
   private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+
+  private final double DEADBAND = 0.5;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -66,16 +66,13 @@ public class RobotContainer {
             m_swerve,
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
             () -> true, // Always drive field-oriented
             false,
             false);
@@ -90,69 +87,41 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::zeroGyro));
+    m_driver.y().onTrue(new InstantCommand(m_swerve::zeroGyro));
+    m_driver.x().onTrue(new InstantCommand(m_swerve::lock));
 
-    // TODO Test
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.LOCK_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::lock));
-
-    // TODO Figure our what commands have to go here...
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
-        .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kLeftTrigger.value, DEADBAND)
         .onTrue(new InstantCommand(m_claw::close));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kRightTrigger.value, DEADBAND)
         .onTrue(new InstantCommand(m_claw::open));
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kRightY.value, -DEADBAND)
         .whileTrue(new SafeExtend(m_extensionController));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kRightY.value, DEADBAND)
         .whileTrue(new SafeRetract(m_extensionController));
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
-                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kLeftY.value, -DEADBAND)
         .whileTrue(new SafeRaise(m_rotationController));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kLeftY.value, DEADBAND)
         .whileTrue(new SafeLower(m_rotationController));
 
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -300));
+    m_manipulator.x().whileTrue(new DumbRotate(m_rotationController, -300));
+    m_manipulator.a().whileTrue(new DumbRotate(m_rotationController, 0));
+    m_manipulator.y().whileTrue(new DumbRotate(m_rotationController, -100));
+    m_manipulator.b().whileTrue(new DumbRotate(m_rotationController, -115));
 
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, 0));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -100));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -115));
-
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kLeftBumper.value))
+    m_manipulator
+        .leftBumper()
         .onTrue(new InstantCommand(m_intake::intake))
         .onFalse(new InstantCommand(m_intake::stop));
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kRightBumper.value))
+    m_manipulator
+        .rightBumper()
         .onTrue(new InstantCommand(m_intake::outtake))
         .onFalse(new InstantCommand(m_intake::stop));
   }
