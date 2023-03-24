@@ -253,7 +253,7 @@ public final class Constants {
       /** Rotation motor KP. Applies this many volts per degree of error. */
       public static final double KP = 0.0; // TODO
       /** Rotation motor KI. */
-      public static final double KI = 0; // TODO
+      public static final double KI = 0.0; // TODO
       /** Rotation motor KD. */
       public static final double KD = 0.0; // TODO
 
