@@ -161,19 +161,16 @@ public final class Constants {
       public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
 
       /** Extension motor KP. Applies this many volts per meter of error. */
-      public static final double KP = 0; // TODO
+      public static final double KP = 0.0; // TODO
       /** Extension motor KI. */
-      public static final double KI = 0; // TODO
+      public static final double KI = 0.0; // TODO
       /** Extension motor KD. */
-      public static final double KD = 0; // TODO
+      public static final double KD = 0.0; // TODO
       /**
        * The extension tolerance in meters. Used for stopping the PID control when within this
        * threshold of the setpoint.
        */
       public static final double TOLERANCE = 0.1; // TODO
-
-      /** The maximum voltage that can be applied to motors. */
-      public static final int MAX_VOLTAGE = 0; // TODO
 
       /**
        * Toggle for if the extension motor should be inverted. Ensures that positive values cause
@@ -197,7 +194,7 @@ public final class Constants {
        * The gear ratio between the extension motor and the spool. Used for calculating the
        * displacement per encoder tick.
        */
-      public static final double GEAR_RATIO = 15.34; // TODO
+      public static final double GEAR_RATIO = 15.34;
 
       /**
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
@@ -219,10 +216,6 @@ public final class Constants {
        */
       public static final double MANUAL_RETRACT_SPEED = -MANUAL_SPEED;
 
-      public static final double CONTROLLED_RETRACT_SPEED = MANUAL_EXTEND_SPEED;
-
-      public static final double CONTROLLED_EXTEND_SPEED = MANUAL_RETRACT_SPEED;
-
       public static final double MAX_EXTENSION_LENGTH = 0.8; // 1.3 max hypot, 0.95 max horiz leg, ~0.9 max vertical leg
 
       public static final double MIN_EXTENSION_LENGTH = 0.0;
@@ -235,11 +228,6 @@ public final class Constants {
        * button, then copy the ID of the motor to this constant.
        */
       public static final int MOTOR_ID = 2;
-      /**
-       * CAN ID of the rotation CANcoder. Locate the correct CANcoder in Phoenix Tuner using the
-       * Blink button, then copy the ID of the CANcoder to this constant.
-       */
-      public static final int CANCODER_ID = 1;
 
       /**
        * Maximum continuous current for the extension motor. This is the current that the motor will
@@ -267,22 +255,13 @@ public final class Constants {
       /** Rotation motor KI. */
       public static final double KI = 0; // TODO
       /** Rotation motor KD. */
-      public static final double KD = 0; // TODO
+      public static final double KD = 0.0; // TODO
 
       /**
        * The rotation tolerance in degrees. Used for stopping the PID control when within this
        * tolerance.
        */
       public static final double TOLERANCE = 2; // TODO
-
-      /** The maximum voltage that can be applied to motors. */
-      public static final int MAX_VOLTAGE = 0; // TODO
-
-      /**
-       * Toggle for if the CANCoder should be inverted. Ensures that positive angles are
-       * counter-clockwise and negative angles are clockwise.
-       */
-      public static final boolean SHOULD_INVERT_CANCODER = false;
 
       /**
        * Toggle for if the rotation motor should be inverted. Ensures that positive motor values
@@ -300,26 +279,19 @@ public final class Constants {
        * The gear ratio between the rotation motor and the arm. Used for calculating the
        * displacement per encoder tick.
        */
-      public static final double GEAR_RATIO = 24.1666; // TODO
-
-      /**
-       * The difference between 0 degrees on the CANCoder and 0 degrees on the mechanism. Used for
-       * keeping a constant frame of reference for all calculations, where 0 degrees is parallel
-       * with the ground and perpendicular with the superstructure.
-       */
-      public static final double CANCODER_OFFSET = 0; // TODO
+      public static final double GEAR_RATIO = 812.0 / 11.0;
 
       /**
        * The minimum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the lower bound that the arm will never cross.
        */
-      public static final double MIN_ANGLE = -300;
+      public static final double MIN_ANGLE = 0.0; // TODO
 
       /**
        * The maximum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the upper bound that the arm will never cross.
        */
-      public static final double MAX_ANGLE = 0;
+      public static final double MAX_ANGLE = 0.0; // TODO
 
       /**
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
@@ -334,13 +306,6 @@ public final class Constants {
 
       /** The speed for manually lowering the arm. */
       public static final double MANUAL_LOWER_SPEED = -MANUAL_SPEED;
-
-      public static final double CONTROLLED_SPEED_MULTIPLE = 1.5;
-
-      public static final double CONTROLLED_RAISE_SPEED = MANUAL_RAISE_SPEED * CONTROLLED_SPEED_MULTIPLE;
-
-      public static final double CONTROLLED_LOWER_SPEED = MANUAL_LOWER_SPEED * CONTROLLED_SPEED_MULTIPLE;
-    
     }
   }
 

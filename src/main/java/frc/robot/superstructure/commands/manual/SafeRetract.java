@@ -24,7 +24,7 @@ public class SafeRetract extends CommandBase {
 
   @Override
   public void execute() {
-    m_extender.drive(Constants.Arm.Extension.CONTROLLED_RETRACT_SPEED);
+    m_extender.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
   }
 
   @Override
