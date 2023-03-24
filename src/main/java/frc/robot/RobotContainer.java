@@ -33,14 +33,13 @@ import java.io.File;
 public class RobotContainer {
 
   // Subsystems
-  private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final Claw m_claw = new Claw();
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
 
   // Controllers
-  private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
+  //private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
   private final XboxController m_manipulator =
       new XboxController(Constants.Manipulator.CONTROLLER_PORT);
 
@@ -49,8 +48,6 @@ public class RobotContainer {
     setDefaultCommands();
     configureButtonBindings();
     configureTriggers();
-
-    SmartDashboard.putData(m_rotationController);
   }
 
   /**
@@ -58,27 +55,6 @@ public class RobotContainer {
    * require the subsystem.
    */
   private void setDefaultCommands() {
-
-    TeleopDrive teleopDrive =
-        new TeleopDrive(
-            m_swerve,
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
-            () -> true, // Always drive field-oriented
-            false,
-            false);
-
-    m_swerve.setDefaultCommand(teleopDrive);
   }
 
   /**
@@ -88,17 +64,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::zeroGyro));
-
-    // TODO Test
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.LOCK_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::lock));
-
-    // TODO Figure our what commands have to go here...
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
-        .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
-
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
@@ -161,7 +126,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return Autos.extendDropAndRetractAndBackup(
-        m_extensionController, m_rotationController, m_claw, m_swerve);
+    return new InstantCommand();
   }
 }
