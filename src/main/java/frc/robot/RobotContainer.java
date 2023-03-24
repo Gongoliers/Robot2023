@@ -20,6 +20,7 @@ import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
 import frc.robot.superstructure.commands.manual.SafeRetract;
+import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -80,7 +81,25 @@ public class RobotContainer {
             false,
             false);
 
-    m_swerve.setDefaultCommand(teleopDrive);
+    AbsoluteDrive absoluteDrive = new AbsoluteDrive(m_swerve,
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
+                    Constants.Driver.DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
+                    Constants.Driver.DEADBAND));
+
+    m_swerve.setDefaultCommand(absoluteDrive);
   }
 
   /**
