@@ -136,7 +136,11 @@ public class ExtensionController extends SubsystemBase
 
   public double getMaxLength() {
     double angle = m_rotationController.getAngle();
-    return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH / Math.cos(Math.toRadians(angle));
+    double cos = Math.cos(Math.toRadians(angle));
+    if (cos == 0) {
+      return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH;
+    }
+    return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH / cos;
   }
 
   public boolean isRetracted() {
