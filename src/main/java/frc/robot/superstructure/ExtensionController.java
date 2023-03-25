@@ -136,14 +136,7 @@ public class ExtensionController extends SubsystemBase
 
   public double getMaxLength() {
     double angle = m_rotationController.getAngle();
-
-    if (-90 <= angle && angle < 0) {
-      return 0.8;
-    } else if (-110 < angle && angle <= -80) {
-      return 1.1;
-    } else {
-      return 0.8;
-    }
+    return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH / Math.cos(Math.toRadians(angle));
   }
 
   public boolean isRetracted() {

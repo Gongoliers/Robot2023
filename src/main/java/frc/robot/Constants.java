@@ -216,7 +216,9 @@ public final class Constants {
        */
       public static final double MANUAL_RETRACT_SPEED = -MANUAL_SPEED;
 
-      public static final double MAX_EXTENSION_LENGTH = 0.8; // 1.3 max hypot, 0.95 max horiz leg, ~0.9 max vertical leg
+      public static final double MAX_EXTENSION_LENGTH = 0.8;
+
+      public static final double MAX_HORIZONTAL_LENGTH = 0.0; // TODO
 
       public static final double MIN_EXTENSION_LENGTH = 0.0;
     }
