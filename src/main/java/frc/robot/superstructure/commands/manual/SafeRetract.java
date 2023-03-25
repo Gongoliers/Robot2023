@@ -35,6 +35,6 @@ public class SafeRetract extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_extender.getLength() <= Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+    return m_extender.isRetracted();
   }
 }

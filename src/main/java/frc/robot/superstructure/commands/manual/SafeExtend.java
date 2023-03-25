@@ -35,6 +35,6 @@ public class SafeExtend extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_extender.exceedsMaxLength();
+    return m_extender.isExtended();
   }
 }

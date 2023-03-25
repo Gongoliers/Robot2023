@@ -120,7 +120,8 @@ public class ExtensionController extends SubsystemBase
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Length (m)", this::getLength).withPosition(0, 0);
     container.addNumber("Max Length (m)", this::getMaxLength).withPosition(0, 1);
-    container.addBoolean("Exceeds Max Length?", this::exceedsMaxLength).withPosition(0, 2);
+    container.addBoolean("Retracted to Min Length?", this::isRetracted);
+    container.addBoolean("Extended to Max Length?", this::isExtended).withPosition(0, 2);
     container
         .addDouble("Speed (%)", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
@@ -131,7 +132,6 @@ public class ExtensionController extends SubsystemBase
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
-
   }
 
   public double getMaxLength() {
@@ -146,7 +146,11 @@ public class ExtensionController extends SubsystemBase
     }
   }
 
-  public boolean exceedsMaxLength() {
-    return getLength() > getMaxLength();
+  public boolean isRetracted() {
+    return getLength() <= Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+  }
+
+  public boolean isExtended() {
+    return getLength() >= getMaxLength();
   }
 }

@@ -97,6 +97,8 @@ public class RotationController extends SubsystemBase
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Angle (deg)", this::getAngle).withPosition(0, 0);
+    container.addBoolean("Lowered to Min Angle?", this::isLowered);
+    container.addBoolean("Raised to Max Angle?", this::isRaised);
     container
         .addDouble("Speed (%)", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
@@ -107,6 +109,13 @@ public class RotationController extends SubsystemBase
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
+  }
 
+  public boolean isLowered() {
+    return getAngle() <= Constants.Arm.Rotation.MIN_ANGLE;
+  }
+
+  public boolean isRaised() {
+    return getAngle() >= Constants.Arm.Rotation.MAX_ANGLE;
   }
 }
