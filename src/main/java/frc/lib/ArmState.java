@@ -2,10 +2,10 @@ package frc.lib;
 
 public enum ArmState {
 
-  STOWED("Stowed", 0, 0),
-  TOP("Top Row", 0, -100),
-  DOUBLE_SUBSTATION("Double Substation", 0, -115),
-  FLOOR("Floor", 0, -300);
+  STOWED("Stowed", 0, 0), // TODO
+  TOP("Top Row", 0, 0), // TODO
+  DOUBLE_SUBSTATION("Double Substation", 0, 0), // TODO
+  FLOOR("Floor", 0, 0); // TODO
 
   private final String name;
   private final double length;
