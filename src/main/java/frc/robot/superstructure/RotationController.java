@@ -38,7 +38,7 @@ public class RotationController extends SubsystemBase
 
     setAngle(ArmState.STOWED.getAngle());
 
-    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Rotation", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0));
+    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Rotation", BuiltInLayouts.kList));
   }
 
   /**
@@ -96,14 +96,14 @@ public class RotationController extends SubsystemBase
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
-    container.addDouble("Angle (deg)", this::getAngle).withPosition(0, 0);
+    container.addDouble("Angle (deg)", this::getAngle);
     container.addBoolean("Lowered to Min Angle?", this::isLowered);
     container.addBoolean("Raised to Max Angle?", this::isRaised);
     container
         .addDouble("Speed (%)", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("min", -1.0, "max", 1.0)).withPosition(0, 1);
-    container.addBoolean("Unlocked?", m_brake::get).withPosition(0, 2);
+        .withProperties(Map.of("min", -1.0, "max", 1.0));
+    container.addBoolean("Unlocked?", m_brake::get);
   }
 
   @Override
