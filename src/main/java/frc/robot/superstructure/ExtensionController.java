@@ -18,6 +18,10 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class ExtensionController extends SubsystemBase
@@ -119,6 +123,8 @@ public class ExtensionController extends SubsystemBase
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Length (m)", this::getLength);
+    container.addNumber("Horizontal Length Constraint (m)", () -> calculateHorizontalConstraint(m_rotationController.getAngle()));
+    container.addNumber("Vertical Length Constraint (m)", () -> calculateVerticalConstraint(m_rotationController.getAngle()));
     container.addNumber("Max Length (m)", this::getMaxLength);
     container.addBoolean("Retracted to Min Length?", this::isRetracted);
     container.addBoolean("Extended to Max Length?", this::isExtended);
@@ -134,13 +140,28 @@ public class ExtensionController extends SubsystemBase
     // TODO Auto-generated method stub
   }
 
+  private double calculateHorizontalConstraint(double angle) {
+    double cos = Math.cos(Math.toRadians(angle));
+  
+    // Prevent a division by zero
+    if (cos == 0) {
+      return Double.POSITIVE_INFINITY;
+    }
+
+    return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH / cos;
+  }
+
+  private double calculateVerticalConstraint(double angle) {
+    // TODO
+    return Double.POSITIVE_INFINITY;
+  }
+
   public double getMaxLength() {
     double angle = m_rotationController.getAngle();
-    double cos = Math.cos(Math.toRadians(angle));
-    if (cos == 0) {
-      return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH;
-    }
-    return Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH / cos;
+
+    List<Double> constraints = Arrays.asList(Constants.Arm.Extension.MAX_EXTENSION_LENGTH, calculateHorizontalConstraint(angle), calculateVerticalConstraint(angle));
+
+    return Collections.min(constraints);
   }
 
   public boolean isRetracted() {
