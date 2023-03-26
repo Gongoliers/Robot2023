@@ -170,7 +170,7 @@ public final class Constants {
        * The extension tolerance in meters. Used for stopping the PID control when within this
        * threshold of the setpoint.
        */
-      public static final double TOLERANCE = 0.1; // TODO
+      public static final double TOLERANCE = 0.0; // TODO
 
       /**
        * Toggle for if the extension motor should be inverted. Ensures that positive values cause
@@ -216,11 +216,11 @@ public final class Constants {
        */
       public static final double MANUAL_RETRACT_SPEED = -MANUAL_SPEED;
 
-      public static final double MAX_EXTENSION_LENGTH = 0.8;
+      public static final double MAX_EXTENSION_LENGTH = Double.POSITIVE_INFINITY; // TODO
 
-      public static final double MAX_HORIZONTAL_LENGTH = 0.0; // TODO
+      public static final double MAX_HORIZONTAL_LENGTH = Double.POSITIVE_INFINITY; // TODO
 
-      public static final double MIN_EXTENSION_LENGTH = 0.0;
+      public static final double MIN_EXTENSION_LENGTH = Double.NEGATIVE_INFINITY; // TODO
     }
 
     public static final class Rotation {
@@ -263,7 +263,7 @@ public final class Constants {
        * The rotation tolerance in degrees. Used for stopping the PID control when within this
        * tolerance.
        */
-      public static final double TOLERANCE = 2; // TODO
+      public static final double TOLERANCE = 0.0; // TODO
 
       /**
        * Toggle for if the rotation motor should be inverted. Ensures that positive motor values
@@ -287,13 +287,13 @@ public final class Constants {
        * The minimum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the lower bound that the arm will never cross.
        */
-      public static final double MIN_ANGLE = 0.0; // TODO
+      public static final double MIN_ANGLE = -45;
 
       /**
        * The maximum angle that the arm can rotate to. This value is measured in degrees, and
        * represents the upper bound that the arm will never cross.
        */
-      public static final double MAX_ANGLE = 0.0; // TODO
+      public static final double MAX_ANGLE = 60;
 
       /**
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
