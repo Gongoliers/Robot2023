@@ -97,7 +97,8 @@ public class RobotContainer {
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(Constants.Driver.RIGHT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND));
+                    Constants.Driver.DEADBAND),
+            () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
 
     m_swerve.setDefaultCommand(absoluteDrive);
   }
