@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -167,18 +166,14 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Score Top", m_autos.scoreTop());
     m_chooser.addOption("Score Middle", m_autos.scoreMiddle());
     m_chooser.addOption("Score Bottom", m_autos.scoreBottom());
+    // TODO Create a SendableChooser for score level, and use that as the `score` parameter 
+    // E.x. m_autos.scoreThenMobility(m_scoreLevelChooser.getSelected())
     m_chooser.addOption(
-        "Score Top Backup",
-        (Command)
-            m_autos.scoreTop().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
+        "Score Top Backup", m_autos.scoreThenMobility(m_autos.scoreTop()));
     m_chooser.addOption(
-        "Score Middle Backup",
-        (Command)
-            m_autos.scoreMiddle().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
+        "Score Middle Backup", m_autos.scoreThenMobility(m_autos.scoreMiddle()));
     m_chooser.addOption(
-        "Score Bottom Backup",
-        (Command)
-            m_autos.scoreBottom().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
+        "Score Bottom Backup", m_autos.scoreThenMobility(m_autos.scoreBottom()));
     m_chooser.addOption("Do Nothing", new InstantCommand());
 
     SmartDashboard.putData(m_chooser);
