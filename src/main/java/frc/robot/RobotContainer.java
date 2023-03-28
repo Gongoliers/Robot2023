@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,7 +41,8 @@ public class RobotContainer {
       new ExtensionController(m_rotationController);
   private final Intake m_intake = new Intake();
 
-  private final Autos m_autos = new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
+  private final Autos m_autos =
+      new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
 
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
@@ -162,21 +164,21 @@ public class RobotContainer {
   private void configureTriggers() {}
 
   private void setupAutos() {
-    m_chooser.setDefaultOption(
-        "Score Top", m_autos.scoreTop());
-    m_chooser.addOption(
-        "Score Middle", m_autos.scoreMiddle());
-    m_chooser.addOption(
-        "Score Bottom", m_autos.scoreBottom());
+    m_chooser.setDefaultOption("Score Top", m_autos.scoreTop());
+    m_chooser.addOption("Score Middle", m_autos.scoreMiddle());
+    m_chooser.addOption("Score Bottom", m_autos.scoreBottom());
     m_chooser.addOption(
         "Score Top Backup",
-        m_autos.scoreThenMobility(m_autos.scoreTop()));
+        (Command)
+            m_autos.scoreTop().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
     m_chooser.addOption(
         "Score Middle Backup",
-        m_autos.scoreThenMobility(m_autos.scoreMiddle()));
+        (Command)
+            m_autos.scoreMiddle().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
     m_chooser.addOption(
         "Score Bottom Backup",
-        m_autos.scoreThenMobility(m_autos.scoreBottom()));
+        (Command)
+            m_autos.scoreBottom().andThen(Commands.waitSeconds(0.5)).andThen(m_autos.mobility()));
     m_chooser.addOption("Do Nothing", new InstantCommand());
 
     SmartDashboard.putData(m_chooser);
