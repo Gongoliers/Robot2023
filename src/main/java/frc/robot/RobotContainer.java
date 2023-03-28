@@ -166,14 +166,11 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Score Top", m_autos.scoreTop());
     m_chooser.addOption("Score Middle", m_autos.scoreMiddle());
     m_chooser.addOption("Score Bottom", m_autos.scoreBottom());
-    // TODO Create a SendableChooser for score level, and use that as the `score` parameter 
+    // TODO Create a SendableChooser for score level, and use that as the `score` parameter
     // E.x. m_autos.scoreThenMobility(m_scoreLevelChooser.getSelected())
-    m_chooser.addOption(
-        "Score Top Backup", m_autos.scoreThenMobility(m_autos.scoreTop()));
-    m_chooser.addOption(
-        "Score Middle Backup", m_autos.scoreThenMobility(m_autos.scoreMiddle()));
-    m_chooser.addOption(
-        "Score Bottom Backup", m_autos.scoreThenMobility(m_autos.scoreBottom()));
+    m_chooser.addOption("Score Top Backup", m_autos.scoreThenMobility(m_autos.scoreTop()));
+    m_chooser.addOption("Score Middle Backup", m_autos.scoreThenMobility(m_autos.scoreMiddle()));
+    m_chooser.addOption("Score Bottom Backup", m_autos.scoreThenMobility(m_autos.scoreBottom()));
     m_chooser.addOption("Do Nothing", new InstantCommand());
 
     SmartDashboard.putData(m_chooser);
