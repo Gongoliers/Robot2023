@@ -143,34 +143,34 @@ public final class Constants {
        * Maximum continuous current for the extension motor. This is the current that the motor will
        * be held at if the current limit is exceeded.
        */
-      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      public static final double CONTINUOUS_CURRENT_MAX = 0;
       /**
        * Maximum peak current for the extension motor. If this current is exceeded for the specified
        * duration, current will be reduced.
        */
-      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      public static final double PEAK_CURRENT_MAX = 0;
       /**
        * Maximum peak current duration for the extension motor. If the specified current is exceeded
        * for this duration, current will be reduced.
        */
-      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      public static final double PEAK_CURRENT_DURATION = 0;
       /**
        * Toggle for limiting the current for the extension motor. If true, current will be limited
        * using the specified parameters.
        */
-      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
+      public static final boolean SHOULD_CURRENT_LIMIT = false;
 
-      /** Extension motor KP. Applies this many volts per meter of error. */
-      public static final double KP = 0.0; // TODO
+      /** Extension motor KP. Applies this speed per meter of error. */
+      public static final double KP = 0.2; // TODO 20% speed per meter
       /** Extension motor KI. */
-      public static final double KI = 0.0; // TODO
+      public static final double KI = 0.0;
       /** Extension motor KD. */
-      public static final double KD = 0.0; // TODO
+      public static final double KD = 0.0;
       /**
        * The extension tolerance in meters. Used for stopping the PID control when within this
        * threshold of the setpoint.
        */
-      public static final double TOLERANCE = 0.0; // TODO
+      public static final double TOLERANCE = 0.05; // TODO 5cm margin of error
 
       /**
        * Toggle for if the extension motor should be inverted. Ensures that positive values cause
@@ -235,35 +235,35 @@ public final class Constants {
        * Maximum continuous current for the extension motor. This is the current that the motor will
        * be held at if the current limit is exceeded.
        */
-      public static final double CONTINUOUS_CURRENT_MAX = 0; // TODO
+      public static final double CONTINUOUS_CURRENT_MAX = 0;
       /**
        * Maximum peak current for the extension motor. If this current is exceeded for the specified
        * duration, current will be reduced.
        */
-      public static final double PEAK_CURRENT_MAX = 0; // TODO
+      public static final double PEAK_CURRENT_MAX = 0;
       /**
        * Maximum peak current duration for the extension motor. If the specified current is exceeded
        * for this duration, current will be reduced.
        */
-      public static final double PEAK_CURRENT_DURATION = 0; // TODO
+      public static final double PEAK_CURRENT_DURATION = 0;
       /**
        * Toggle for limiting the current for the extension motor. If true, current will be limited
        * using the specified parameters.
        */
-      public static final boolean SHOULD_CURRENT_LIMIT = false; // TODO
+      public static final boolean SHOULD_CURRENT_LIMIT = false;
 
-      /** Rotation motor KP. Applies this many volts per degree of error. */
-      public static final double KP = 0.0; // TODO
+      /** Rotation motor KP. Applies this speed per degree of error. */
+      public static final double KP = 0.1 / 20.0; // TODO 10% per 20 degrees
       /** Rotation motor KI. */
-      public static final double KI = 0.0; // TODO
+      public static final double KI = 0.0;
       /** Rotation motor KD. */
-      public static final double KD = 0.0; // TODO
+      public static final double KD = 0.0;
 
       /**
        * The rotation tolerance in degrees. Used for stopping the PID control when within this
        * tolerance.
        */
-      public static final double TOLERANCE = 0.0; // TODO
+      public static final double TOLERANCE = 3.0; // TODO 3 degrees margin of error
 
       /**
        * Toggle for if the rotation motor should be inverted. Ensures that positive motor values
