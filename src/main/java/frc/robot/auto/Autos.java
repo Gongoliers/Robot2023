@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.superstructure.Claw;
+import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbExtend;
@@ -61,23 +61,10 @@ public final class Autos {
     return Commands.sequence(autoBuilder.fullAuto(example1));
   }
 
-  public static Command scoreTop2(
-      ExtensionController extensionController, RotationController rotationController, Claw claw) {
-
-    var m_extensionController = extensionController;
-    var m_rotationController = rotationController;
-    var m_claw = claw;
-
-    return Commands.sequence(
-        new DumbRotate(m_rotationController, -100),
-        new DumbExtend(m_extensionController, 1.1),
-        new InstantCommand(m_claw::open));
-  }
-
   public static Command score(
       ExtensionController extensionController,
       RotationController rotationController,
-      Claw claw,
+      RollerClaw claw,
       double angle,
       double length) {
 
@@ -88,19 +75,20 @@ public final class Autos {
     return Commands.sequence(
         new DumbRotate(m_rotationController, angle),
         new DumbExtend(m_extensionController, length),
-        new InstantCommand(m_claw::open),
         new WaitCommand(0.5),
-        new InstantCommand(m_claw::close),
+        new InstantCommand(m_claw::intake),
+        new WaitCommand(0.5),
+        new InstantCommand(m_claw::hold),
         retract(m_extensionController, m_rotationController));
   }
 
   public static Command scoreTop(
-      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
     return score(extensionController, rotationController, claw, -100, 1.1);
   }
 
   public static Command scoreMiddle(
-      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
     return score(
         extensionController,
         rotationController,
@@ -110,7 +98,7 @@ public final class Autos {
   }
 
   public static Command scoreBottom(
-      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
     return score(extensionController, rotationController, claw, -200, 0.3); // TODO
   }
 
@@ -129,7 +117,7 @@ public final class Autos {
   }
 
   public static Command scoreTopBackup(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
@@ -137,7 +125,7 @@ public final class Autos {
   }
 
   public static Command scoreMiddleBackup(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
@@ -145,7 +133,7 @@ public final class Autos {
   }
 
   public static Command scoreBottomBackup(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
@@ -165,7 +153,7 @@ public final class Autos {
   }
 
   public static Command scoreTopChargeStation(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
@@ -175,7 +163,7 @@ public final class Autos {
   }
 
   public static Command scoreMiddleChargeStation(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
@@ -185,7 +173,7 @@ public final class Autos {
   }
 
   public static Command scoreBottomChargeStation(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
