@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.auto.Autos;
-import frc.robot.intake.Intake;
-import frc.robot.superstructure.Claw;
+import frc.robot.intake.SideIntake;
 import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.manual.SafeExtend;
@@ -33,11 +33,11 @@ public class RobotContainer {
 
   // Subsystems
   private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final Claw m_claw = new Claw();
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
-  private final Intake m_intake = new Intake();
+  private final SideIntake m_intake = new SideIntake();
+  private final RollerClaw m_claw = new RollerClaw();
 
   // Controllers
   private final CommandXboxController m_driver = new CommandXboxController(0);
@@ -92,10 +92,13 @@ public class RobotContainer {
 
     m_manipulator
         .axisGreaterThan(XboxController.Axis.kLeftTrigger.value, DEADBAND)
-        .onTrue(new InstantCommand(m_claw::close));
+        .onTrue(new InstantCommand(m_claw::intake))
+        .onFalse(new InstantCommand(m_claw::hold));
+        
     m_manipulator
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, DEADBAND)
-        .onTrue(new InstantCommand(m_claw::open));
+        .onTrue(new InstantCommand(m_claw::outtake))
+        .onFalse(new InstantCommand(m_claw::stop));
 
     m_manipulator
         .axisLessThan(XboxController.Axis.kRightY.value, -DEADBAND)

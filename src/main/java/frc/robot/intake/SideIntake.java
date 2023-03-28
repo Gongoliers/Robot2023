@@ -8,11 +8,11 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase {
+public class SideIntake extends SubsystemBase {
   /** Creates a new Intake. */
   private WPI_TalonSRX m_top, m_bottom;
 
-  public Intake() {
+  public SideIntake() {
     m_top = new WPI_TalonSRX(5);
     m_bottom = new WPI_TalonSRX(6);
 
