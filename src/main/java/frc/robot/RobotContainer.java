@@ -40,6 +40,8 @@ public class RobotContainer {
       new ExtensionController(m_rotationController);
   private final Intake m_intake = new Intake();
 
+  private final Autos m_autos = new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
+
   // Controllers
   private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
   private final XboxController m_manipulator =
@@ -161,31 +163,20 @@ public class RobotContainer {
 
   private void setupAutos() {
     m_chooser.setDefaultOption(
-        "Score Top", Autos.scoreTop(m_extensionController, m_rotationController, m_claw));
+        "Score Top", m_autos.scoreTop());
     m_chooser.addOption(
-        "Score Middle", Autos.scoreMiddle(m_extensionController, m_rotationController, m_claw));
+        "Score Middle", m_autos.scoreMiddle());
     m_chooser.addOption(
-        "Score Bottom", Autos.scoreBottom(m_extensionController, m_rotationController, m_claw));
+        "Score Bottom", m_autos.scoreBottom());
     m_chooser.addOption(
         "Score Top Backup",
-        Autos.scoreTopBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
+        m_autos.scoreThenMobility(m_autos.scoreTop()));
     m_chooser.addOption(
         "Score Middle Backup",
-        Autos.scoreMiddleBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
+        m_autos.scoreThenMobility(m_autos.scoreMiddle()));
     m_chooser.addOption(
         "Score Bottom Backup",
-        Autos.scoreBottomBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Top ChargeStation",
-        Autos.scoreTopChargeStation(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Middle ChargeStation",
-        Autos.scoreMiddleChargeStation(
-            m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Bottom ChargeStation",
-        Autos.scoreBottomChargeStation(
-            m_extensionController, m_rotationController, m_claw, m_swerve));
+        m_autos.scoreThenMobility(m_autos.scoreBottom()));
     m_chooser.addOption("Do Nothing", new InstantCommand());
 
     SmartDashboard.putData(m_chooser);
