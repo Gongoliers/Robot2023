@@ -48,8 +48,8 @@ public class RobotContainer {
   private final XboxController m_manipulator =
       new XboxController(Constants.Manipulator.CONTROLLER_PORT);
 
-  private SendableChooser<Command> m_scoreLevelChooser = new SendableChooser<Command>();
-  private SendableChooser<Boolean> m_mobilityChooser = new SendableChooser<Boolean>();
+  private SendableChooser<Command> m_scoreChooser = new SendableChooser<Command>();
+  private SendableChooser<Command> m_mobilityChooser = new SendableChooser<Command>();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -164,15 +164,14 @@ public class RobotContainer {
   private void configureTriggers() {}
 
   private void setupAutos() {
-    m_scoreLevelChooser.setDefaultOption("Top", m_autos.scoreTop());
-    m_scoreLevelChooser.addOption("Middle", m_autos.scoreMiddle());
-    m_scoreLevelChooser.addOption("Bottom", m_autos.scoreBottom());
-    m_scoreLevelChooser.addOption("Don't Score", new InstantCommand());
-    SmartDashboard.putData("Score Level", m_scoreLevelChooser);
+    m_scoreChooser.setDefaultOption("Top", m_autos.scoreTop());
+    m_scoreChooser.addOption("Middle", m_autos.scoreMiddle());
+    m_scoreChooser.addOption("Bottom", m_autos.scoreBottom());
+    m_scoreChooser.addOption("Don't Score", new InstantCommand());
+    SmartDashboard.putData("Score Position", m_scoreChooser);
 
-    m_mobilityChooser.setDefaultOption("Yes", true);
-    // TODO ChargeStation, <Boolean> -> Enum
-    m_mobilityChooser.addOption("No", false);
+    m_mobilityChooser.setDefaultOption("Yes", m_autos.mobility());
+    m_mobilityChooser.addOption("No", new InstantCommand());
     SmartDashboard.putData("Mobility?", m_mobilityChooser);
   }
 
@@ -182,14 +181,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    Command scoreCommand = m_scoreChooser.getSelected();
+    Command mobilityCommand = m_mobilityChooser.getSelected();
 
-    Command scoreCommand = m_scoreLevelChooser.getSelected();
-
-    if (m_mobilityChooser.getSelected()) {
-        return m_autos.scoreThenMobility(scoreCommand);
-    }
-    
-    return scoreCommand;
-
+    return scoreCommand.andThen(mobilityCommand);
   }
 }

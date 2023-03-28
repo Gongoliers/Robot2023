@@ -145,14 +145,4 @@ public final class Autos {
   public Command mobility() {
     return driveDistance(0.75, 0.0, 4.0);
   }
-
-  /**
-   * Score using the specified score command, then achieve mobility.
-   *
-   * @param score a command that scores.
-   * @return a command that scores, then achieves moblity.
-   */
-  public Command scoreThenMobility(Command score) {
-    return score.andThen(Commands.waitSeconds(0.5)).andThen(mobility());
-  }
 }
