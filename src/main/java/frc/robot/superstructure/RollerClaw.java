@@ -4,31 +4,30 @@
 
 package frc.robot.superstructure;
 
-import java.util.Map;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.thegongoliers.output.interfaces.Stoppable;
-
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
+import java.util.Map;
 
 public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Stoppable {
-  
+
   private final WPI_TalonSRX m_motor;
 
   public RollerClaw() {
-    m_motor = new WPI_TalonSRX(0); // TODO
+    m_motor = new WPI_TalonSRX(7);
     configure();
 
-    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Roller Claw", BuiltInLayouts.kList));
+    addToShuffleboard(
+        Shuffleboard.getTab("Superstructure").getLayout("Roller Claw", BuiltInLayouts.kList));
   }
 
   private void configure() {
-    m_motor.setInverted(false); // TODO
+    m_motor.setInverted(false);
   }
 
   @Override
@@ -36,7 +35,8 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
 
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
-    container.addNumber("Speed", m_motor::get)
+    container
+        .addNumber("Speed", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("min", -1.0, "max", 1.0));
   }
@@ -47,15 +47,15 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
   }
 
   public void intake() {
-    m_motor.set(0.5); // TODO
+    m_motor.set(-0.25); // TODO
   }
 
   public void hold() {
-    m_motor.set(0.05); // TODO
+    m_motor.set(-0.05); // TODO
   }
 
   public void outtake() {
-    m_motor.set(-0.5); // TODO
+    m_motor.set(0.5); // TODO
   }
 
   public void stop() {
