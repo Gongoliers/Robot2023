@@ -95,16 +95,16 @@ public class RobotContainer {
         .whileTrue(m_rotationController.lower());
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(m_rotationController.rotateTo(ArmState.FLOOR.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.FLOOR));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
-        .whileTrue(m_rotationController.rotateTo(ArmState.STOWED.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.STOWED));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(m_rotationController.rotateTo(ArmState.TOP.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.TOP));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
   }
 
   private void configureTriggers() {}
