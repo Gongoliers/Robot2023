@@ -303,7 +303,7 @@ public final class Constants {
        */
       public static final int BRAKE_CHANNEL = 9;
 
-      public static final double MANUAL_SPEED = 0.1;
+      public static final double MANUAL_SPEED = 0.25;
 
       /** The speed for manually raising the arm. */
       public static final double MANUAL_RAISE_SPEED = MANUAL_SPEED;

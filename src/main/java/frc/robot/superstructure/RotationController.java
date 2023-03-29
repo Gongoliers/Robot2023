@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -51,6 +53,7 @@ public class RotationController extends SubsystemBase
    * @param percent the speed to drive the motor at.
    */
   public void setMotor(double percent) {
+    percent = MathUtil.clamp(percent, Constants.Arm.Rotation.MANUAL_LOWER_SPEED, Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
