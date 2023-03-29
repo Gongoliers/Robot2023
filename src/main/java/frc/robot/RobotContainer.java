@@ -16,8 +16,6 @@ import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.controlled.PIDRotate;
-import frc.robot.superstructure.commands.manual.SafeLower;
-import frc.robot.superstructure.commands.manual.SafeRaise;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -90,13 +88,13 @@ public class RobotContainer {
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeRaise(m_rotationController));
+        .whileTrue(m_rotationController.raise());
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeLower(m_rotationController));
+        .whileTrue(m_rotationController.lower());
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
         // .whileTrue(new DumbRotate(m_rotationController, ArmState.FLOOR.getAngle()));

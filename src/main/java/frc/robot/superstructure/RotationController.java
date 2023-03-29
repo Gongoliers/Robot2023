@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -17,6 +19,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Arm.Rotation;
 import frc.robot.Robot;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class RotationController extends SubsystemBase
     implements Lockable, Stoppable, TelemetrySubsystem {
@@ -45,7 +48,7 @@ public class RotationController extends SubsystemBase
    *
    * @param percent the speed to drive the motor at.
    */
-  public void drive(double percent) {
+  public void setMotor(double percent) {
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
@@ -74,6 +77,18 @@ public class RotationController extends SubsystemBase
   /** Stops the motor. */
   public void stop() {
     m_motor.stopMotor();
+  }
+
+  public Command drive(double percent, BooleanSupplier isFinished) {
+    return this.runOnce(this::unlock).andThen(Commands.run(() -> setMotor(percent))).until(isFinished).andThen(Commands.runOnce(() -> { stop(); lock(); }));
+  }
+
+  public Command raise() {
+    return drive(Constants.Arm.Rotation.MANUAL_RAISE_SPEED, this::isRaised);
+  }
+
+  public Command lower() {
+    return drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED, this::isLowered);
   }
 
   private void configRotationMotor() {

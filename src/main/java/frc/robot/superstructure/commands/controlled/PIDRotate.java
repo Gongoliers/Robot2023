@@ -18,7 +18,7 @@ public class PIDRotate extends PIDCommand {
             Constants.Arm.Rotation.KP, Constants.Arm.Rotation.KI, Constants.Arm.Rotation.KD),
         rotator::getAngle,
         angle,
-        speed -> rotator.drive(speed),
+        speed -> rotator.setMotor(speed),
         rotator);
 
     getController().setTolerance(Constants.Arm.Rotation.TOLERANCE);
