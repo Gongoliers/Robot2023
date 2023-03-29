@@ -1,11 +1,7 @@
 package frc.robot.superstructure;
 
-import java.util.Map;
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
 import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
@@ -16,13 +12,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class ExtensionController extends SubsystemBase
     implements Lockable, Stoppable, TelemetrySubsystem {
@@ -47,7 +44,8 @@ public class ExtensionController extends SubsystemBase
     // Assumes that the arm begins in the stowed state
     setLength(ArmState.STOWED.length);
 
-    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList));
+    addToShuffleboard(
+        Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList));
   }
 
   /**
@@ -88,16 +86,19 @@ public class ExtensionController extends SubsystemBase
     m_brake.set(true);
   }
 
-  /**
-   * Stops the arm motor.
-   */
+  /** Stops the arm motor. */
   public void stop() {
     m_motor.stopMotor();
   }
 
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return this.runOnce(this::unlock).andThen(Commands.run(() -> setMotor(percent))).until(isFinished).andThen(Commands.runOnce(() -> { stop(); lock(); }));
-  } 
+    return this.runOnce(this::unlock)
+        .andThen(() -> setMotor(percent))
+        .repeatedly()
+        .until(isFinished)
+        .andThen(this::stop)
+        .andThen(this::lock);
+  }
 
   public Command extend() {
     return drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED, this::isExtended);
@@ -148,6 +149,7 @@ public class ExtensionController extends SubsystemBase
 
   /**
    * Gets the maximum length of the arm for the current angle.
+   *
    * @return the maximum length of the arm.
    */
   private double getLengthConstraint() {

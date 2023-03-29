@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -40,7 +39,8 @@ public class RotationController extends SubsystemBase
 
     setAngle(ArmState.STOWED.angle);
 
-    addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Rotation", BuiltInLayouts.kList));
+    addToShuffleboard(
+        Shuffleboard.getTab("Superstructure").getLayout("Rotation", BuiltInLayouts.kList));
   }
 
   /**
@@ -80,7 +80,12 @@ public class RotationController extends SubsystemBase
   }
 
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return this.runOnce(this::unlock).andThen(Commands.run(() -> setMotor(percent))).until(isFinished).andThen(Commands.runOnce(() -> { stop(); lock(); }));
+    return this.runOnce(this::unlock)
+        .andThen(() -> setMotor(percent))
+        .repeatedly()
+        .until(isFinished)
+        .andThen(this::stop)
+        .andThen(this::lock);
   }
 
   public Command raise() {
