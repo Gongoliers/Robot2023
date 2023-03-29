@@ -53,7 +53,7 @@ public class RotationController extends SubsystemBase
    * @param percent the speed to drive the motor at.
    */
   public void setMotor(double percent) {
-    percent = MathUtil.clamp(percent, Constants.Arm.Rotation.MANUAL_LOWER_SPEED, Constants.Arm.Rotation.MANUAL_RAISE_SPEED);
+    percent = MathUtil.clamp(percent, -Constants.Arm.Rotation.MAX_SPEED, Constants.Arm.Rotation.MAX_SPEED);
     m_motor.set(ControlMode.PercentOutput, percent);
   }
 
