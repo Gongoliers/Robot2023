@@ -97,7 +97,6 @@ public class RotationController extends SubsystemBase
   }
 
   public Command rotateTo(double angle) {
-    // TODO make sure this unlocks before going!!!
     return new PIDRotate(this, angle);
   }
 

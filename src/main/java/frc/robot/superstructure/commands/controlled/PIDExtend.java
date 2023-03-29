@@ -12,6 +12,8 @@ import frc.robot.superstructure.ExtensionController;
 
 public class PIDExtend extends PIDCommand {
 
+  private final ExtensionController m_extender;
+
   public PIDExtend(ExtensionController extender, double length) {
     super(
         new PIDController(
@@ -21,8 +23,25 @@ public class PIDExtend extends PIDCommand {
         speed -> extender.setMotor(speed),
         extender);
 
+    m_extender = extender;
+
     getController().setTolerance(Constants.Arm.Extension.TOLERANCE);
     SmartDashboard.putData(getController());
+  }
+
+  @Override
+  public void initialize() {
+    super.initialize();
+    
+    m_extender.unlock();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    super.end(interrupted);
+
+    m_extender.stop();
+    m_extender.lock();
   }
 
   @Override

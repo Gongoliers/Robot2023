@@ -106,7 +106,6 @@ public class ExtensionController extends SubsystemBase
   }
 
   public Command extendTo(double length) {
-    // TODO Make sure we unlock before trying to extend
     return new PIDExtend(this, length);
   }
 
