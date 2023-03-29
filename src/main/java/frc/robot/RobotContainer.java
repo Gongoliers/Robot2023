@@ -27,7 +27,6 @@ import java.io.File;
 public class RobotContainer {
 
   // Subsystems
-  private final Claw m_claw = new Claw();
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
@@ -58,18 +57,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(m_claw::close));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(m_claw::open));
-
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
