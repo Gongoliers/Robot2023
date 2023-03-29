@@ -89,7 +89,7 @@ public class RobotContainer {
         .axisGreaterThan(XboxController.Axis.kLeftTrigger.value, DEADBAND)
         .onTrue(new InstantCommand(m_claw::intake))
         .onFalse(new InstantCommand(m_claw::hold));
-        
+
     m_manipulator
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, DEADBAND)
         .onTrue(new InstantCommand(m_claw::outtake))

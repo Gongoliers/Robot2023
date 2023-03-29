@@ -3,7 +3,6 @@ package frc.robot.superstructure;
 import frc.robot.Constants;
 
 public enum ArmState {
-
   STOWED("Stowed", 0, Constants.Arm.Rotation.MAX_ANGLE),
   TOP("Top Row", 0, 0), // TODO
   DOUBLE_SUBSTATION("Double Substation", 0, 0), // TODO
@@ -30,5 +29,4 @@ public enum ArmState {
   public String toString() {
     return name;
   }
-
 }

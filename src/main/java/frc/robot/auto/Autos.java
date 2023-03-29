@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
@@ -81,12 +81,16 @@ public final class Autos {
   }
 
   public static Command scoreTop(
-      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+      ExtensionController extensionController,
+      RotationController rotationController,
+      RollerClaw claw) {
     return score(extensionController, rotationController, claw, -100, 1.1);
   }
 
   public static Command scoreMiddle(
-      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+      ExtensionController extensionController,
+      RotationController rotationController,
+      RollerClaw claw) {
     return score(
         extensionController,
         rotationController,
@@ -96,7 +100,9 @@ public final class Autos {
   }
 
   public static Command scoreBottom(
-      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+      ExtensionController extensionController,
+      RotationController rotationController,
+      RollerClaw claw) {
     return score(extensionController, rotationController, claw, -200, 0.3); // TODO
   }
 
@@ -145,7 +151,8 @@ public final class Autos {
         .andThen(new TeleopDrive(m_swerve, () -> 0, () -> 0, () -> 0.5, () -> false, false, false))
         .withTimeout(0.375)
         .andThen(new WaitCommand(1.0))
-        .andThen(new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
+        .andThen(
+            new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
         .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 3.0)
         .andThen(m_swerve::lock, m_swerve); // TODO
   }

@@ -94,7 +94,15 @@ public class ExtensionController extends SubsystemBase
   }
 
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return new FunctionalCommand(this::unlock, () -> setMotor(percent), interrupted -> { stop(); lock(); }, isFinished, this);
+    return new FunctionalCommand(
+        this::unlock,
+        () -> setMotor(percent),
+        interrupted -> {
+          stop();
+          lock();
+        },
+        isFinished,
+        this);
   }
 
   public Command extend() {
