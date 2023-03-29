@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -92,12 +93,8 @@ public class ExtensionController extends SubsystemBase
     m_motor.stopMotor();
   }
 
-  public Command withLock(Command command) {
-    return runOnce(this::unlock).andThen(command).andThen(this::stop).andThen(this::lock);
-  }
-
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return withLock(run(() -> setMotor(percent)).until(isFinished));
+    return new FunctionalCommand(this::unlock, () -> setMotor(percent), interrupted -> { stop(); lock(); }, isFinished, this);
   }
 
   public Command extend() {
@@ -109,7 +106,8 @@ public class ExtensionController extends SubsystemBase
   }
 
   public Command extendTo(double length) {
-    return withLock(new PIDExtend(this, length));
+    // TODO Make sure we unlock before trying to extend
+    return new PIDExtend(this, length);
   }
 
   public Command extendTo(ArmState state) {
