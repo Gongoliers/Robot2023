@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,6 +45,9 @@ public class Robot extends TimedRobot {
 
     // Disable joystick warnings, since false positives may be distracting
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Stream cameras to the dashboard
+    CameraServer.startAutomaticCapture();
   }
 
   /**
