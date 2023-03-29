@@ -1,9 +1,11 @@
 package frc.robot.superstructure;
 
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fasterxml.jackson.databind.ser.std.NumberSerializers.DoubleSerializer;
 import com.thegongoliers.math.GMath;
 import com.thegongoliers.output.interfaces.Lockable;
 import com.thegongoliers.output.interfaces.Stoppable;
@@ -13,6 +15,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -51,7 +55,7 @@ public class ExtensionController extends SubsystemBase
    *
    * @param percent the speed to drive the motor at.
    */
-  public void drive(double percent) {
+  public void setMotor(double percent) {
     percent = GMath.clamp(percent, -1.0, 1.0);
     m_motor.set(ControlMode.PercentOutput, percent);
   }
@@ -85,13 +89,22 @@ public class ExtensionController extends SubsystemBase
   }
 
   /**
-   * Locks the arm.
-   *
-   * <p>Disables movement by engaging the friction brake.
+   * Stops the arm motor.
    */
   public void stop() {
     m_motor.stopMotor();
-    lock();
+  }
+
+  public Command drive(double percent, BooleanSupplier isFinished) {
+    return this.runOnce(this::unlock).andThen(Commands.run(() -> setMotor(percent))).until(isFinished).andThen(Commands.runOnce(() -> { stop(); lock(); }));
+  } 
+
+  public Command extend() {
+    return drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED, this::isExtended);
+  }
+
+  public Command retract() {
+    return drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED, this::isRetracted);
   }
 
   private void configExtensionMotor() {
@@ -99,7 +112,6 @@ public class ExtensionController extends SubsystemBase
     m_motor.configAllSettings(Robot.ctreConfigs.armExtensionFXConfig);
     m_motor.setInverted(Extension.SHOULD_INVERT_MOTOR);
     m_motor.setNeutralMode(Extension.MOTOR_NEUTRAL_MODE);
-    m_motor.setSelectedSensorPosition(0);
   }
 
   /**

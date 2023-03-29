@@ -18,7 +18,7 @@ public class PIDExtend extends PIDCommand {
             Constants.Arm.Extension.KP, Constants.Arm.Extension.KI, Constants.Arm.Extension.KD),
         extender::getLength,
         length,
-        speed -> extender.drive(speed),
+        speed -> extender.setMotor(speed),
         extender);
 
     getController().setTolerance(Constants.Arm.Extension.TOLERANCE);

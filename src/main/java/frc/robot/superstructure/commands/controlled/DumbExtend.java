@@ -32,9 +32,9 @@ public class DumbExtend extends CommandBase {
   @Override
   public void execute() {
     if (m_extender.getLength() > m_lengthSetpoint) {
-      m_extender.drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
+      m_extender.setMotor(Constants.Arm.Extension.MANUAL_RETRACT_SPEED);
     } else {
-      m_extender.drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
+      m_extender.setMotor(Constants.Arm.Extension.MANUAL_EXTEND_SPEED);
     }
   }
 

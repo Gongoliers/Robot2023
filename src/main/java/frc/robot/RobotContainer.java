@@ -16,10 +16,8 @@ import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.superstructure.commands.controlled.PIDRotate;
-import frc.robot.superstructure.commands.manual.SafeExtend;
 import frc.robot.superstructure.commands.manual.SafeLower;
 import frc.robot.superstructure.commands.manual.SafeRaise;
-import frc.robot.superstructure.commands.manual.SafeRetract;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -80,13 +78,13 @@ public class RobotContainer {
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeExtend(m_extensionController));
+        .whileTrue(m_extensionController.extend());
 
     new Trigger(
             () ->
                 m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
                     > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeRetract(m_extensionController));
+        .whileTrue(m_extensionController.retract());
 
     new Trigger(
             () ->
