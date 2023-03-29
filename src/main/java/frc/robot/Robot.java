@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,14 +43,11 @@ public class Robot extends TimedRobot {
     m_compressor = new Compressor(30, PneumaticsModuleType.REVPH);
     m_compressor.disable();
 
-    // Use a DataLogManager to automatically handle the saving / sharing of logging info
-    DataLogManager.start();
-
-    // Log DriverStation data, including joystick data, so specific error conditions can be
-    // recreated
-    DriverStation.startDataLog(DataLogManager.getLog());
     // Disable joystick warnings, since false positives may be distracting
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Stream cameras to the dashboard
+    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -78,6 +76,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_compressor.disable();
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -92,6 +92,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_compressor.disable();
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

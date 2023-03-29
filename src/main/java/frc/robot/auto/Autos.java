@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.superstructure.Claw;
+import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
@@ -59,17 +59,45 @@ public final class Autos {
     return Commands.sequence(autoBuilder.fullAuto(example1));
   }
 
-  public static Command scoreTop(
-      ExtensionController extensionController, RotationController rotationController, Claw claw) {
+  public static Command score(
+      ExtensionController extensionController,
+      RotationController rotationController,
+      RollerClaw claw,
+      double angle,
+      double length) {
 
     var m_extensionController = extensionController;
     var m_rotationController = rotationController;
     var m_claw = claw;
 
     return Commands.sequence(
-        m_rotationController.rotateTo(-100),
-        m_extensionController.extendTo(1.1),
-        new InstantCommand(m_claw::open));
+        m_rotationController.rotateTo(angle),
+        m_extensionController.extendTo(length),
+        new WaitCommand(0.5),
+        new InstantCommand(m_claw::intake),
+        new WaitCommand(0.5),
+        new InstantCommand(m_claw::hold),
+        retract(m_extensionController, m_rotationController));
+  }
+
+  public static Command scoreTop(
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+    return score(extensionController, rotationController, claw, -100, 1.1);
+  }
+
+  public static Command scoreMiddle(
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+    return score(
+        extensionController,
+        rotationController,
+        claw,
+        -130,
+        0.58); // TODO still needs some tuning, too short?
+  }
+
+  public static Command scoreBottom(
+      ExtensionController extensionController, RotationController rotationController, RollerClaw claw) {
+    return score(extensionController, rotationController, claw, -200, 0.3); // TODO
   }
 
   public static Command retract(
@@ -82,19 +110,73 @@ public final class Autos {
 
   public static Command backup(Swerve swerve) {
     var m_swerve = swerve;
-    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
-        .withTimeout(3.5);
+    return new TeleopDrive(m_swerve, () -> 0.75, () -> 0, () -> 0, () -> false, false, false)
+        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 4.0); // TODO
   }
 
-  public static Command extendDropAndRetractAndBackup(
-      ExtensionController ext, RotationController rot, Claw claw, Swerve swerve) {
+  public static Command scoreTopBackup(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreTop(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  }
+
+  public static Command scoreMiddleBackup(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreMiddle(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  }
+
+  public static Command scoreBottomBackup(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreBottom(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  }
+
+  public static Command chargeStation(Swerve swerve) {
+    var m_swerve = swerve;
+    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
+        .withTimeout(0.25)
+        .andThen(new TeleopDrive(m_swerve, () -> 0, () -> 0, () -> 0.5, () -> false, false, false))
+        .withTimeout(0.375)
+        .andThen(new WaitCommand(1.0))
+        .andThen(new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
+        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 3.0)
+        .andThen(m_swerve::lock, m_swerve); // TODO
+  }
+
+  public static Command scoreTopChargeStation(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
     var m_ext = ext;
     var m_rot = rot;
     var m_claw = claw;
     return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(1.0))
-        .andThen(new InstantCommand(m_claw::close))
-        .andThen(retract(m_ext, m_rot))
-        .andThen(backup(swerve));
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
+  }
+
+  public static Command scoreMiddleChargeStation(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreMiddle(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
+  }
+
+  public static Command scoreBottomChargeStation(
+      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
+    var m_ext = ext;
+    var m_rot = rot;
+    var m_claw = claw;
+    return scoreBottom(m_ext, m_rot, m_claw)
+        .andThen(new WaitCommand(0.5))
+        .andThen(chargeStation(swerve));
   }
 }
