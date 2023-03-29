@@ -17,6 +17,7 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Rotation;
 import frc.robot.Robot;
+import frc.robot.superstructure.commands.controlled.PIDRotate;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
@@ -79,13 +80,12 @@ public class RotationController extends SubsystemBase
     m_motor.stopMotor();
   }
 
+  public Command withLock(Command command) {
+    return runOnce(this::unlock).andThen(command).andThen(this::stop).andThen(this::lock);
+  }
+
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return this.runOnce(this::unlock)
-        .andThen(() -> setMotor(percent))
-        .repeatedly()
-        .until(isFinished)
-        .andThen(this::stop)
-        .andThen(this::lock);
+    return withLock(run(() -> setMotor(percent)).until(isFinished));
   }
 
   public Command raise() {
@@ -94,6 +94,14 @@ public class RotationController extends SubsystemBase
 
   public Command lower() {
     return drive(Constants.Arm.Rotation.MANUAL_LOWER_SPEED, this::isLowered);
+  }
+
+  public Command rotateTo(double angle) {
+    return withLock(new PIDRotate(this, angle));
+  }
+
+  public Command rotateTo(ArmState state) {
+    return rotateTo(state.angle);
   }
 
   private void configRotationMotor() {

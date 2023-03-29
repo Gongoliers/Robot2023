@@ -18,6 +18,7 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
+import frc.robot.superstructure.commands.controlled.PIDExtend;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
@@ -91,13 +92,12 @@ public class ExtensionController extends SubsystemBase
     m_motor.stopMotor();
   }
 
+  public Command withLock(Command command) {
+    return runOnce(this::unlock).andThen(command).andThen(this::stop).andThen(this::lock);
+  }
+
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return this.runOnce(this::unlock)
-        .andThen(() -> setMotor(percent))
-        .repeatedly()
-        .until(isFinished)
-        .andThen(this::stop)
-        .andThen(this::lock);
+    return withLock(run(() -> setMotor(percent)).until(isFinished));
   }
 
   public Command extend() {
@@ -106,6 +106,14 @@ public class ExtensionController extends SubsystemBase
 
   public Command retract() {
     return drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED, this::isRetracted);
+  }
+
+  public Command extendTo(double length) {
+    return withLock(new PIDExtend(this, length));
+  }
+
+  public Command extendTo(ArmState state) {
+    return extendTo(state.length);
   }
 
   private void configExtensionMotor() {
