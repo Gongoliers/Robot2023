@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
@@ -80,12 +81,8 @@ public class RotationController extends SubsystemBase
     m_motor.stopMotor();
   }
 
-  public Command withLock(Command command) {
-    return runOnce(this::unlock).andThen(command).andThen(this::stop).andThen(this::lock);
-  }
-
   public Command drive(double percent, BooleanSupplier isFinished) {
-    return withLock(run(() -> setMotor(percent)).until(isFinished));
+    return new FunctionalCommand(this::unlock, () -> setMotor(percent), interrupted -> { stop(); lock(); }, isFinished, this);
   }
 
   public Command raise() {
@@ -97,7 +94,8 @@ public class RotationController extends SubsystemBase
   }
 
   public Command rotateTo(double angle) {
-    return withLock(new PIDRotate(this, angle));
+    // TODO make sure this unlocks before going!!!
+    return new PIDRotate(this, angle);
   }
 
   public Command rotateTo(ArmState state) {

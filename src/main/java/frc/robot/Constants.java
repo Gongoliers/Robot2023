@@ -200,7 +200,7 @@ public final class Constants {
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
        * engage and disengage the brake on the gearbox.
        */
-      public static final int BRAKE_CHANNEL = 9;
+      public static final int BRAKE_CHANNEL = 10;
 
       public static final double MANUAL_SPEED = 0.8;
 
@@ -301,7 +301,7 @@ public final class Constants {
        * Channel on the Pneumatics Hub for the brake solenoid. Used for signalling the solenoid to
        * engage and disengage the brake on the gearbox.
        */
-      public static final int BRAKE_CHANNEL = 10;
+      public static final int BRAKE_CHANNEL = 9;
 
       public static final double MANUAL_SPEED = 0.1;
 
