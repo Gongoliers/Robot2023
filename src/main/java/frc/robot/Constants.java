@@ -221,6 +221,8 @@ public final class Constants {
       public static final double MAX_HORIZONTAL_LENGTH = Double.POSITIVE_INFINITY; // TODO
 
       public static final double MIN_EXTENSION_LENGTH = Double.NEGATIVE_INFINITY; // TODO
+
+      public static final double MAX_VERTICAL_EXTENSION = Double.POSITIVE_INFINITY; // TODO
     }
 
     public static final class Rotation {

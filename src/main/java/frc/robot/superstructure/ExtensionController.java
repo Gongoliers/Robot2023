@@ -1,5 +1,7 @@
 package frc.robot.superstructure;
 
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.thegongoliers.math.GMath;
@@ -17,11 +19,6 @@ import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class ExtensionController extends SubsystemBase
     implements Lockable, Stoppable, TelemetrySubsystem {
@@ -122,8 +119,6 @@ public class ExtensionController extends SubsystemBase
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Length (m)", this::getLength);
-    container.addNumber("Horizontal Length Constraint (m)", () -> calculateHorizontalConstraint(m_rotationController.getAngle(), Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH));
-    container.addNumber("Vertical Length Constraint (m)", () -> calculateVerticalConstraint(m_rotationController.getAngle(), Double.POSITIVE_INFINITY));
     container.addNumber("Max Length (m)", this::getLengthConstraint);
     container.addBoolean("Retracted to Min Length?", this::isRetracted);
     container.addBoolean("Extended to Max Length?", this::isExtended);
@@ -140,41 +135,12 @@ public class ExtensionController extends SubsystemBase
   }
 
   /**
-   * Calculates the maximum arm length that can be achieved at the specified angle without exceeding the specified horizontal measurement.
-   * @param angle the arm angle, in degrees.
-   * @param horizontal the horizontal measurement, in meters.
-   * @return the maximum arm length that fulfills this constraint, in meters.
+   * Gets the maximum length of the arm for the current angle.
+   * @return the maximum length of the arm.
    */
-  private double calculateHorizontalConstraint(double angle, double horizontal) {
-    double cos = Math.cos(angle * Math.PI / 180);
-  
-    // If cosine (horizontal component) is 0, this means that the arm is vertical
-    // If the arm is vertical, the horizontal measurement will never be exceeded, so this constraint is not a factor
-    if (cos == 0) {
-      return Double.POSITIVE_INFINITY;
-    }
-
-    // Otherwise, return the maximum arm length that fulfills this constraint
-    return horizontal / cos;
-  }
-
-  /**
-   * Calculates the maximum arm length that can be achieved at the specified angle without exceeding the specified vertical measurement.
-   * @param angle the arm angle, in degrees.
-   * @param vertical the vertical measurement, in meters.
-   * @return the maximum arm length that fulfills this constraint, in meters.
-   */
-  private double calculateVerticalConstraint(double angle, double vertical) {
-    // TODO
-    return Double.POSITIVE_INFINITY;
-  }
-
-  public double getLengthConstraint() {
+  private double getLengthConstraint() {
     double angle = m_rotationController.getAngle();
-
-    List<Double> constraints = Arrays.asList(Constants.Arm.Extension.MAX_EXTENSION_LENGTH, calculateHorizontalConstraint(angle, Constants.Arm.Extension.MAX_HORIZONTAL_LENGTH), calculateVerticalConstraint(angle, Double.POSITIVE_INFINITY));
-
-    return Collections.min(constraints);
+    return ArmMath.calculateLengthConstraint(angle);
   }
 
   public boolean isRetracted() {
