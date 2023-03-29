@@ -17,8 +17,6 @@ import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.controlled.DumbExtend;
-import frc.robot.superstructure.commands.controlled.DumbRotate;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.util.List;
@@ -73,8 +71,8 @@ public final class Autos {
     var m_claw = claw;
 
     return Commands.sequence(
-        new DumbRotate(m_rotationController, angle),
-        new DumbExtend(m_extensionController, length),
+        m_rotationController.rotateTo(angle),
+        m_extensionController.extendTo(length),
         new WaitCommand(0.5),
         new InstantCommand(m_claw::intake),
         new WaitCommand(0.5),
@@ -113,7 +111,7 @@ public final class Autos {
     var m_extensionController = extensionController;
     var m_rotationController = rotationController;
     return Commands.sequence(
-        new DumbExtend(m_extensionController, 0.05), new DumbRotate(m_rotationController, -5));
+        m_extensionController.extendTo(0.05), m_rotationController.rotateTo(-5));
   }
 
   public static Command backup(Swerve swerve) {

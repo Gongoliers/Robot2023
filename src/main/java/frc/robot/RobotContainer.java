@@ -11,14 +11,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.auto.Autos;
 import frc.robot.intake.SideIntake;
+import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.controlled.DumbRotate;
-import frc.robot.superstructure.commands.manual.SafeExtend;
-import frc.robot.superstructure.commands.manual.SafeLower;
-import frc.robot.superstructure.commands.manual.SafeRaise;
-import frc.robot.superstructure.commands.manual.SafeRetract;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -39,7 +35,6 @@ public class RobotContainer {
   private final SideIntake m_intake = new SideIntake();
   private final RollerClaw m_claw = new RollerClaw();
 
-  // Controllers
   private final CommandXboxController m_driver = new CommandXboxController(0);
   private final CommandXboxController m_manipulator = new CommandXboxController(1);
 
@@ -102,22 +97,22 @@ public class RobotContainer {
 
     m_manipulator
         .axisLessThan(XboxController.Axis.kRightY.value, -DEADBAND)
-        .whileTrue(new SafeExtend(m_extensionController));
+        .whileTrue(m_extensionController.extend());
     m_manipulator
         .axisGreaterThan(XboxController.Axis.kRightY.value, DEADBAND)
-        .whileTrue(new SafeRetract(m_extensionController));
+        .whileTrue(m_extensionController.retract());
 
     m_manipulator
         .axisLessThan(XboxController.Axis.kLeftY.value, -DEADBAND)
-        .whileTrue(new SafeRaise(m_rotationController));
+        .whileTrue(m_rotationController.raise());
     m_manipulator
         .axisGreaterThan(XboxController.Axis.kLeftY.value, DEADBAND)
-        .whileTrue(new SafeLower(m_rotationController));
+        .whileTrue(m_rotationController.lower());
 
-    m_manipulator.x().whileTrue(new DumbRotate(m_rotationController, -300));
-    m_manipulator.a().whileTrue(new DumbRotate(m_rotationController, 0));
-    m_manipulator.y().whileTrue(new DumbRotate(m_rotationController, -100));
-    m_manipulator.b().whileTrue(new DumbRotate(m_rotationController, -115));
+    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.FLOOR));
+    m_manipulator.a().whileTrue(m_rotationController.rotateTo(ArmState.STOWED));
+    m_manipulator.y().whileTrue(m_rotationController.rotateTo(ArmState.TOP));
+    m_manipulator.b().whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
 
     m_manipulator
         .leftBumper()

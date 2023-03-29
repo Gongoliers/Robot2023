@@ -11,14 +11,17 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.Extension;
 import frc.robot.Robot;
+import frc.robot.superstructure.commands.controlled.PIDExtend;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class ExtensionController extends SubsystemBase
     implements Lockable, Stoppable, TelemetrySubsystem {
@@ -26,7 +29,6 @@ public class ExtensionController extends SubsystemBase
   private final RotationController m_rotationController;
   private final WPI_TalonFX m_motor;
   private final Solenoid m_brake;
-  private boolean m_isAutoRetracting;
 
   public ExtensionController(RotationController rotation) {
 
@@ -42,11 +44,10 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setLength(Constants.Arm.States.STOWED.getLength());
+    setLength(ArmState.STOWED.length);
 
-    addToShuffleboard(Shuffleboard.getTab("Arm").getLayout("Extension", BuiltInLayouts.kList));
-
-    SmartDashboard.putData(this);
+    addToShuffleboard(
+        Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList));
   }
 
   /**
@@ -54,24 +55,9 @@ public class ExtensionController extends SubsystemBase
    *
    * @param percent the speed to drive the motor at.
    */
-  public void drive(double percent) {
-    // if (m_brake.get()) { // TRUE = UNLOCKED
+  public void setMotor(double percent) {
+    percent = GMath.clamp(percent, -1.0, 1.0);
     m_motor.set(ControlMode.PercentOutput, percent);
-    // } else {
-    // m_motor.set(0.0);
-    // }
-  }
-
-  /**
-   * Sets the motor voltage.
-   *
-   * @param voltage the voltage to set the motor to.
-   */
-  public void setVoltage(double voltage) {
-    double clampedVoltage =
-        GMath.clamp(
-            voltage, -Constants.Arm.Rotation.MAX_VOLTAGE, Constants.Arm.Rotation.MAX_VOLTAGE);
-    m_motor.setVoltage(clampedVoltage);
   }
 
   /**
@@ -102,14 +88,37 @@ public class ExtensionController extends SubsystemBase
     m_brake.set(true);
   }
 
-  /**
-   * Locks the arm.
-   *
-   * <p>Disables movement by engaging the friction brake.
-   */
+  /** Stops the arm motor. */
   public void stop() {
     m_motor.stopMotor();
-    lock();
+  }
+
+  public Command drive(double percent, BooleanSupplier isFinished) {
+    return new FunctionalCommand(
+        this::unlock,
+        () -> setMotor(percent),
+        interrupted -> {
+          stop();
+          lock();
+        },
+        isFinished,
+        this);
+  }
+
+  public Command extend() {
+    return drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED, this::isExtended);
+  }
+
+  public Command retract() {
+    return drive(Constants.Arm.Extension.MANUAL_RETRACT_SPEED, this::isRetracted);
+  }
+
+  public Command extendTo(double length) {
+    return new PIDExtend(this, length);
+  }
+
+  public Command extendTo(ArmState state) {
+    return extendTo(state.length);
   }
 
   private void configExtensionMotor() {
@@ -117,7 +126,6 @@ public class ExtensionController extends SubsystemBase
     m_motor.configAllSettings(Robot.ctreConfigs.armExtensionFXConfig);
     m_motor.setInverted(Extension.SHOULD_INVERT_MOTOR);
     m_motor.setNeutralMode(Extension.MOTOR_NEUTRAL_MODE);
-    m_motor.setSelectedSensorPosition(0);
   }
 
   /**
@@ -137,33 +145,36 @@ public class ExtensionController extends SubsystemBase
   @Override
   public void addToShuffleboard(ShuffleboardContainer container) {
     container.addDouble("Length (m)", this::getLength);
+    container.addNumber("Max Length (m)", this::getLengthConstraint);
+    container.addBoolean("Retracted to Min Length?", this::isRetracted);
+    container.addBoolean("Extended to Max Length?", this::isExtended);
     container
         .addDouble("Speed (%)", m_motor::get)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("min", -1.0, "max", 1.0));
     container.addBoolean("Unlocked?", m_brake::get);
-    container.addNumber("Max Length", this::getMaxLength);
   }
 
   @Override
   public void outputTelemetry() {
     // TODO Auto-generated method stub
-
   }
 
-  public double getMaxLength() {
+  /**
+   * Gets the maximum length of the arm for the current angle.
+   *
+   * @return the maximum length of the arm.
+   */
+  private double getLengthConstraint() {
     double angle = m_rotationController.getAngle();
-
-    if (-90 <= angle && angle < 0) {
-      return 0.8;
-    } else if (-110 < angle && angle <= -80) {
-      return 1.1;
-    } else {
-      return 0.8;
-    }
+    return ArmMath.calculateLengthConstraint(angle);
   }
 
-  public boolean isLocked() {
-    return !m_brake.get();
+  public boolean isRetracted() {
+    return getLength() <= Constants.Arm.Extension.MIN_EXTENSION_LENGTH;
+  }
+
+  public boolean isExtended() {
+    return getLength() >= getLengthConstraint();
   }
 }
