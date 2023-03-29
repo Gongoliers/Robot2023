@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.ArmState;
 import frc.robot.auto.Autos;
+import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
@@ -102,19 +102,19 @@ public class RobotContainer {
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
         // .whileTrue(new DumbRotate(m_rotationController, ArmState.FLOOR.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.FLOOR.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.FLOOR.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
         //.whileTrue(new DumbRotate(m_rotationController, ArmState.STOWED.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.STOWED.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.STOWED.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
         //.whileTrue(new DumbRotate(m_rotationController, ArmState.TOP.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.TOP.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.TOP.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
         //.whileTrue(new DumbRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
+        .whileTrue(new PIDRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.angle));
   }
 
   private void configureTriggers() {}

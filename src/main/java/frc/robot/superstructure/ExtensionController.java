@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.ArmState;
 import frc.lib.TelemetrySubsystem;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -45,7 +44,7 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setLength(ArmState.STOWED.getLength());
+    setLength(ArmState.STOWED.length);
 
     addToShuffleboard(Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList));
   }

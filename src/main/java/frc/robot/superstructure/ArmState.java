@@ -1,15 +1,17 @@
-package frc.lib;
+package frc.robot.superstructure;
+
+import frc.robot.Constants;
 
 public enum ArmState {
 
-  STOWED("Stowed", 0, 0), // TODO
+  STOWED("Stowed", 0, Constants.Arm.Rotation.MAX_ANGLE),
   TOP("Top Row", 0, 0), // TODO
   DOUBLE_SUBSTATION("Double Substation", 0, 0), // TODO
   FLOOR("Floor", 0, 0); // TODO
 
   private final String name;
-  private final double length;
-  private final double angle;
+  public final double length;
+  public final double angle;
 
   /**
    * Constructs an ArmState with the provided extension length and angle.
@@ -27,14 +29,6 @@ public enum ArmState {
   @Override
   public String toString() {
     return name;
-  }
-
-  public double getLength() {
-    return length;
-  }
-
-  public double getAngle() {
-    return angle;
   }
 
 }
