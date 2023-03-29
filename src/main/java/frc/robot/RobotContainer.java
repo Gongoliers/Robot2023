@@ -14,8 +14,6 @@ import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.Claw;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.controlled.DumbRotate;
-import frc.robot.superstructure.commands.controlled.PIDRotate;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -97,20 +95,16 @@ public class RobotContainer {
         .whileTrue(m_rotationController.lower());
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        // .whileTrue(new DumbRotate(m_rotationController, ArmState.FLOOR.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.FLOOR.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.FLOOR.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
-        //.whileTrue(new DumbRotate(m_rotationController, ArmState.STOWED.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.STOWED.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.STOWED.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        //.whileTrue(new DumbRotate(m_rotationController, ArmState.TOP.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.TOP.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.TOP.angle));
 
     new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        //.whileTrue(new DumbRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.getAngle()));
-        .whileTrue(new PIDRotate(m_rotationController, ArmState.DOUBLE_SUBSTATION.angle));
+        .whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION.angle));
   }
 
   private void configureTriggers() {}
