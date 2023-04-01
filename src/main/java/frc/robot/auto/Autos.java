@@ -159,7 +159,8 @@ public final class Autos {
         .andThen(new TeleopDrive(m_swerve, () -> 0, () -> 0, () -> 0.5, () -> false, false, false))
         .withTimeout(0.375)
         .andThen(new WaitCommand(1.0))
-        .andThen(new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
+        .andThen(
+            new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
         .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 3.0)
         .andThen(m_swerve::lock, m_swerve); // TODO
   }

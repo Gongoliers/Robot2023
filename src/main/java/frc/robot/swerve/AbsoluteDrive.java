@@ -4,15 +4,14 @@
 
 package frc.robot.swerve;
 
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
@@ -23,7 +22,13 @@ public class AbsoluteDrive extends CommandBase {
   private final DoubleSupplier m_headingHorizontal, m_headingVertical;
   private final BooleanSupplier m_isPrecise;
 
-  public AbsoluteDrive(Swerve swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal, DoubleSupplier headingVertical, BooleanSupplier isPrecise) {
+  public AbsoluteDrive(
+      Swerve swerve,
+      DoubleSupplier vX,
+      DoubleSupplier vY,
+      DoubleSupplier headingHorizontal,
+      DoubleSupplier headingVertical,
+      BooleanSupplier isPrecise) {
     m_swerve = swerve;
     m_vX = vX;
     m_vY = vY;
@@ -52,13 +57,23 @@ public class AbsoluteDrive extends CommandBase {
     SmartDashboard.putNumber("vY", vY);
 
     // Convert joystick inputs to desired chassis speeds
-    ChassisSpeeds desiredSpeeds = m_swerve.getTargetSpeeds(vX, vY, m_headingHorizontal.getAsDouble(), m_headingVertical.getAsDouble());
+    ChassisSpeeds desiredSpeeds =
+        m_swerve.getTargetSpeeds(
+            vX, vY, m_headingHorizontal.getAsDouble(), m_headingVertical.getAsDouble());
 
     // Get the translational velocity component of the desired chassis speeds
     Translation2d desiredVelocity = SwerveController.getTranslation2d(desiredSpeeds);
     // TODO Test
     // Limit the velocity to prevent tipping
-    desiredVelocity = SwerveMath.limitVelocity(desiredVelocity, m_swerve.getFieldVelocity(), m_swerve.getPose(), Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS), m_swerve.getSwerveDriveConfiguration()) ;
+    desiredVelocity =
+        SwerveMath.limitVelocity(
+            desiredVelocity,
+            m_swerve.getFieldVelocity(),
+            m_swerve.getPose(),
+            Constants.LOOP_TIME,
+            Constants.ROBOT_MASS,
+            List.of(Constants.CHASSIS),
+            m_swerve.getSwerveDriveConfiguration());
 
     // Add debug info to SmartDashboard
     SmartDashboard.putNumber("DesiredLimitedVelocity", desiredVelocity.getX());
