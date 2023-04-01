@@ -4,7 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,14 +36,14 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    // Use a DataLogManager to automatically handle the saving / sharing of logging info
-    DataLogManager.start();
+    m_compressor = new Compressor(30, PneumaticsModuleType.REVPH);
+    m_compressor.disable();
 
-    // Log DriverStation data, including joystick data, so specific error conditions can be
-    // recreated
-    DriverStation.startDataLog(DataLogManager.getLog());
     // Disable joystick warnings, since false positives may be distracting
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Stream cameras to the dashboard
+    CameraServer.startAutomaticCapture();
   }
 
   /**
