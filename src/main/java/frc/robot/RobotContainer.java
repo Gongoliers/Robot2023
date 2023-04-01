@@ -5,16 +5,15 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.auto.Autos;
 import frc.robot.intake.SideIntake;
 import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
+import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -72,7 +71,24 @@ public class RobotContainer {
             false,
             false);
 
-    m_swerve.setDefaultCommand(teleopDrive);
+    AbsoluteDrive absoluteDrive =
+        new AbsoluteDrive(
+            m_swerve,
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
+            () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
+
+    m_swerve.setDefaultCommand(absoluteDrive);
   }
 
   /**
@@ -126,37 +142,7 @@ public class RobotContainer {
 
   private void configureTriggers() {}
 
-  private void setupAutos() {
-    m_chooser.setDefaultOption(
-        "Score Top", Autos.scoreTop(m_extensionController, m_rotationController, m_claw));
-    m_chooser.addOption(
-        "Score Middle", Autos.scoreMiddle(m_extensionController, m_rotationController, m_claw));
-    m_chooser.addOption(
-        "Score Bottom", Autos.scoreBottom(m_extensionController, m_rotationController, m_claw));
-    m_chooser.addOption(
-        "Score Top Backup",
-        Autos.scoreTopBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Middle Backup",
-        Autos.scoreMiddleBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Bottom Backup",
-        Autos.scoreBottomBackup(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Top ChargeStation",
-        Autos.scoreTopChargeStation(m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Middle ChargeStation",
-        Autos.scoreMiddleChargeStation(
-            m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption(
-        "Score Bottom ChargeStation",
-        Autos.scoreBottomChargeStation(
-            m_extensionController, m_rotationController, m_claw, m_swerve));
-    m_chooser.addOption("Do Nothing", new InstantCommand());
-
-    SmartDashboard.putData(m_chooser);
-  }
+  private void setupAutos() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -164,6 +150,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_chooser.getSelected();
+    return new InstantCommand();
   }
 }
