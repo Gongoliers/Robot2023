@@ -112,7 +112,7 @@ public final class Constants {
       public static final boolean SHOULD_CURRENT_LIMIT = false;
 
       /** Extension motor KP. Applies this speed per meter of error. */
-      public static final double KP = 0.2; // TODO 20% speed per meter
+      public static final double KP = 2.5; // TODO 20% speed per meter
       /** Extension motor KI. */
       public static final double KI = 0.0;
       /** Extension motor KD. */
@@ -167,9 +167,9 @@ public final class Constants {
 
       public static final double MAX_EXTENSION_LENGTH = Double.POSITIVE_INFINITY; // TODO
 
-      public static final double MAX_HORIZONTAL_LENGTH = Double.POSITIVE_INFINITY; // TODO
+      public static final double MAX_HORIZONTAL_LENGTH = 0.92;
 
-      public static final double MIN_EXTENSION_LENGTH = Double.NEGATIVE_INFINITY; // TODO
+      public static final double MIN_EXTENSION_LENGTH = 0.05;
 
       public static final double MAX_VERTICAL_EXTENSION = Double.POSITIVE_INFINITY; // TODO
     }
@@ -204,7 +204,7 @@ public final class Constants {
       public static final boolean SHOULD_CURRENT_LIMIT = false;
 
       /** Rotation motor KP. Applies this speed per degree of error. */
-      public static final double KP = 0.1 / 20.0; // TODO 10% per 20 degrees
+      public static final double KP = 0.35 / 10.0; // TODO 10% per 20 degrees
       /** Rotation motor KI. */
       public static final double KI = 0.0;
       /** Rotation motor KD. */

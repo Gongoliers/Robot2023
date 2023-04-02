@@ -44,7 +44,7 @@ public class ExtensionController extends SubsystemBase
     lock();
 
     // Assumes that the arm begins in the stowed state
-    setLength(ArmState.STOWED.length);
+    setLength(0);
 
     addToShuffleboard(
         Shuffleboard.getTab("Superstructure").getLayout("Extension", BuiltInLayouts.kList));

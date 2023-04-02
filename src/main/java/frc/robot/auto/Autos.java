@@ -85,7 +85,7 @@ public final class Autos {
    * @return a command that scores on the bottom row.
    */
   public Command scoreBottom() {
-    return score(ArmState.FLOOR);
+    return score(ArmState.HYBRID);
   }
 
   /**

@@ -3,11 +3,11 @@ package frc.robot.superstructure;
 import frc.robot.Constants;
 
 public enum ArmState {
-  STOWED("Stowed", 0, Constants.Arm.Rotation.MAX_ANGLE),
-  TOP("Top Row", 0, 0), // TODO
-  MIDDLE("Middle Row", 0, 0), // TODO
+  STOWED("Stowed", 0.05, Constants.Arm.Rotation.MAX_ANGLE),
+  TOP("Top Row", 1.15, 30),
+  MIDDLE("Middle Row", 0.45, 20), // TODO
   DOUBLE_SUBSTATION("Double Substation", 0, 0), // TODO
-  FLOOR("Floor", 0, 0); // TODO
+  HYBRID("Floor", 0.1, 0); // TODO
 
   private final String name;
   public final double length;

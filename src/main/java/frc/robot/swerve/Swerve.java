@@ -5,7 +5,6 @@
 package frc.robot.swerve;
 
 import com.thegongoliers.math.GMath;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,7 +28,8 @@ public class Swerve extends SubsystemBase {
   /** Swerve drive object. */
   private final SwerveDrive swerveDrive;
 
-  private final SlewRateLimiter pitchRateLimiter = new SlewRateLimiter(0.5); // 0.5 degrees per second
+  private final SlewRateLimiter pitchRateLimiter =
+      new SlewRateLimiter(0.5); // 0.5 degrees per second
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.

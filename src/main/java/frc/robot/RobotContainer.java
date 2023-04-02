@@ -88,10 +88,10 @@ public class RobotContainer {
                     m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
+                    -m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
+                    -m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
             () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
 
     m_swerve.setDefaultCommand(absoluteDrive);
@@ -131,7 +131,7 @@ public class RobotContainer {
         .axisGreaterThan(XboxController.Axis.kLeftY.value, DEADBAND)
         .whileTrue(m_rotationController.lower());
 
-    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.FLOOR));
+    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.HYBRID));
     m_manipulator.a().whileTrue(m_rotationController.rotateTo(ArmState.STOWED));
     m_manipulator.y().whileTrue(m_rotationController.rotateTo(ArmState.TOP));
     m_manipulator.b().whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
