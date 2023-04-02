@@ -52,6 +52,8 @@ public class AbsoluteDrive extends CommandBase {
 
   @Override
   public void execute() {
+    double nowTime = timer.get();
+
     double vX = m_vX.getAsDouble();
     double vY = m_vY.getAsDouble();
 
@@ -72,11 +74,13 @@ public class AbsoluteDrive extends CommandBase {
           m_swerve.getTargetSpeeds(
               vX, vY, -m_headingHorizontal.getAsDouble(), -m_headingVertical.getAsDouble());
     } else {
-      double kDegreesPerSecond = 5;
+      double kScaleFactor = 30;
       double angularVelocity =
-          m_headingHorizontal.getAsDouble() * kDegreesPerSecond * (timer.get() - lastTime);
-      Rotation2d angle = m_swerve.getHeading().plus(Rotation2d.fromDegrees(angularVelocity));
-      desiredSpeeds = m_swerve.getTargetSpeeds(vX, vY, angle);
+          m_headingHorizontal.getAsDouble() * kScaleFactor * (nowTime - lastTime);
+      SmartDashboard.putNumber("om", angularVelocity);
+      Rotation2d futureAngle = m_swerve.getHeading().plus(Rotation2d.fromDegrees(angularVelocity));
+      SmartDashboard.putNumber("target", futureAngle.getDegrees());
+      desiredSpeeds = m_swerve.getTargetSpeeds(vX, vY, futureAngle);
     }
 
     // Get the translational velocity component of the desired chassis speeds
@@ -98,6 +102,8 @@ public class AbsoluteDrive extends CommandBase {
 
     // Drive the robot using the desired translational velocity and rotational velocity
     m_swerve.drive(desiredVelocity, desiredSpeeds.omegaRadiansPerSecond, true, true);
+
+    lastTime = nowTime;
   }
 
   @Override
