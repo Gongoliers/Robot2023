@@ -7,6 +7,7 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
@@ -31,32 +32,16 @@ public final class Autos {
     m_claw = claw;
   }
 
-  /**
-   * Rotate to angle then extend to length. Should be used when the length setpoint is greater than
-   * the current length.
-   *
-   * @param angleSetpoint angle.
-   * @param lengthSetpoint length.
-   * @return a command which performs this motion.
-   */
-  public Command extendToPosition(double angleSetpoint, double lengthSetpoint) {
+  public Command extendToPosition(ArmState state) {
     return Commands.sequence(
-        m_rotationController.rotateTo(angleSetpoint),
-        m_extensionController.extendTo(lengthSetpoint));
+        m_rotationController.rotateTo(state),
+        m_extensionController.extendTo(state));
   }
 
-  /**
-   * Extend to length then rotate to angle. Should be used when the current length is greater than
-   * the length setpoint.
-   *
-   * @param angleSetpoint angle.
-   * @param lengthSetpoint length.
-   * @return a command which performs this motion.
-   */
-  public Command retractToPosition(double angleSetpoint, double lengthSetpoint) {
+  public Command retractToPosition(ArmState state) {
     return Commands.sequence(
-        m_extensionController.extendTo(lengthSetpoint),
-        m_rotationController.rotateTo(angleSetpoint));
+        m_extensionController.extendTo(state),
+        m_rotationController.rotateTo(state));
   }
 
   /**
@@ -65,19 +50,11 @@ public final class Autos {
    * @return a command which returns the arm to the stow position.
    */
   public Command stow() {
-    return retractToPosition(-5, 0.05);
+    return retractToPosition(ArmState.STOWED);
   }
 
-  /**
-   * Extend to setpoint, then drop the game piece, then stow.
-   *
-   * @param angleSetpoint angle.
-   * @param lengthSetpoint length.
-   * @return a command which performs this sequence.
-   */
-  public Command score(double angleSetpoint, double lengthSetpoint) {
-
-    return extendToPosition(angleSetpoint, lengthSetpoint)
+  public Command score(ArmState state) {
+    return extendToPosition(state)
         .andThen(m_claw::outtake, m_claw)
         .andThen(Commands.waitSeconds(0.5))
         .andThen(m_claw::stop, m_claw)
@@ -90,7 +67,7 @@ public final class Autos {
    * @return a command that scores on the top row.
    */
   public Command scoreTop() {
-    return score(-100, 1.1);
+    return score(ArmState.TOP);
   }
 
   /**
@@ -99,7 +76,7 @@ public final class Autos {
    * @return a command that scores on the middle row.
    */
   public Command scoreMiddle() {
-    return score(-130, 0.58);
+    return score(ArmState.MIDDLE);
   }
 
   /**
@@ -108,7 +85,7 @@ public final class Autos {
    * @return a command that scores on the bottom row.
    */
   public Command scoreBottom() {
-    return score(-200, 0.3);
+    return score(ArmState.FLOOR);
   }
 
   /**
