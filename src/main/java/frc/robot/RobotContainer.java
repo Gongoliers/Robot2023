@@ -5,9 +5,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.auto.Autos;
 import frc.robot.intake.SideIntake;
 import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
@@ -34,10 +36,14 @@ public class RobotContainer {
   private final SideIntake m_intake = new SideIntake();
   private final RollerClaw m_claw = new RollerClaw();
 
+  private final Autos m_autos =
+      new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
+
   private final CommandXboxController m_driver = new CommandXboxController(0);
   private final CommandXboxController m_manipulator = new CommandXboxController(1);
 
-  private SendableChooser<Command> m_chooser = new SendableChooser<Command>();
+  private SendableChooser<Command> m_scoreChooser = new SendableChooser<Command>();
+  private SendableChooser<Command> m_mobilityChooser = new SendableChooser<Command>();
 
   private final double DEADBAND = 0.5;
 
@@ -142,7 +148,17 @@ public class RobotContainer {
 
   private void configureTriggers() {}
 
-  private void setupAutos() {}
+  private void setupAutos() {
+    m_scoreChooser.setDefaultOption("Top", m_autos.scoreTop());
+    m_scoreChooser.addOption("Middle", m_autos.scoreMiddle());
+    m_scoreChooser.addOption("Bottom", m_autos.scoreBottom());
+    m_scoreChooser.addOption("Don't Score", new InstantCommand());
+    SmartDashboard.putData("Score Position", m_scoreChooser);
+
+    m_mobilityChooser.setDefaultOption("Yes", m_autos.mobility());
+    m_mobilityChooser.addOption("No", new InstantCommand());
+    SmartDashboard.putData("Mobility?", m_mobilityChooser);
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -150,6 +166,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new InstantCommand();
+    Command scoreCommand = m_scoreChooser.getSelected();
+    Command mobilityCommand = m_mobilityChooser.getSelected();
+
+    return scoreCommand.andThen(mobilityCommand);
   }
 }

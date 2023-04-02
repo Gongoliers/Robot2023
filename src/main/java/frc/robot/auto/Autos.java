@@ -4,186 +4,143 @@
 
 package frc.robot.auto;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.superstructure.ExtensionController;
 import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
-import java.util.List;
 
 public final class Autos {
 
-  private Autos() {
-    throw new UnsupportedOperationException("This is a utility class!");
-  }
+  private final Swerve m_swerve;
+  private final ExtensionController m_extensionController;
+  private final RotationController m_rotationController;
+  private final RollerClaw m_claw;
 
-  /** Example static factory for an autonomous command. */
-  public static CommandBase exampleAuto(Swerve swerve) {
-    List<PathPlannerTrajectory> example1 =
-        PathPlanner.loadPathGroup("SamplePath", new PathConstraints(4, 3));
-
-    // Create the AutoBuilder. This only needs to be created once when robot code starts, not every
-    // time you want
-    // to create an auto command. A good place to put this is in RobotContainer along with your
-    // subsystems.
-    SwerveAutoBuilder autoBuilder =
-        new SwerveAutoBuilder(
-            swerve::getPose,
-            // Pose2d supplier
-            swerve::resetOdometry,
-            // Pose2d consumer, used to reset odometry at the beginning of auto
-            Constants.Auto.TRANSLATION_PID,
-            // PID constants to correct for translation error (used to create the X and Y PID
-            // controllers)
-            Constants.Auto.ROTATION_PID,
-            // PID constants to correct for rotation error (used to create the rotation controller)
-            swerve::setChassisSpeeds,
-            // Module states consumer used to output to the drive subsystem
-            Constants.Auto.EVENT_MAP,
-            false,
-            // Should the path be automatically mirrored depending on alliance color. Optional,
-            // defaults to true
-            swerve
-            // The drive subsystem. Used to properly set the requirements of path following commands
-            );
-    return Commands.sequence(autoBuilder.fullAuto(example1));
-  }
-
-  public static Command score(
+  public Autos(
+      Swerve swerve,
       ExtensionController extensionController,
       RotationController rotationController,
-      RollerClaw claw,
-      double angle,
-      double length) {
+      RollerClaw claw) {
+    m_swerve = swerve;
+    m_extensionController = extensionController;
+    m_rotationController = rotationController;
+    m_claw = claw;
+  }
 
-    var m_extensionController = extensionController;
-    var m_rotationController = rotationController;
-    var m_claw = claw;
-
+  /**
+   * Rotate to angle then extend to length. Should be used when the length setpoint is greater than
+   * the current length.
+   *
+   * @param angleSetpoint angle.
+   * @param lengthSetpoint length.
+   * @return a command which performs this motion.
+   */
+  public Command extendToPosition(double angleSetpoint, double lengthSetpoint) {
     return Commands.sequence(
-        m_rotationController.rotateTo(angle),
-        m_extensionController.extendTo(length),
-        new WaitCommand(0.5),
-        new InstantCommand(m_claw::intake),
-        new WaitCommand(0.5),
-        new InstantCommand(m_claw::hold),
-        retract(m_extensionController, m_rotationController));
+        m_rotationController.rotateTo(angleSetpoint),
+        m_extensionController.extendTo(lengthSetpoint));
   }
 
-  public static Command scoreTop(
-      ExtensionController extensionController,
-      RotationController rotationController,
-      RollerClaw claw) {
-    return score(extensionController, rotationController, claw, -100, 1.1);
-  }
-
-  public static Command scoreMiddle(
-      ExtensionController extensionController,
-      RotationController rotationController,
-      RollerClaw claw) {
-    return score(
-        extensionController,
-        rotationController,
-        claw,
-        -130,
-        0.58); // TODO still needs some tuning, too short?
-  }
-
-  public static Command scoreBottom(
-      ExtensionController extensionController,
-      RotationController rotationController,
-      RollerClaw claw) {
-    return score(extensionController, rotationController, claw, -200, 0.3); // TODO
-  }
-
-  public static Command retract(
-      ExtensionController extensionController, RotationController rotationController) {
-    var m_extensionController = extensionController;
-    var m_rotationController = rotationController;
+  /**
+   * Extend to length then rotate to angle. Should be used when the current length is greater than
+   * the length setpoint.
+   *
+   * @param angleSetpoint angle.
+   * @param lengthSetpoint length.
+   * @return a command which performs this motion.
+   */
+  public Command retractToPosition(double angleSetpoint, double lengthSetpoint) {
     return Commands.sequence(
-        m_extensionController.extendTo(0.05), m_rotationController.rotateTo(-5));
+        m_extensionController.extendTo(lengthSetpoint),
+        m_rotationController.rotateTo(angleSetpoint));
   }
 
-  public static Command backup(Swerve swerve) {
-    var m_swerve = swerve;
-    return new TeleopDrive(m_swerve, () -> 0.75, () -> 0, () -> 0, () -> false, false, false)
-        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 4.0); // TODO
+  /**
+   * Alias for returning the arm to the stow position.
+   *
+   * @return a command which returns the arm to the stow position.
+   */
+  public Command stow() {
+    return retractToPosition(-5, 0.05);
   }
 
-  public static Command scoreTopBackup(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreTop(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  /**
+   * Extend to setpoint, then drop the game piece, then stow.
+   *
+   * @param angleSetpoint angle.
+   * @param lengthSetpoint length.
+   * @return a command which performs this sequence.
+   */
+  public Command score(double angleSetpoint, double lengthSetpoint) {
+
+    return extendToPosition(angleSetpoint, lengthSetpoint)
+        .andThen(m_claw::outtake, m_claw)
+        .andThen(Commands.waitSeconds(0.5))
+        .andThen(m_claw::stop, m_claw)
+        .andThen(stow());
   }
 
-  public static Command scoreMiddleBackup(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreMiddle(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  /**
+   * Alias for scoring on the top row.
+   *
+   * @return a command that scores on the top row.
+   */
+  public Command scoreTop() {
+    return score(-100, 1.1);
   }
 
-  public static Command scoreBottomBackup(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreBottom(m_ext, m_rot, m_claw).andThen(new WaitCommand(0.5)).andThen(backup(swerve));
+  /**
+   * Alias for scoring on the middle row.
+   *
+   * @return a command that scores on the middle row.
+   */
+  public Command scoreMiddle() {
+    return score(-130, 0.58);
   }
 
-  public static Command chargeStation(Swerve swerve) {
-    var m_swerve = swerve;
-    return new TeleopDrive(m_swerve, () -> 0.5, () -> 0, () -> 0, () -> false, false, false)
-        .withTimeout(0.25)
-        .andThen(new TeleopDrive(m_swerve, () -> 0, () -> 0, () -> 0.5, () -> false, false, false))
-        .withTimeout(0.375)
-        .andThen(new WaitCommand(1.0))
-        .andThen(
-            new TeleopDrive(m_swerve, () -> 0.75, () -> 0.5, () -> 0, () -> false, false, false))
-        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) > 3.0)
-        .andThen(m_swerve::lock, m_swerve); // TODO
+  /**
+   * Alias for scoring on the bottom row.
+   *
+   * @return a command that scores on the bottom row.
+   */
+  public Command scoreBottom() {
+    return score(-200, 0.3);
   }
 
-  public static Command scoreTopChargeStation(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreTop(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(0.5))
-        .andThen(chargeStation(swerve));
+  /**
+   * Reset the swerve drive odometry to (0, 0).
+   *
+   * @return a command that resets the swerve drive odometry.
+   */
+  public Command resetPose() {
+    // TODO Call m_swerve.zeroGyro()?
+    return Commands.runOnce(() -> m_swerve.resetOdometry(new Pose2d()), m_swerve);
   }
 
-  public static Command scoreMiddleChargeStation(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreMiddle(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(0.5))
-        .andThen(chargeStation(swerve));
+  /**
+   * Drive with the specified robot-centric velocities for the specified distance.
+   *
+   * @param vX robot-centric X velocity.
+   * @param vY robot-centric Y velocity.
+   * @param distance distance to drive.
+   * @return a command that drives the specified distance.
+   */
+  public Command driveDistance(double vX, double vY, double distance) {
+    return resetPose()
+        .andThen(new TeleopDrive(m_swerve, () -> vX, () -> vY, () -> 0, () -> false, false, false))
+        .until(() -> Math.abs(m_swerve.getPose().getTranslation().getNorm()) >= distance);
   }
 
-  public static Command scoreBottomChargeStation(
-      ExtensionController ext, RotationController rot, RollerClaw claw, Swerve swerve) {
-    var m_ext = ext;
-    var m_rot = rot;
-    var m_claw = claw;
-    return scoreBottom(m_ext, m_rot, m_claw)
-        .andThen(new WaitCommand(0.5))
-        .andThen(chargeStation(swerve));
+  /**
+   * Alias for achieving mobility.
+   *
+   * @return a command that achieves mobility.
+   */
+  public Command mobility() {
+    return driveDistance(0.75, 0.0, 4.0);
   }
 }
