@@ -4,8 +4,10 @@
 
 package frc.robot.swerve;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -20,7 +22,9 @@ public class AbsoluteDrive extends CommandBase {
   private final Swerve m_swerve;
   private final DoubleSupplier m_vX, m_vY;
   private final DoubleSupplier m_headingHorizontal, m_headingVertical;
-  private final BooleanSupplier m_isPrecise;
+  private final BooleanSupplier m_isPrecise, m_isAiming;
+  private double lastTime = 0.0;
+  private Timer timer = new Timer();
 
   public AbsoluteDrive(
       Swerve swerve,
@@ -28,19 +32,23 @@ public class AbsoluteDrive extends CommandBase {
       DoubleSupplier vY,
       DoubleSupplier headingHorizontal,
       DoubleSupplier headingVertical,
-      BooleanSupplier isPrecise) {
+      BooleanSupplier isPrecise,
+      BooleanSupplier isAiming) {
     m_swerve = swerve;
     m_vX = vX;
     m_vY = vY;
     m_headingHorizontal = headingHorizontal;
     m_headingVertical = headingVertical;
     m_isPrecise = isPrecise;
+    m_isAiming = isAiming;
 
     addRequirements(swerve);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    lastTime = timer.get();
+  }
 
   @Override
   public void execute() {
@@ -57,13 +65,20 @@ public class AbsoluteDrive extends CommandBase {
     SmartDashboard.putNumber("vY", vY);
 
     // Convert joystick inputs to desired chassis speeds
-    ChassisSpeeds desiredSpeeds =
-        m_swerve.getTargetSpeeds(
+    ChassisSpeeds desiredSpeeds;
+    
+    if (m_isAiming.getAsBoolean()) {
+      desiredSpeeds = m_swerve.getTargetSpeeds(
             vX, vY, m_headingHorizontal.getAsDouble(), m_headingVertical.getAsDouble());
+    } else {
+      double kDegreesPerSecond = 5;
+      double angularVelocity = m_headingHorizontal.getAsDouble() * kDegreesPerSecond * (timer.get() - lastTime);
+      Rotation2d angle = m_swerve.getHeading().plus(Rotation2d.fromDegrees(angularVelocity));
+      desiredSpeeds = m_swerve.getTargetSpeeds(vX, vY, angle);
+    }
 
     // Get the translational velocity component of the desired chassis speeds
     Translation2d desiredVelocity = SwerveController.getTranslation2d(desiredSpeeds);
-    // TODO Test
     // Limit the velocity to prevent tipping
     desiredVelocity =
         SwerveMath.limitVelocity(

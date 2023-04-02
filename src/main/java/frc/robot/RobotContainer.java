@@ -60,23 +60,6 @@ public class RobotContainer {
    * require the subsystem.
    */
   private void setDefaultCommands() {
-
-    TeleopDrive teleopDrive =
-        new TeleopDrive(
-            m_swerve,
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
-            () ->
-                MathUtil.applyDeadband(
-                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
-            () -> true, // Always drive field-oriented
-            false,
-            false);
-
     AbsoluteDrive absoluteDrive =
         new AbsoluteDrive(
             m_swerve,
@@ -92,7 +75,8 @@ public class RobotContainer {
             () ->
                 MathUtil.applyDeadband(
                     m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
-            () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
+            () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5,
+            () -> m_driver.getRawAxis(XboxController.Axis.kLeftTrigger.value) > 0.5);
 
     m_swerve.setDefaultCommand(absoluteDrive);
   }
