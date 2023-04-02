@@ -66,13 +66,15 @@ public class AbsoluteDrive extends CommandBase {
 
     // Convert joystick inputs to desired chassis speeds
     ChassisSpeeds desiredSpeeds;
-    
+
     if (m_isAiming.getAsBoolean()) {
-      desiredSpeeds = m_swerve.getTargetSpeeds(
-            vX, vY, m_headingHorizontal.getAsDouble(), m_headingVertical.getAsDouble());
+      desiredSpeeds =
+          m_swerve.getTargetSpeeds(
+              vX, vY, -m_headingHorizontal.getAsDouble(), -m_headingVertical.getAsDouble());
     } else {
       double kDegreesPerSecond = 5;
-      double angularVelocity = m_headingHorizontal.getAsDouble() * kDegreesPerSecond * (timer.get() - lastTime);
+      double angularVelocity =
+          m_headingHorizontal.getAsDouble() * kDegreesPerSecond * (timer.get() - lastTime);
       Rotation2d angle = m_swerve.getHeading().plus(Rotation2d.fromDegrees(angularVelocity));
       desiredSpeeds = m_swerve.getTargetSpeeds(vX, vY, angle);
     }
