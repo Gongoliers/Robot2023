@@ -133,36 +133,36 @@ public final class Autos {
 
   public Command chargeStationEngageWithMobility() {
     // On the floor away from Charge Station, so drive to it
-    // ◢■◣ ⬅🤖 
     return driveUntil(m_swerve::isTipped, 0.75, 0.0)
+        // ◢■◣ ⬅🤖
         .andThen(new PrintCommand("TIPPED_TOWARDS_CROSSING"))
         // Charge Station is tipped towards us, so drive up it
         .andThen(driveUntil(m_swerve::isLevel, 0.5, 0.0))
-        //  ⬅🤖 
+        //  ⬅🤖
         // ◢■◺
         .andThen(new PrintCommand("LEVEL_CROSSING"))
         // Charge Station is tipped level, so drive across it
         .andThen(driveUntil(m_swerve::isTipped, 0.5, 0.0))
-        // ⬅🤖 
+        // ⬅🤖
         // ◢■◣
         .andThen(new PrintCommand("TIPPED_AWAY_CROSSING"))
         // Charge Station is tipped away from us, so drive down it
         .andThen(driveUntil(m_swerve::isLevel, 0.5, 0.0))
-        // ⬅🤖 
+        // ⬅🤖
         //  ◿■◣
         .andThen(new PrintCommand("MOBILITY"))
         // On the floor, so drive away to get mobility
         .andThen(driveDistance(0.5, 0.5, 0.0))
-        // ⬅🤖 ◢■◣ 
+        // ⬅🤖 ◢■◣
         .andThen(new PrintCommand("TIPPED_AWAY_RETURNING"))
         // On the floor away from Charge Station, so drive back to it
         .andThen(driveUntil(m_swerve::isTipped, -0.75, 0.0))
-        // 🤖⮕ 
+        // 🤖⮕
         //  ◿■◣
         .andThen(new PrintCommand("BALANCING"))
         // Charge Station is tipped towards us, so engage it
         .andThen(new AutoBalance(m_swerve));
-        // ⬅🤖⮕
-        // ◢■◣ 
+    //  ⬅🤖⮕
+    //  ◢■◣
   }
 }
