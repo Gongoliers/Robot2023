@@ -18,13 +18,13 @@ public final class Autos {
   private final Swerve m_swerve;
   private final ExtensionController m_extensionController;
   private final RotationController m_rotationController;
-  private final Claw m_claw;
+  private final RollerClaw m_claw;
 
   public Autos(
       Swerve swerve,
       ExtensionController extensionController,
       RotationController rotationController,
-      Claw claw) {
+      RollerClaw claw) {
     m_swerve = swerve;
     m_extensionController = extensionController;
     m_rotationController = rotationController;
@@ -41,8 +41,8 @@ public final class Autos {
    */
   public Command extendToPosition(double angleSetpoint, double lengthSetpoint) {
     return Commands.sequence(
-        new DumbRotate(m_rotationController, angleSetpoint),
-        new DumbExtend(m_extensionController, lengthSetpoint));
+        m_rotationController.rotateTo(angleSetpoint),
+        m_extensionController.extendTo(lengthSetpoint));
   }
 
   /**
@@ -55,8 +55,8 @@ public final class Autos {
    */
   public Command retractToPosition(double angleSetpoint, double lengthSetpoint) {
     return Commands.sequence(
-        new DumbExtend(m_extensionController, lengthSetpoint),
-        new DumbRotate(m_rotationController, angleSetpoint));
+        m_extensionController.extendTo(lengthSetpoint),
+        m_rotationController.rotateTo(angleSetpoint));
   }
 
   /**
@@ -78,9 +78,9 @@ public final class Autos {
   public Command score(double angleSetpoint, double lengthSetpoint) {
 
     return extendToPosition(angleSetpoint, lengthSetpoint)
-        .andThen(m_claw::open, m_claw)
+        .andThen(m_claw::outtake, m_claw)
         .andThen(Commands.waitSeconds(0.5))
-        .andThen(m_claw::close, m_claw)
+        .andThen(m_claw::stop, m_claw)
         .andThen(stow());
   }
 
