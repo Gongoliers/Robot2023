@@ -106,7 +106,7 @@ public class ExtensionController extends SubsystemBase
   }
 
   public Command extend() {
-    return drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED, this::isExtended);
+    return drive(Constants.Arm.Extension.MANUAL_EXTEND_SPEED, () -> { return isExtended() || m_rotationController.getAngle() >= 45.0; });
   }
 
   public Command retract() {
