@@ -4,6 +4,7 @@
 
 package frc.robot.swerve;
 
+import com.thegongoliers.math.GMath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -156,6 +157,14 @@ public class Swerve extends SubsystemBase {
 
   public Rotation2d getPitch() {
     return swerveDrive.getPitch();
+  }
+
+  public boolean isLevel() {
+    return GMath.approximately(getPitch().getDegrees(), 0.0, 1);
+  }
+
+  public boolean isTipped() {
+    return !isLevel();
   }
 
   /**
