@@ -2,10 +2,7 @@ package frc.lib;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
 import frc.robot.Constants;
 
 public final class CTREConfigs {
@@ -44,12 +41,5 @@ public final class CTREConfigs {
     armExtensionFXConfig.slot0.kI = Constants.Arm.Extension.KI;
     armExtensionFXConfig.slot0.kD = Constants.Arm.Extension.KD;
     armExtensionFXConfig.supplyCurrLimit = extensionSupplyLimit;
-
-    // Arm rotation CANCoder config
-    rotationCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    rotationCanCoderConfig.sensorDirection = Constants.Arm.Rotation.SHOULD_INVERT_CANCODER;
-    rotationCanCoderConfig.initializationStrategy =
-        SensorInitializationStrategy.BootToAbsolutePosition;
-    rotationCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
   }
 }

@@ -5,21 +5,15 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.auto.Autos;
-import frc.robot.intake.Intake;
-import frc.robot.superstructure.Claw;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.intake.SideIntake;
+import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
+import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
-import frc.robot.superstructure.commands.controlled.DumbRotate;
-import frc.robot.superstructure.commands.manual.SafeExtend;
-import frc.robot.superstructure.commands.manual.SafeLower;
-import frc.robot.superstructure.commands.manual.SafeRaise;
-import frc.robot.superstructure.commands.manual.SafeRetract;
+import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
 import java.io.File;
@@ -34,22 +28,22 @@ public class RobotContainer {
 
   // Subsystems
   private final Swerve m_swerve = new Swerve(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final Claw m_claw = new Claw();
   private final RotationController m_rotationController = new RotationController();
   private final ExtensionController m_extensionController =
       new ExtensionController(m_rotationController);
-  private final Intake m_intake = new Intake();
+  private final SideIntake m_intake = new SideIntake();
+  private final RollerClaw m_claw = new RollerClaw();
 
   private final Autos m_autos =
       new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
 
-  // Controllers
-  private final XboxController m_driver = new XboxController(Constants.Driver.CONTROLLER_PORT);
-  private final XboxController m_manipulator =
-      new XboxController(Constants.Manipulator.CONTROLLER_PORT);
+  private final CommandXboxController m_driver = new CommandXboxController(0);
+  private final CommandXboxController m_manipulator = new CommandXboxController(1);
 
   private SendableChooser<Command> m_scoreChooser = new SendableChooser<Command>();
   private SendableChooser<Command> m_mobilityChooser = new SendableChooser<Command>();
+
+  private final double DEADBAND = 0.5;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -70,21 +64,35 @@ public class RobotContainer {
             m_swerve,
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_VERTICAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.LEFT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
             () ->
                 MathUtil.applyDeadband(
-                    m_driver.getRawAxis(Constants.Driver.RIGHT_HORIZONTAL_AXIS.value),
-                    Constants.Driver.DEADBAND),
+                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
             () -> true, // Always drive field-oriented
             false,
             false);
 
-    m_swerve.setDefaultCommand(teleopDrive);
+    AbsoluteDrive absoluteDrive =
+        new AbsoluteDrive(
+            m_swerve,
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
+            () ->
+                MathUtil.applyDeadband(
+                    m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
+            () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
+
+    m_swerve.setDefaultCommand(absoluteDrive);
   }
 
   /**
@@ -94,69 +102,44 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.ZERO_GYRO_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::zeroGyro));
+    m_driver.y().onTrue(new InstantCommand(m_swerve::zeroGyro));
+    m_driver.x().onTrue(new InstantCommand(m_swerve::lock));
 
-    // TODO Test
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.LOCK_BUTTON.value))
-        .onTrue(new InstantCommand(m_swerve::lock));
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kLeftTrigger.value, DEADBAND)
+        .onTrue(new InstantCommand(m_claw::intake))
+        .onFalse(new InstantCommand(m_claw::hold));
 
-    // TODO Figure our what commands have to go here...
-    new Trigger(() -> m_driver.getRawButton(Constants.Driver.PANIC_BUTTON.value))
-        .onTrue(new SequentialCommandGroup(new InstantCommand(), new InstantCommand()));
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kRightTrigger.value, DEADBAND)
+        .onTrue(new InstantCommand(m_claw::outtake))
+        .onFalse(new InstantCommand(m_claw::stop));
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.CLOSE_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(m_claw::close));
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kRightY.value, -DEADBAND)
+        .whileTrue(m_extensionController.extend());
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kRightY.value, DEADBAND)
+        .whileTrue(m_extensionController.retract());
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.OPEN_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .onTrue(new InstantCommand(m_claw::open));
+    m_manipulator
+        .axisLessThan(XboxController.Axis.kLeftY.value, -DEADBAND)
+        .whileTrue(m_rotationController.raise());
+    m_manipulator
+        .axisGreaterThan(XboxController.Axis.kLeftY.value, DEADBAND)
+        .whileTrue(m_rotationController.lower());
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeExtend(m_extensionController));
+    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.FLOOR));
+    m_manipulator.a().whileTrue(m_rotationController.rotateTo(ArmState.STOWED));
+    m_manipulator.y().whileTrue(m_rotationController.rotateTo(ArmState.TOP));
+    m_manipulator.b().whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
 
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.EXTEND_RETRACT_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeRetract(m_extensionController));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
-                    < -Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeRaise(m_rotationController));
-
-    new Trigger(
-            () ->
-                m_manipulator.getRawAxis(Constants.Manipulator.RAISE_LOWER_AXIS.value)
-                    > Constants.Manipulator.TRIGGER_THRESHOLD)
-        .whileTrue(new SafeLower(m_rotationController));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.FLOOR_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -300));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.LEVEL_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, 0));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.TOP_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -100));
-
-    new Trigger(() -> m_manipulator.getRawButton(Constants.Manipulator.SUBSTATION_BUTTON.value))
-        .whileTrue(new DumbRotate(m_rotationController, -115));
-
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kLeftBumper.value))
+    m_manipulator
+        .leftBumper()
         .onTrue(new InstantCommand(m_intake::intake))
         .onFalse(new InstantCommand(m_intake::stop));
-    new Trigger(() -> m_manipulator.getRawButton(XboxController.Button.kRightBumper.value))
+    m_manipulator
+        .rightBumper()
         .onTrue(new InstantCommand(m_intake::outtake))
         .onFalse(new InstantCommand(m_intake::stop));
   }
