@@ -1,8 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +37,8 @@ public class RobotContainer {
       new ExtensionController(m_rotationController);
   private final SideIntake m_intake = new SideIntake();
   private final RollerClaw m_claw = new RollerClaw();
+
+  private final Compressor m_compressor = new Compressor(30, PneumaticsModuleType.REVPH);
 
   private final Autos m_autos =
       new Autos(m_swerve, m_extensionController, m_rotationController, m_claw);
@@ -170,5 +174,13 @@ public class RobotContainer {
     Command mobilityCommand = m_mobilityChooser.getSelected();
 
     return scoreCommand.andThen(mobilityCommand);
+  }
+
+  public void startCompressor() {
+    m_compressor.enableDigital();
+  }
+
+  public void stopCompressor() {
+    m_compressor.disable();
   }
 }

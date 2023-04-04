@@ -5,9 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -26,8 +24,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private Compressor m_compressor;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,9 +34,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-    m_compressor = new Compressor(30, PneumaticsModuleType.REVPH);
-    m_compressor.disable();
 
     // Disable joystick warnings, since false positives may be distracting
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -75,13 +68,14 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_compressor.disable();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    m_robotContainer.stopCompressor();
   }
 
   /** This function is called periodically during autonomous. */
@@ -90,7 +84,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_compressor.disable();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -98,6 +91,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.stopCompressor();
   }
 
   /** This function is called periodically during operator control. */
@@ -108,7 +103,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-    m_compressor.enableDigital();
+    m_robotContainer.startCompressor();
   }
 
   /** This function is called periodically during test mode. */
