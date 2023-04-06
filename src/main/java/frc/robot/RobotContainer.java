@@ -148,6 +148,11 @@ public class RobotContainer {
         .rightBumper()
         .onTrue(new InstantCommand(m_intake::outtake))
         .onFalse(new InstantCommand(m_intake::stop));
+
+    m_manipulator
+        .start()
+        .onTrue(new InstantCommand(this::startCompressor))
+        .onFalse(new InstantCommand(this::stopCompressor));
   }
 
   private void configureTriggers() {}
