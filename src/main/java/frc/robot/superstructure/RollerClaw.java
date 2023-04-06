@@ -62,7 +62,7 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
   }
 
   public void outtake() {
-    m_motor.set(0.45); // TODO
+    m_motor.set(0.65); // TODO
   }
 
   public void stop() {
