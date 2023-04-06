@@ -4,6 +4,7 @@
 
 package frc.robot.superstructure;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.thegongoliers.output.interfaces.Stoppable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -27,6 +28,12 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
   }
 
   private void configure() {
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration();
+    currentLimit.triggerThresholdCurrent = 40; // amps
+    currentLimit.triggerThresholdTime = 1; // seconds
+    currentLimit.currentLimit = 20; // amps
+    currentLimit.enable = true;
+    m_motor.configSupplyCurrentLimit(currentLimit);
     m_motor.setInverted(false);
   }
 
