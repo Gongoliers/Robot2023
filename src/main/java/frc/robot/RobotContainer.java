@@ -179,11 +179,12 @@ public class RobotContainer {
     m_scoreChooser.setDefaultOption("Top", m_autos.scoreTop());
     m_scoreChooser.addOption("Middle", m_autos.scoreMiddle());
     m_scoreChooser.addOption("Bottom", m_autos.scoreBottom());
+    m_scoreChooser.addOption("Just Outtake", m_autos.outtake());
     m_scoreChooser.addOption("Don't Score", new InstantCommand());
     SmartDashboard.putData("Score Position", m_scoreChooser);
 
-    m_mobilityChooser.setDefaultOption("Yes", m_autos.mobility());
-    m_mobilityChooser.addOption("No", new InstantCommand());
+    m_mobilityChooser.setDefaultOption("Back Up", m_autos.mobility());
+    m_mobilityChooser.addOption("Don't Move", new InstantCommand());
     SmartDashboard.putData("Mobility?", m_mobilityChooser);
   }
 

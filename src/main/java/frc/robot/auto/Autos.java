@@ -7,6 +7,7 @@ package frc.robot.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.superstructure.ArmState;
 import frc.robot.superstructure.ExtensionController;
@@ -60,6 +61,10 @@ public final class Autos {
         .andThen(Commands.waitSeconds(0.5))
         .andThen(m_claw::stop, m_claw)
         .andThen(stow());
+  }
+
+  public Command outtake() {
+    return new InstantCommand(m_claw::outtake, m_claw).andThen(Commands.waitSeconds(1.0)).andThen(m_claw::stop, m_claw).andThen(Commands.waitSeconds(1.0));
   }
 
   /**
@@ -125,7 +130,7 @@ public final class Autos {
    * @return a command that achieves mobility.
    */
   public Command mobility() {
-    return driveDistance(4.0, 0.75, 0.0);
+    return driveDistance(4.0, 0.25, 0.0);
   }
 
   public Command chargeStationEngage() {
