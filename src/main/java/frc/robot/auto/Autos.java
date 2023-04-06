@@ -14,6 +14,7 @@ import frc.robot.superstructure.RollerClaw;
 import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
+import frc.robot.swerve.TeleopDriveWithPrecision;
 import java.util.function.BooleanSupplier;
 
 public final class Autos {

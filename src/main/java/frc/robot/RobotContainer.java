@@ -20,6 +20,7 @@ import frc.robot.superstructure.RotationController;
 import frc.robot.swerve.AbsoluteDrive;
 import frc.robot.swerve.Swerve;
 import frc.robot.swerve.TeleopDrive;
+import frc.robot.swerve.TeleopDriveWithPrecision;
 import java.io.File;
 
 /**
@@ -80,6 +81,23 @@ public class RobotContainer {
             () -> true, // Always drive field-oriented
             false,
             false);
+    
+    TeleopDriveWithPrecision teleopDriveWithPrecision =
+            new TeleopDriveWithPrecision(
+                m_swerve,
+                () ->
+                    MathUtil.applyDeadband(
+                        m_driver.getRawAxis(XboxController.Axis.kLeftY.value), DEADBAND),
+                () ->
+                    MathUtil.applyDeadband(
+                        m_driver.getRawAxis(XboxController.Axis.kLeftX.value), DEADBAND),
+                () ->
+                    MathUtil.applyDeadband(
+                        m_driver.getRawAxis(XboxController.Axis.kRightX.value), DEADBAND),
+                () -> true, // Always drive field-oriented
+                () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5,
+                false,
+                false);   
 
     AbsoluteDrive absoluteDrive =
         new AbsoluteDrive(
@@ -98,7 +116,7 @@ public class RobotContainer {
                     -m_driver.getRawAxis(XboxController.Axis.kRightY.value), DEADBAND),
             () -> m_driver.getRawAxis(XboxController.Axis.kRightTrigger.value) > 0.5);
 
-    m_swerve.setDefaultCommand(absoluteDrive);
+    m_swerve.setDefaultCommand(teleopDriveWithPrecision);
   }
 
   /**
