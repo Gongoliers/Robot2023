@@ -109,7 +109,7 @@ public class ExtensionController extends SubsystemBase
     return drive(
         Constants.Arm.Extension.MANUAL_EXTEND_SPEED,
         () -> {
-          return isExtended() || m_rotationController.getAngle() >= 45.0;
+          return isExtended() || m_rotationController.getAngle() >= 35.0;
         });
   }
 
