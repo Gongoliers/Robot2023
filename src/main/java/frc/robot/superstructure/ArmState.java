@@ -4,8 +4,8 @@ import frc.robot.Constants;
 
 public enum ArmState {
   STOWED("Stowed", 0.05, Constants.Arm.Rotation.MAX_ANGLE),
-  TOP("Top Row", 1.15, 30),
-  MIDDLE("Middle Row", 0.45, 20), // TODO
+  TOP("Top Row", 1.075, 18),
+  MIDDLE("Middle Row", 0.45, 7), // TODO
   DOUBLE_SUBSTATION("Double Substation", 0, 0), // TODO
   HYBRID("Floor", 0.1, 0); // TODO
 

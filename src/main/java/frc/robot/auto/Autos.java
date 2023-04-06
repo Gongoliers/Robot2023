@@ -38,12 +38,12 @@ public final class Autos {
 
   public Command extendToPosition(ArmState state) {
     return Commands.sequence(
-        m_rotationController.rotateTo(state), m_extensionController.extendTo(state));
+        m_rotationController.rotateTo(30), m_extensionController.extendTo(state), m_rotationController.rotateTo(state));
   }
 
   public Command retractToPosition(ArmState state) {
     return Commands.sequence(
-        m_extensionController.extendTo(state), m_rotationController.rotateTo(state));
+        m_rotationController.rotateTo(30), m_extensionController.extendTo(state), m_rotationController.rotateTo(state));
   }
 
   /**
@@ -57,6 +57,7 @@ public final class Autos {
 
   public Command score(ArmState state) {
     return extendToPosition(state)
+        .andThen(Commands.waitSeconds(1.0))
         .andThen(m_claw::outtake, m_claw)
         .andThen(Commands.waitSeconds(0.5))
         .andThen(m_claw::stop, m_claw)

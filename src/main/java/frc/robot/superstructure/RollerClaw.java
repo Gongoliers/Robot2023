@@ -34,7 +34,7 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
     currentLimit.currentLimit = 20; // amps
     currentLimit.enable = true;
     m_motor.configSupplyCurrentLimit(currentLimit);
-    m_motor.setInverted(false);
+    m_motor.setInverted(true);
   }
 
   @Override
@@ -54,7 +54,7 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
   }
 
   public void intake() {
-    m_motor.set(-0.75); // TODO
+    m_motor.set(-0.60); // TODO
   }
 
   public void hold() {
@@ -62,7 +62,7 @@ public class RollerClaw extends SubsystemBase implements TelemetrySubsystem, Sto
   }
 
   public void outtake() {
-    m_motor.set(0.65); // TODO
+    m_motor.set(0.45); // TODO
   }
 
   public void stop() {
