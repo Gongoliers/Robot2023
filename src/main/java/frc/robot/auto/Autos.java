@@ -43,7 +43,7 @@ public final class Autos {
 
   public Command retractToPosition(ArmState state) {
     return Commands.sequence(
-        m_rotationController.rotateTo(30), m_extensionController.extendTo(state), m_rotationController.rotateTo(state));
+        m_extensionController.extendTo(state), m_rotationController.rotateTo(state));
   }
 
   /**
@@ -131,7 +131,7 @@ public final class Autos {
    * @return a command that achieves mobility.
    */
   public Command mobility() {
-    return driveDistance(4.0, 0.25, 0.0);
+    return driveDistance(4.0, 0.55, 0.0);
   }
 
   public Command chargeStationEngage() {

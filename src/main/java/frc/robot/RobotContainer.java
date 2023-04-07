@@ -153,10 +153,8 @@ public class RobotContainer {
         .axisGreaterThan(XboxController.Axis.kLeftY.value, DEADBAND)
         .whileTrue(m_rotationController.lower());
 
-    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.HYBRID));
+    m_manipulator.x().whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
     m_manipulator.a().whileTrue(m_rotationController.rotateTo(ArmState.STOWED));
-    m_manipulator.y().whileTrue(m_rotationController.rotateTo(ArmState.TOP));
-    m_manipulator.b().whileTrue(m_rotationController.rotateTo(ArmState.DOUBLE_SUBSTATION));
 
     m_manipulator
         .leftBumper()
