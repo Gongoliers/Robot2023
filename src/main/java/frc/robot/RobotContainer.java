@@ -174,9 +174,12 @@ public class RobotContainer {
   private void configureTriggers() {}
 
   private void setupAutos() {
-    m_scoreChooser.setDefaultOption("Top", m_autos.scoreTop());
-    m_scoreChooser.addOption("Middle", m_autos.scoreMiddle());
-    m_scoreChooser.addOption("Bottom", m_autos.scoreBottom());
+    m_scoreChooser.setDefaultOption("Top (Cone)", m_autos.scoreTopCone());
+    m_scoreChooser.addOption("Middle (Cone)", m_autos.scoreMiddleCone());
+    m_scoreChooser.addOption("Bottom (Cone)", m_autos.scoreBottomCone());
+    m_scoreChooser.setDefaultOption("Top (Cube)", m_autos.scoreTopCube());
+    m_scoreChooser.addOption("Middle (Cube)", m_autos.scoreMiddleCube());
+    m_scoreChooser.addOption("Bottom (Cube)", m_autos.scoreBottomCube());
     m_scoreChooser.addOption("Just Outtake", m_autos.outtake());
     m_scoreChooser.addOption("Don't Score", new InstantCommand());
     SmartDashboard.putData("Score Position", m_scoreChooser);

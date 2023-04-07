@@ -59,9 +59,9 @@ public final class Autos {
     return extendToPosition(state)
         .andThen(Commands.waitSeconds(1.0))
         .andThen(m_claw::outtake, m_claw)
-        .andThen(Commands.waitSeconds(0.5))
-        .andThen(m_claw::stop, m_claw)
-        .andThen(stow());
+        .andThen(Commands.waitSeconds(2.0))
+        .andThen(stow())
+        .andThen(m_claw::stop, m_claw);
   }
 
   public Command outtake() {
@@ -73,8 +73,14 @@ public final class Autos {
    *
    * @return a command that scores on the top row.
    */
-  public Command scoreTop() {
-    return score(ArmState.TOP);
+  public Command scoreTopCone() {
+    return extendToPosition(ArmState.TOP_CONE)
+    .andThen(Commands.waitSeconds(1.0))
+    .andThen(m_claw::outtake, m_claw)
+    .andThen(Commands.waitSeconds(2.0))
+    .andThen(retractToPosition(ArmState.TOP_PIVOT_POINT))
+    .andThen(m_claw::stop, m_claw)
+    .andThen(retractToPosition(ArmState.STOWED));
   }
 
   /**
@@ -82,8 +88,8 @@ public final class Autos {
    *
    * @return a command that scores on the middle row.
    */
-  public Command scoreMiddle() {
-    return score(ArmState.MIDDLE);
+  public Command scoreMiddleCone() {
+    return score(ArmState.MIDDLE_CONE);
   }
 
   /**
@@ -91,7 +97,34 @@ public final class Autos {
    *
    * @return a command that scores on the bottom row.
    */
-  public Command scoreBottom() {
+  public Command scoreBottomCone() {
+    return score(ArmState.HYBRID);
+  }
+
+    /**
+   * Alias for scoring on the top row.
+   *
+   * @return a command that scores on the top row.
+   */
+  public Command scoreTopCube() {
+    return score(ArmState.TOP_CUBE);
+  }
+
+  /**
+   * Alias for scoring on the middle row.
+   *
+   * @return a command that scores on the middle row.
+   */
+  public Command scoreMiddleCube() {
+    return score(ArmState.MIDDLE_CUBE);
+  }
+
+  /**
+   * Alias for scoring on the bottom row.
+   *
+   * @return a command that scores on the bottom row.
+   */
+  public Command scoreBottomCube() {
     return score(ArmState.HYBRID);
   }
 

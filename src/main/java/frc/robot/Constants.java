@@ -157,13 +157,13 @@ public final class Constants {
        * The speed for manually extending the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_EXTEND_SPEED = 0.8;
+      public static final double MANUAL_EXTEND_SPEED = 1.0;
 
       /**
        * The speed for manually retracting the arm. Used for manual driving of the arm, as a bypass
        * for the PID control.
        */
-      public static final double MANUAL_RETRACT_SPEED = -0.8;
+      public static final double MANUAL_RETRACT_SPEED = -1.0;
 
       public static final double MAX_EXTENSION_LENGTH = Double.POSITIVE_INFINITY; // TODO
 
